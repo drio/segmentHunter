@@ -8,6 +8,15 @@ all: starred.json
 		make details/$$i.json; \
 	done
 
+all.json:
+	@echo "[" > $@;\
+	for j in details/*.json;do \
+		cat $$j >> $@;\
+		echo "," >> $@; \
+	done; \
+	gsed -i '$$ s/.$$//' $@;\
+	echo "]" >> $@
+
 details/%.json:
 	curl -X \
 	GET "https://www.strava.com/api/v3/segments/$*" \
