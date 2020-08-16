@@ -1,0 +1,19 @@
+
+-Data:
+
+- Get segment data for drio.
+- render segment data on map with leaflet
+- get weather data for location.
+- visualize winds for a particular moment in time
+- combine wind data + segments for a particular time 
+
+
+Make things dynamic so you have segments for a particular user. 
+
+Alternatively, get all segments for a particular location and update 
+periodically the visualization. 
+
+So: 
+
+show me all segments in a location and tell me which ones are ideal to ride
+to get comes given the weather conditions for a particular time.
