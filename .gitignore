@@ -2,3 +2,4 @@ client/node_modules
 secret/
 client/.cache
 client/data
+client/.next
