@@ -5,26 +5,29 @@
 //import "leaflet/dist/leaflet.css";
 //import TestMapBox from "./test-mapbox";
 //import listOfSegments from "./data/segments/starred.json";
-//import segments from "./data/segments/all.json";
+import segments from "../data/segments/all.json";
 
 const chs = {
   lat: 32.784618,
   lon: -79.940918
 };
-const leafExample = [51.505, -0.09];
-const home = [32.782003, -79.932903];
-//const position = [chs.lat, chs.lon];
-const position = home;
-
-//console.log(segments[24].end_latlng);
 
 import dynamic from "next/dynamic";
 
-const DynamicComponentWithNoSSR = dynamic(
-  () => import("../components/test-mb-next"),
-  {
-    ssr: false
-  }
-);
+const importMap = () => import("../components/test-mb-next");
 
-export default () => <DynamicComponentWithNoSSR />;
+const DynamicComponentWithNoSSR = dynamic(importMap, {
+  ssr: false
+});
+
+export async function getStaticProps() {
+  return {
+    props: {
+      foo: "David"
+    }
+  };
+}
+
+const Index = () => <DynamicComponentWithNoSSR segments={segments} />;
+
+export default Index;

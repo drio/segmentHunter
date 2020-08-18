@@ -1,63 +1,78 @@
 import { useState, useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
+import polyline from "@mapbox/polyline";
 
-const home = { lat: 32.782003, lng: -79.932903 };
 const TOKEN =
   "pk.eyJ1IjoiZHJpbyIsImEiOiJjanhrczh2c2MyNnVmNDBwNm1ic2NhZTVsIn0.X9AIabxzpa8DYz3D7W0wiQ";
 
 mapboxgl.accessToken = TOKEN;
 
-class MapClass extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      lng: home.lng,
-      lat: home.lat,
-      zoom: 13
-    };
-  }
-
-  componentDidMount() {
-    const map = new mapboxgl.Map({
-      container: this.mapContainer,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [this.state.lng, this.state.lat],
-      zoom: this.state.zoom
-    });
-
-    new mapboxgl.Marker().setLngLat([home.lng, home.lat]).addTo(map);
-
-    map.on("move", () => {
-      this.setState({
-        lng: map.getCenter().lng.toFixed(4),
-        lat: map.getCenter().lat.toFixed(4),
-        zoom: map.getZoom().toFixed(2)
-      });
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="sidebarStyle">
-          <div>
-            Longitude: {this.state.lng} | Latitude: {this.state.lat} | Zoom:{" "}
-            {this.state.zoom}
-          </div>
-        </div>
-        <div ref={el => (this.mapContainer = el)} className="mapContainer" />
-      </div>
-    );
-  }
+function addMarker(map, segment, setMarker) {
+  const {
+    start_longitude,
+    start_latitude,
+    end_latitude,
+    end_longitude
+  } = segment;
+  setMarker(
+    new mapboxgl.Marker({})
+      .setLngLat([start_longitude, start_latitude])
+      .addTo(map)
+  );
+  setMarker(
+    new mapboxgl.Marker({ color: "red" })
+      .setLngLat([end_longitude, end_latitude])
+      .addTo(map)
+  );
 }
 
-function Map() {
+function addLine(map, segment) {
+  const coordinateList = polyline
+    .decode(segment.map.polyline)
+    .map(p => [p[1], p[0]]); // reverse lat/long
+  const id = `segment-${segment.id}`;
+  console.log(coordinateList);
+  map.addSource(id, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            color: "#F7455D" // red
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: coordinateList
+          }
+        }
+      ]
+    }
+  });
+
+  map.addLayer({
+    id: id,
+    type: "line",
+    source: id,
+    paint: {
+      "line-width": 4,
+      // Use a get expression
+      // (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-get)
+      // to set the line-color to a feature property value.
+      "line-color": ["get", "color"]
+    }
+  });
+}
+
+function Map({ segments }) {
+  const concreteSegment = segments[24];
   const mapContainer = useRef(null);
 
   const [state, setState] = useState({
-    lng: home.lng,
-    lat: home.lat,
-    zoom: 13
+    lng: concreteSegment.start_longitude,
+    lat: concreteSegment.start_latitude,
+    zoom: 14
   });
 
   const [marker, setMarker] = useState(null);
@@ -67,15 +82,15 @@ function Map() {
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [state.lng, state.lat],
-      zoom: state.zoom,
-      accessToken: TOKEN
+      zoom: state.zoom
     });
 
-    if (!marker) {
-      setMarker(
-        new mapboxgl.Marker().setLngLat([home.lng, home.lat]).addTo(map)
-      );
-    }
+    map.on("load", () => {
+      if (!marker) {
+        addMarker(map, concreteSegment, setMarker);
+      }
+      addLine(map, concreteSegment);
+    });
 
     map.on("move", () => {
       setState({
