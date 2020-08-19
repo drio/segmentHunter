@@ -33,4 +33,3 @@ stats: segments.json all.json
 	echo "# of segments in segments.json: `cat segments.json | jq '.[] | {id}' | grep id |wc -l`"
 	echo "# of segments in all.json: `cat all.json | jq '.[] | {id}' | grep id |wc -l`"
 
-

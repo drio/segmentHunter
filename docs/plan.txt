@@ -1,4 +1,33 @@
 
+- items:
+
++ load all segments
++ position the map so we see all the segments (perhaps not necessary)
++ load weather data
++ how do we use the weather data (wind) and the segment data (polyline) to 
+  determine how ideal a segment is for a PR attempt.
+
++ Given a polyline, determine the direction of the sublines:
+  *----NE----*-----SOUTH----* ....
+
+  Algorith:
+  INPUT: (polyline(segment), wind speed, wind direction (angle), ..... dry or wet?)
+  ---
+  Per each subsegment:
+    - compute angle direction
+    - compute distance
+  Compute angle difference on each subsegment (absolute value)
+    90
+    [100m, 200m, 300m, 100m, .....]    
+    [82, 80, 80, 20, 90    , .....]
+    -
+    [8, 10, 10, 70, 0
+  
+  ---
+  OUPUT: score = [0, 1]
+  
+---
+
 -Data:
 
 - Get segment data for drio.

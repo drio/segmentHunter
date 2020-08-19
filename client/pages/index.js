@@ -20,14 +20,6 @@ const DynamicComponentWithNoSSR = dynamic(importMap, {
   ssr: false
 });
 
-export async function getStaticProps() {
-  return {
-    props: {
-      foo: "David"
-    }
-  };
-}
-
 const Index = () => <DynamicComponentWithNoSSR segments={segments} />;
 
 export default Index;
