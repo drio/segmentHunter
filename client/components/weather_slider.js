@@ -36,11 +36,11 @@ function WeatherSlider({ data, changeAction }) {
   return (
     <div style={style}>
       <div> {timeString} </div>
-      <div> Temperature: {data[value].temperature} </div>
-      <div> Direction: {data[value].windDirection} </div>
-      <div> Speed: {data[value].windSpeed} </div>
-      <div> Forecast: {data[value].shortForecast} </div>
-      <br />
+      <div>
+        {data[value].temperature}F ({data[value].windDirection}){" "}
+        {data[value].windSpeed}
+      </div>
+      <div>{data[value].shortForecast} </div>
       <Slider
         value={value}
         min={0}
