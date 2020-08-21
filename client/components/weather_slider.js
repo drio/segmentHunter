@@ -29,18 +29,25 @@ function WeatherSlider({ data, changeAction }) {
   const [max, setMax] = useState(0);
 
   useEffect(() => {
-    setMax(data.length);
+    setMax(data.length-1);
     setTimeString(formatDate(data[0].startTime));
   }, []);
+
+  const {
+    temperature,
+    windDirection,
+    windSpeed,
+    shortForecast,
+    startTime
+  } = data[value];
 
   return (
     <div style={style}>
       <div> {timeString} </div>
       <div>
-        {data[value].temperature}F ({data[value].windDirection}){" "}
-        {data[value].windSpeed}
+        {temperature}F ({windDirection}) {windSpeed}
       </div>
-      <div>{data[value].shortForecast} </div>
+      <div>{shortForecast} </div>
       <Slider
         value={value}
         min={0}
@@ -48,7 +55,7 @@ function WeatherSlider({ data, changeAction }) {
         step={1}
         onChange={v => {
           setValue(v);
-          setTimeString(formatDate(data[v].startTime));
+          setTimeString(formatDate(startTime));
           changeAction(data[v]);
         }}
       />

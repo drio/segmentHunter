@@ -1,50 +1,15 @@
 [
   {
-    "startTime": "2020-08-21T09:00:00-04:00",
-    "temperature": 77,
-    "windSpeed": "5 mph",
-    "windDirection": "SW",
-    "shortForecast": "Chance Showers And Thunderstorms"
-  },
-  {
-    "startTime": "2020-08-21T10:00:00-04:00",
-    "temperature": 79,
-    "windSpeed": "6 mph",
-    "windDirection": "S",
-    "shortForecast": "Chance Showers And Thunderstorms"
-  },
-  {
-    "startTime": "2020-08-21T11:00:00-04:00",
-    "temperature": 80,
-    "windSpeed": "8 mph",
-    "windDirection": "S",
-    "shortForecast": "Chance Showers And Thunderstorms"
-  },
-  {
-    "startTime": "2020-08-21T12:00:00-04:00",
-    "temperature": 82,
-    "windSpeed": "9 mph",
-    "windDirection": "S",
-    "shortForecast": "Scattered Showers And Thunderstorms"
-  },
-  {
-    "startTime": "2020-08-21T13:00:00-04:00",
-    "temperature": 83,
-    "windSpeed": "12 mph",
-    "windDirection": "S",
-    "shortForecast": "Scattered Showers And Thunderstorms"
-  },
-  {
     "startTime": "2020-08-21T14:00:00-04:00",
     "temperature": 84,
-    "windSpeed": "13 mph",
+    "windSpeed": "12 mph",
     "windDirection": "S",
     "shortForecast": "Scattered Showers And Thunderstorms"
   },
   {
     "startTime": "2020-08-21T15:00:00-04:00",
     "temperature": 84,
-    "windSpeed": "13 mph",
+    "windSpeed": "12 mph",
     "windDirection": "S",
     "shortForecast": "Scattered Showers And Thunderstorms"
   },
@@ -71,8 +36,8 @@
   },
   {
     "startTime": "2020-08-21T19:00:00-04:00",
-    "temperature": 82,
-    "windSpeed": "12 mph",
+    "temperature": 83,
+    "windSpeed": "13 mph",
     "windDirection": "S",
     "shortForecast": "Isolated Showers And Thunderstorms"
   },
@@ -93,7 +58,7 @@
   {
     "startTime": "2020-08-21T22:00:00-04:00",
     "temperature": 80,
-    "windSpeed": "9 mph",
+    "windSpeed": "10 mph",
     "windDirection": "S",
     "shortForecast": "Scattered Showers And Thunderstorms"
   },
@@ -101,7 +66,7 @@
     "startTime": "2020-08-21T23:00:00-04:00",
     "temperature": 80,
     "windSpeed": "9 mph",
-    "windDirection": "SW",
+    "windDirection": "S",
     "shortForecast": "Scattered Showers And Thunderstorms"
   },
   {
@@ -134,7 +99,7 @@
   },
   {
     "startTime": "2020-08-22T04:00:00-04:00",
-    "temperature": 78,
+    "temperature": 77,
     "windSpeed": "1 mph",
     "windDirection": "SW",
     "shortForecast": "Isolated Showers And Thunderstorms"
@@ -1088,6 +1053,41 @@
     "startTime": "2020-08-27T20:00:00-04:00",
     "temperature": 81,
     "windSpeed": "8 mph",
+    "windDirection": "S",
+    "shortForecast": "Chance Showers And Thunderstorms"
+  },
+  {
+    "startTime": "2020-08-27T21:00:00-04:00",
+    "temperature": 80,
+    "windSpeed": "8 mph",
+    "windDirection": "S",
+    "shortForecast": "Chance Showers And Thunderstorms"
+  },
+  {
+    "startTime": "2020-08-27T22:00:00-04:00",
+    "temperature": 80,
+    "windSpeed": "8 mph",
+    "windDirection": "S",
+    "shortForecast": "Chance Showers And Thunderstorms"
+  },
+  {
+    "startTime": "2020-08-27T23:00:00-04:00",
+    "temperature": 80,
+    "windSpeed": "7 mph",
+    "windDirection": "S",
+    "shortForecast": "Chance Showers And Thunderstorms"
+  },
+  {
+    "startTime": "2020-08-28T00:00:00-04:00",
+    "temperature": 79,
+    "windSpeed": "7 mph",
+    "windDirection": "S",
+    "shortForecast": "Chance Showers And Thunderstorms"
+  },
+  {
+    "startTime": "2020-08-28T01:00:00-04:00",
+    "temperature": 79,
+    "windSpeed": "7 mph",
     "windDirection": "S",
     "shortForecast": "Chance Showers And Thunderstorms"
   }
