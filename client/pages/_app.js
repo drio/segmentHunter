@@ -1,6 +1,7 @@
 import Head from "next/head";
 import React from "react";
 import "../css/styles.css";
+import "rc-slider/assets/index.css";
 
 function MyApp({ Component, pageProps }) {
   return (
