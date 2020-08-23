@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CLIENT_ID=52300
-CLIENT_SECRET=5e512f6f0549c3b1099a1b416118249b5eb12c93
+source ../../secret/oauth.sh
 AUTH_CODE=$1
 
 if [ ".$AUTH_CODE" != "." ];then
