@@ -4,3 +4,5 @@ client/.cache
 client/data
 client/.next
 client/config.json
+data/segments/*.json
+data/weather/*.json
