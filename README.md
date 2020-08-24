@@ -41,6 +41,7 @@ Then, we get our starred segments from Strava:
 ```
 $ cd ../segments
 $ make
+$ make all.json
 ```
 
 At this point you should have the details of your starred segments in `./details`.
