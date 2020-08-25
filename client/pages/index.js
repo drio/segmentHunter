@@ -7,7 +7,7 @@ import weather from "../data/weather/hourly.json";
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 
-// FIXME
+// FIXME:
 const CLIENT_ID = 52300;
 const REDIRECT_PATH = `/exchange_token`;
 const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost/${REDIRECT_PATH}&approval_prompt=force&scope=read`;
@@ -19,11 +19,11 @@ const Map = dynamic(importMap, {
   ssr: false
 });
 
-const App = ({ token }) => {
+const App = ({ access_token }) => {
   const [windDirection, setWindDirection] = useState("N");
 
   useEffect(() => {
-    if (!token) Router.push(OAUTH_URL);
+    if (!access_token) Router.push(OAUTH_URL);
   }, []);
 
   return (
@@ -52,7 +52,8 @@ export async function getStaticProps(ctx) {
   const cookies = nextCookie(ctx);
   return {
     props: {
-      token: cookies.token ? cookies.token : false
+      //access_token: cookies.access_token ? cookies.access_token : false
+      access_token: "xxxxxxxxx"
     }
   };
 }
