@@ -8,9 +8,9 @@ import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 
 // FIXME:
-const CLIENT_ID = 52300;
-const REDIRECT_PATH = `/exchange_token`;
-const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost/${REDIRECT_PATH}&approval_prompt=force&scope=read`;
+const CLIENT_ID = process.env.CLIENT_ID;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&approval_prompt=force&scope=read`;
 
 const sc_segments_only = segments.filter(s => s.state == "SC");
 
@@ -19,17 +19,17 @@ const Map = dynamic(importMap, {
   ssr: false
 });
 
-const App = ({ access_token }) => {
+const App = ({ access_token, username, profile }) => {
   const [windDirection, setWindDirection] = useState("N");
 
   useEffect(() => {
-    if (!access_token) Router.push(OAUTH_URL);
+    if (!access_token) {
+      Router.push(OAUTH_URL);
+    }
   }, []);
 
-  return (
+  return access_token ? (
     <Layout>
-      This is the app.
-      {/*
       <div>
         <WeatherSlider
           data={weather}
@@ -43,19 +43,17 @@ const App = ({ access_token }) => {
           windDirection={windDirection}
         />
       </div>
-      */}
     </Layout>
-  );
+  ) : null;
 };
 
-export async function getStaticProps(ctx) {
+App.getInitialProps = async ctx => {
   const cookies = nextCookie(ctx);
   return {
-    props: {
-      //access_token: cookies.access_token ? cookies.access_token : false
-      access_token: "xxxxxxxxx"
-    }
+    access_token: cookies.segment_hunter_access_token || null,
+    username: cookies.segment_hunter_username || null,
+    profile: cookies.segment_hunter_profile || null
   };
-}
+};
 
 export default App;

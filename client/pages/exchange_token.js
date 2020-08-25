@@ -1,17 +1,21 @@
 import React from "react";
 import { useEffect } from "react";
+import cookie from "js-cookie";
 import Router from "next/Router";
-import Layout from "../components/layout";
 
 const STRAVA_URL = `https://www.strava.com/oauth/token`;
-const CLIENT_SECRET = `XXXXXXXXXXXXXXXXXXXx`;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const CLIENT_ID = process.env.CLIENT_ID;
 
 const ExchangeToken = props => {
   const { access_token, username, profile } = props;
 
   useEffect(() => {
     if (access_token) {
-      // TODO: save the token in the cookie jar if not there
+      // FIXME: Is this secure?
+      cookie.set("segment_hunter_access_token", access_token);
+      cookie.set("segment_hunter_username", username);
+      cookie.set("segment_hunter_profile", profile);
       Router.push("/");
     } else {
       Router.push("/error");
@@ -27,21 +31,24 @@ ExchangeToken.getInitialProps = async ({ query }) => {
   if (code && scope) {
     // TODO: check scope for read permissions
     try {
-      /*
       const response = await fetch(STRAVA_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          client_id: 52300,
+          client_id: CLIENT_ID,
           client_secret: CLIENT_SECRET,
           code,
           grant_type: "authorization_code"
         })
       });
       if (response.status === 200) {
-        const { access_token, username, profile } = await response.json();
-        return { access_token, username, profile };
+        const json = await response.json();
+        return {
+          access_token: json.access_token,
+          username: json.athlete.username,
+          profile: json.athlete.profile_medium
+        };
       }
-      */
-      return { access_token: "XX", username: "drio", profile: "url here" };
     } catch (error) {
       console.log("Error on oauth handshake: ", error);
     }

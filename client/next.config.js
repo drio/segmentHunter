@@ -24,7 +24,5 @@ if (!config[mode]) {
 console.log(`>> config file loaded. Working in ${mode} mode.`);
 
 module.exports = {
-  env: {
-    MAPBOX_TOKEN: config[mode].MAPBOX_TOKEN
-  }
+  env: config[mode]
 };

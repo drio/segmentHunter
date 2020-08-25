@@ -5,9 +5,8 @@ import moment from "moment";
 const style = {
   fontSize: 14,
   width: 400,
-  margin: 50,
+  margin: 10,
   background: "rgba(68, 65, 65, 0.84)",
-  margin: "2px",
   padding: "12px",
   borderRadius: "4px",
   color: "white",
@@ -15,8 +14,7 @@ const style = {
   position: "absolute",
   top: 0,
   left: 0,
-  margin: "12px",
-  zIndex: "1 !important"
+  zIndex: 2
 };
 
 const DATE_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
@@ -29,7 +27,7 @@ function WeatherSlider({ data, changeAction }) {
   const [max, setMax] = useState(0);
 
   useEffect(() => {
-    setMax(data.length-1);
+    setMax(data.length - 1);
     setTimeString(formatDate(data[0].startTime));
   }, []);
 
