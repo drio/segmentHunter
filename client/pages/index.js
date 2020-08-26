@@ -5,6 +5,8 @@ import Router from "next/Router";
 
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
+import { stravaLoader } from "../logic/data_loader";
+import getLocation from "../logic/get_location";
 
 import segments from "../data/segments/all.json";
 import weather from "../data/weather/hourly.json";
@@ -27,6 +29,12 @@ const App = ({ access_token, username, profile }) => {
     if (!access_token) {
       Router.push(OAUTH_URL);
     }
+    /*
+    stravaLoader(access_token).then(d => {
+      console.log(d);
+    });
+    */
+    getLocation().then(c => console.log(c));
   }, []);
 
   return access_token ? (
