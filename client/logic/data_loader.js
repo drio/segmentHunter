@@ -14,6 +14,7 @@ async function weatherLoader(coordinates, fetchFn = fetch) {
   );
 
   if (localStorageWeather && now - localStorageWeather.timestamp < ONE_HOUR) {
+    console.log("Using weather data from local storage.");
     hourly = localStorageWeather.weather;
   } else {
     let response, json;
@@ -58,6 +59,7 @@ async function stravaLoader(token, fetchFn = fetch) {
   const localSegments = JSON.parse(localStorage.getItem(LOCAL_KEY_SEGMENTS));
 
   if (localSegments && now - localSegments.timestamp < HOURS_MS_24) {
+    console.log("Using strava segments from local storage.");
     segmentDetailsList = localSegments.segments;
   } else {
     const fetchOpts = {

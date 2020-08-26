@@ -34,11 +34,15 @@ const App = ({ access_token, username, profile }) => {
       Router.push(OAUTH_URL);
     }
     getLocation().then(coordinates => {
-      weatherLoader(coordinates).then(d => {
-        console.log("weather: ", d);
-        setWeather(d);
-        setLoadingWeather(false);
-      });
+      weatherLoader(coordinates)
+        .then(d => {
+          console.log("weather: ", d);
+          setWeather(d);
+          setLoadingWeather(false);
+        })
+        .catch(e => {
+          console.log("", e);
+        });
     });
     stravaLoader(access_token).then(d => {
       console.log("segments: ", d);
