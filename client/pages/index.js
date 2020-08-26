@@ -8,10 +8,9 @@ import Layout from "../components/layout";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
 
-import segments from "../data/segments/all.json";
+//import segments from "../data/segments/all.json";
 //import weather from "../data/weather/hourly.json";
-
-const sc_segments_only = segments.filter(s => s.state == "SC");
+//const sc_segments_only = segments.filter(s => s.state == "SC");
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -26,29 +25,32 @@ const App = ({ access_token, username, profile }) => {
   const [windDirection, setWindDirection] = useState("N");
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
-  //const [segments, setSegments] = useState([]);
+  const [segments, setSegments] = useState([]);
   const [weather, setWeather] = useState([]);
 
   useEffect(() => {
     if (!access_token) {
+      console.log("Starting OAUTH process ...");
       Router.push(OAUTH_URL);
     }
-    getLocation().then(coordinates => {
-      weatherLoader(coordinates)
-        .then(d => {
-          console.log("weather: ", d);
-          setWeather(d);
-          setLoadingWeather(false);
-        })
-        .catch(e => {
-          console.log("", e);
-        });
-    });
-    stravaLoader(access_token).then(d => {
-      console.log("segments: ", d);
-      //setSegments(d);
-      setLoadingSegments(false);
-    });
+    if (access_token) {
+      getLocation().then(coordinates => {
+        weatherLoader(coordinates)
+          .then(d => {
+            console.log("weather: ", d);
+            setWeather(d);
+            setLoadingWeather(false);
+          })
+          .catch(e => {
+            console.log("", e);
+          });
+      });
+      stravaLoader(access_token).then(d => {
+        console.log("segments: ", d);
+        setSegments(d);
+        setLoadingSegments(false);
+      });
+    }
   }, []);
 
   if (access_token) {
@@ -70,7 +72,7 @@ const App = ({ access_token, username, profile }) => {
               }}
             />
             <Map
-              segments={sc_segments_only}
+              segments={segments}
               weather={weather}
               windDirection={windDirection}
             />
@@ -79,7 +81,7 @@ const App = ({ access_token, username, profile }) => {
       );
     }
   } else {
-    null;
+    return null;
   }
 };
 
