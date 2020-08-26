@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import nextCookie from "next-cookies";
 import Router from "next/Router";
-import segments from "../data/segments/all.json";
-import weather from "../data/weather/hourly.json";
+
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 
-// FIXME:
+import segments from "../data/segments/all.json";
+import weather from "../data/weather/hourly.json";
+
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&approval_prompt=force&scope=read`;
