@@ -9,13 +9,13 @@ import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
 
 import segments from "../data/segments/all.json";
-import weather from "../data/weather/hourly.json";
+//import weather from "../data/weather/hourly.json";
+
+const sc_segments_only = segments.filter(s => s.state == "SC");
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&approval_prompt=force&scope=read`;
-
-const sc_segments_only = segments.filter(s => s.state == "SC");
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
@@ -26,6 +26,8 @@ const App = ({ access_token, username, profile }) => {
   const [windDirection, setWindDirection] = useState("N");
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
+  //const [segments, setSegments] = useState([]);
+  const [weather, setWeather] = useState([]);
 
   useEffect(() => {
     if (!access_token) {
@@ -33,33 +35,48 @@ const App = ({ access_token, username, profile }) => {
     }
     getLocation().then(coordinates => {
       weatherLoader(coordinates).then(d => {
-        console.log(d);
+        console.log("weather: ", d);
+        setWeather(d);
         setLoadingWeather(false);
       });
     });
     stravaLoader(access_token).then(d => {
-      console.log(d);
+      console.log("segments: ", d);
+      //setSegments(d);
       setLoadingSegments(false);
     });
   }, []);
 
-  return access_token ? (
-    <Layout>
-      <div>
-        <WeatherSlider
-          data={weather}
-          changeAction={e => {
-            if (e) setWindDirection(e.windDirection);
-          }}
-        />
-        <Map
-          segments={sc_segments_only}
-          weather={weather}
-          windDirection={windDirection}
-        />
-      </div>
-    </Layout>
-  ) : null;
+  if (access_token) {
+    if (loadingWeather || loadingSegments) {
+      return (
+        <Layout>
+          <div>Loading weather {loadingWeather ? " ... " : " done."}</div>
+          <div>Loading segments {loadingSegments ? " ... " : " done."}</div>
+        </Layout>
+      );
+    } else {
+      return (
+        <Layout>
+          <div>
+            <WeatherSlider
+              data={weather}
+              changeAction={e => {
+                if (e) setWindDirection(e.windDirection);
+              }}
+            />
+            <Map
+              segments={sc_segments_only}
+              weather={weather}
+              windDirection={windDirection}
+            />
+          </div>
+        </Layout>
+      );
+    }
+  } else {
+    null;
+  }
 };
 
 App.getInitialProps = async ctx => {
