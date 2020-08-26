@@ -29,9 +29,9 @@ const mockFetch = jest.fn(url => {
 });
 
 test("We load segment data correctly", async () => {
-  const r = await stravaLoader("token_here", mockFetch);
-  const { segments } = r;
-  expect(segments.length).toBe(30);
-  expect(segments[0].id).toBeGreaterThan(0);
-  expect(segments[0].name.length).toBeGreaterThan(0);
+  return stravaLoader("token_here", mockFetch).then(segments => {
+    expect(segments.length).toBe(30);
+    expect(segments[0].id).toBeGreaterThan(0);
+    expect(segments[0].name.length).toBeGreaterThan(0);
+  });
 });
