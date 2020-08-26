@@ -5,7 +5,7 @@ import Router from "next/Router";
 
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
-import { stravaLoader } from "../logic/data_loader";
+import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
 
 import segments from "../data/segments/all.json";
@@ -24,17 +24,23 @@ const Map = dynamic(importMap, {
 
 const App = ({ access_token, username, profile }) => {
   const [windDirection, setWindDirection] = useState("N");
+  const [loadingSegments, setLoadingSegments] = useState(true);
+  const [loadingWeather, setLoadingWeather] = useState(true);
 
   useEffect(() => {
     if (!access_token) {
       Router.push(OAUTH_URL);
     }
-    /*
+    getLocation().then(coordinates => {
+      weatherLoader(coordinates).then(d => {
+        console.log(d);
+        setLoadingWeather(false);
+      });
+    });
     stravaLoader(access_token).then(d => {
       console.log(d);
+      setLoadingSegments(false);
     });
-    */
-    getLocation().then(c => console.log(c));
   }, []);
 
   return access_token ? (
