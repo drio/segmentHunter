@@ -7,10 +7,7 @@ import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
-
-//import segments from "../data/segments/all.json";
-//import weather from "../data/weather/hourly.json";
-//const sc_segments_only = segments.filter(s => s.state == "SC");
+import onlyLocalSegments from "../logic/gis";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -37,18 +34,22 @@ const App = ({ access_token, username, profile }) => {
       getLocation().then(coordinates => {
         weatherLoader(coordinates)
           .then(d => {
-            console.log("weather: ", d);
             setWeather(d);
             setLoadingWeather(false);
+
+            stravaLoader(access_token)
+              .then(d => {
+                console.log(onlyLocalSegments(coordinates, d));
+                setSegments(onlyLocalSegments(coordinates, d));
+                setLoadingSegments(false);
+              })
+              .catch(e => {
+                console.log("ERROR loading segments: ", e);
+              });
           })
           .catch(e => {
-            console.log("", e);
+            console.log("ERROR loading weather: ", e);
           });
-      });
-      stravaLoader(access_token).then(d => {
-        console.log("segments: ", d);
-        setSegments(d);
-        setLoadingSegments(false);
       });
     }
   }, []);

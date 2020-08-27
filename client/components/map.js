@@ -3,12 +3,7 @@ import mapboxgl from "mapbox-gl";
 import alg from "../logic/algorithm";
 
 const TOKEN = process.env.MAPBOX_TOKEN;
-
-const PATRIOTS_SOUTH_NORTH = "1525260";
-const PATRIOTS_NORTH_SOUTH = "1920971";
-const BRIDGE_MT_SIDE = "652664";
-const LIMEHOUSE_NORTH_SOUTH = "752447";
-const BRIDGE_W_E = "1670236";
+const DEFAULT_ZOOM = 11;
 
 mapboxgl.accessToken = TOKEN;
 
@@ -91,14 +86,14 @@ function computeScoreColor(score) {
 let map;
 
 function Map({ segments, weather, windDirection }) {
-  const concreteSegment = segments.filter(s => s.id == BRIDGE_W_E)[0];
+  const firstSegment = segments[0];
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [state, setState] = useState({
-    lng: concreteSegment.start_longitude,
-    lat: concreteSegment.start_latitude,
-    zoom: 14
+    lng: firstSegment.start_longitude,
+    lat: firstSegment.start_latitude,
+    zoom: DEFAULT_ZOOM
   });
 
   useEffect(() => {

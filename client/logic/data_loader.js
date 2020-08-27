@@ -3,9 +3,9 @@ const WEATHER_API_URL = "https://api.weather.gov/points";
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const LOCAL_KEY_WEATHER = "segment_hunter_weather";
 const HOURS_MS_24 = 60 * 60 * 24 * 1000;
-const ONE_HOUR = 60 * 60 * 1 * 1000;
+const FOUR_HOURS = 60 * 60 * 4 * 1000;
 
-async function weatherLoader(coordinates, fetchFn = fetch) {
+async function weatherLoader({ latitude, longitude }, fetchFn = fetch) {
   let error = false;
   let hourly;
   const now = +new Date();
@@ -13,12 +13,11 @@ async function weatherLoader(coordinates, fetchFn = fetch) {
     localStorage.getItem(LOCAL_KEY_WEATHER)
   );
 
-  if (localStorageWeather && now - localStorageWeather.timestamp < ONE_HOUR) {
+  if (localStorageWeather && now - localStorageWeather.timestamp < FOUR_HOURS) {
     console.log("Using weather data from local storage.");
     hourly = localStorageWeather.weather;
   } else {
     let response, json;
-    const { latitude, longitude } = coordinates;
     const fetchOpts = { headers: { accept: "application/json" } };
 
     const url = `${WEATHER_API_URL}/${latitude},${longitude}`;
