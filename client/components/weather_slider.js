@@ -6,7 +6,7 @@ import config from "../config.json";
 
 const style = {
   fontSize: 16,
-  width: 500,
+  width: "40vw",
   margin: 10,
   background: "rgba(68, 65, 65, 0.84)",
   padding: "14px",
