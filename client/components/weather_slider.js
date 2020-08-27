@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Slider from "rc-slider";
 import moment from "moment";
 
+import config from "../config.json";
+
 const style = {
   fontSize: 16,
   width: 500,
@@ -20,6 +22,18 @@ const style = {
 const DATE_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
 
 const formatDate = s => moment(s).format(DATE_FORMAT);
+
+const toCelsious = f => ((f - 32) * 0.55).toFixed(1);
+
+const toKmHour = m => {
+  const re = /(\d+)\s/;
+  const match = m.match(re);
+  if (match) {
+    const milesPerHour = match[1];
+    return (parseFloat(milesPerHour) * parseFloat(1.61)).toFixed(1);
+  }
+  return 0;
+};
 
 function WeatherSlider({ segments, data, changeAction }) {
   const [value, setValue] = useState(0);
@@ -41,12 +55,14 @@ function WeatherSlider({ segments, data, changeAction }) {
 
   return (
     <div style={style}>
+      <div style={{}}>© Segment Hunter (v{config.version})</div>
       <div>⭐️ {segments.length} segments loaded</div>
       <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
         <b>{timeString}</b>
       </div>
       <div>
-        🌡 {temperature}F 💨 (<b>{windDirection}</b>) {windSpeed}
+        🌡 {temperature}F | {toCelsious(temperature)}C 💨 (<b>{windDirection}</b>
+        ) {windSpeed} | {toKmHour(windSpeed)} km/h
       </div>
       <div>{shortForecast} </div>
       <Slider
