@@ -5,6 +5,7 @@ import Router from "next/Router";
 
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
+import Error from "../components/error";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
 import onlyLocalSegments from "../logic/gis";
@@ -24,6 +25,7 @@ const App = ({ access_token, username, profile }) => {
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [segments, setSegments] = useState([]);
   const [weather, setWeather] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!access_token) {
@@ -44,15 +46,19 @@ const App = ({ access_token, username, profile }) => {
                 setLoadingSegments(false);
               })
               .catch(e => {
-                console.log("ERROR loading segments: ", e);
+                setError("Problem loading segment data.");
               });
           })
           .catch(e => {
-            console.log("ERROR loading weather: ", e);
+            setError("Problem loading weather data.");
           });
       });
     }
   }, []);
+
+  if (error) {
+    return <Error msg={error} />;
+  }
 
   if (access_token) {
     if (loadingWeather || loadingSegments) {

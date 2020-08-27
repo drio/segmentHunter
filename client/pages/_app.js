@@ -1,5 +1,6 @@
 import Head from "next/head";
 import React from "react";
+import "bulma/css/bulma.css";
 import "../css/styles.css";
 import "rc-slider/assets/index.css";
 
