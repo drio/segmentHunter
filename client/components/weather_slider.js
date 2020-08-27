@@ -7,7 +7,7 @@ const style = {
   width: 500,
   margin: 10,
   background: "rgba(68, 65, 65, 0.84)",
-  padding: "12px",
+  padding: "14px",
   borderRadius: "4px",
   color: "white",
   display: "inline-block",
@@ -21,7 +21,7 @@ const DATE_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
 
 const formatDate = s => moment(s).format(DATE_FORMAT);
 
-function WeatherSlider({ data, changeAction }) {
+function WeatherSlider({ segments, data, changeAction }) {
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
@@ -41,11 +41,12 @@ function WeatherSlider({ data, changeAction }) {
 
   return (
     <div style={style}>
-      <div style={{ fontSize: "20px", paddingBottom: "5px" }}>
+      <div>⭐️ {segments.length} segments loaded</div>
+      <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
         <b>{timeString}</b>
       </div>
       <div>
-        {temperature}F (<b>{windDirection}</b>) {windSpeed}
+        🌡 {temperature}F 💨 (<b>{windDirection}</b>) {windSpeed}
       </div>
       <div>{shortForecast} </div>
       <Slider
@@ -58,7 +59,7 @@ function WeatherSlider({ data, changeAction }) {
           setTimeString(formatDate(startTime));
           changeAction(data[v]);
         }}
-        style={{ paddingTop: "8px" }}
+        style={{ paddingTop: "10px" }}
       />
     </div>
   );

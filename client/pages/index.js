@@ -69,6 +69,7 @@ const App = ({ access_token, username, profile }) => {
         <Layout>
           <div>
             <WeatherSlider
+              segments={segments}
               data={weather}
               changeAction={e => {
                 if (e) setWindDirection(e.windDirection);
