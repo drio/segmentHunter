@@ -3,8 +3,8 @@ import Slider from "rc-slider";
 import moment from "moment";
 
 const style = {
-  fontSize: 14,
-  width: 400,
+  fontSize: 16,
+  width: 500,
   margin: 10,
   background: "rgba(68, 65, 65, 0.84)",
   padding: "12px",
@@ -41,9 +41,11 @@ function WeatherSlider({ data, changeAction }) {
 
   return (
     <div style={style}>
-      <div> {timeString} </div>
+      <div style={{ fontSize: "20px", paddingBottom: "5px" }}>
+        <b>{timeString}</b>
+      </div>
       <div>
-        {temperature}F ({windDirection}) {windSpeed}
+        {temperature}F (<b>{windDirection}</b>) {windSpeed}
       </div>
       <div>{shortForecast} </div>
       <Slider
@@ -56,6 +58,7 @@ function WeatherSlider({ data, changeAction }) {
           setTimeString(formatDate(startTime));
           changeAction(data[v]);
         }}
+        style={{ paddingTop: "8px" }}
       />
     </div>
   );
