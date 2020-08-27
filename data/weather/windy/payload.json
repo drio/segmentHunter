@@ -1,0 +1,8 @@
+{
+	"lat": 32.784618,
+	"lon": -79.940918,
+	"model": "gfs",
+	"parameters": ["temp", "precip", "dewpoint", "wind", "windGust", "ptype", "rh" ],
+	"levels": ["surface"],
+	"key": "rE8KSEJP1qUJERN83G7eQJZ61GbYLEms"
+} 
