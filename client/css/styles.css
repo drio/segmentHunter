@@ -28,8 +28,13 @@ body {
 }
 
 .center {
-  margin: auto;
-  width: 80%;
-  border: 0px solid green;
+  margin: 0;
+	height: 100vh;
+  border: 1px solid green;
   padding: 70px 0;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+  display: flex;
+  flex-direction: column;
 }

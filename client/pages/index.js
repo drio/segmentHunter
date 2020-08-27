@@ -6,6 +6,7 @@ import Router from "next/Router";
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 import Error from "../components/error";
+import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
 import onlyLocalSegments from "../logic/gis";
@@ -62,12 +63,7 @@ const App = ({ access_token, username, profile }) => {
 
   if (access_token) {
     if (loadingWeather || loadingSegments) {
-      return (
-        <Layout>
-          <div>Loading weather {loadingWeather ? " ... " : " done."}</div>
-          <div>Loading segments {loadingSegments ? " ... " : " done."}</div>
-        </Layout>
-      );
+      return <Loading />;
     } else {
       return (
         <Layout>
