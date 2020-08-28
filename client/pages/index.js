@@ -25,6 +25,7 @@ const App = ({ access_token, username, profile }) => {
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [segments, setSegments] = useState([]);
+  const [localSegments, setLocalSegments] = useState([]);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
 
@@ -34,26 +35,31 @@ const App = ({ access_token, username, profile }) => {
       Router.push(OAUTH_URL);
     }
     if (access_token) {
-      getLocation().then(coordinates => {
-        weatherLoader(coordinates)
-          .then(d => {
-            setWeather(d);
-            setLoadingWeather(false);
+      getLocation()
+        .then(coordinates => {
+          weatherLoader(coordinates)
+            .then(d => {
+              setWeather(d);
+              setLoadingWeather(false);
 
-            stravaLoader(access_token)
-              .then(d => {
-                console.log(onlyLocalSegments(coordinates, d));
-                setSegments(onlyLocalSegments(coordinates, d));
-                setLoadingSegments(false);
-              })
-              .catch(e => {
-                setError("Problem loading segment data.");
-              });
-          })
-          .catch(e => {
-            setError("Problem loading weather data.");
-          });
-      });
+              stravaLoader(access_token)
+                .then(d => {
+                  setSegments(d);
+                  setLocalSegments(onlyLocalSegments(coordinates, d));
+                  setLoadingSegments(false);
+                })
+                .catch(e => {
+                  setError("Problem loading segment data.");
+                });
+            })
+            .catch(e => {
+              setError("Problem loading weather data.");
+            });
+        })
+        .catch(e => {
+          setError("Problems loading current location");
+          console.log(e);
+        });
     }
   }, []);
 
@@ -65,24 +71,37 @@ const App = ({ access_token, username, profile }) => {
     if (loadingWeather || loadingSegments) {
       return <Loading />;
     } else {
-      return (
-        <Layout>
-          <div>
-            <WeatherSlider
-              segments={segments}
-              data={weather}
-              changeAction={e => {
-                if (e) setWindDirection(e.windDirection);
-              }}
-            />
-            <Map
-              segments={segments}
-              weather={weather}
-              windDirection={windDirection}
-            />
-          </div>
-        </Layout>
-      );
+      if (segments.length < 1 && localSegments.length < 1) {
+        return (
+          <Error
+            msg="It seems you haven't starred any segment yet."
+            errorDetailKey="segments"
+          />
+        );
+      } else if (weather.length < 1) {
+        return <Error msg="Ups, no weather data available." />;
+      } else {
+        /* To render the map I need segments and weather data */
+        return (
+          <Layout>
+            <div>
+              <WeatherSlider
+                segments={segments}
+                data={weather}
+                changeAction={e => {
+                  if (e) setWindDirection(e.windDirection);
+                }}
+              />
+              <Map
+                segments={segments}
+                localSegments={localSegments}
+                weather={weather}
+                windDirection={windDirection}
+              />
+            </div>
+          </Layout>
+        );
+      }
     }
   } else {
     return null;
