@@ -21,7 +21,17 @@ const NoSegmentsDetail = () => {
       This could be happening because you haven't starred any segment in Strava
       yet. Segment Hunter uses only your starred segments. So, head over{" "}
       <a href="https://www.strava.com/">Strava</a> and star a few segments.
-      Also, blal blala.
+      <br /> <br />
+      Also, the app loads all yours starred segments from strava, it then
+      divides them by local segments (local with respect to your current
+      location) and global segments. If local segments are available, segment
+      hunter will position the map in the local area and load the local
+      segments. If local segments are not available, it will use your first
+      starred segment and load that area in the map.
+      <br /> <br />
+      If you are using a VPN to connect to the Internet, Segment Hunter may pick
+      a wrong location. If you experience issues, disable your VPN, reload the
+      app and then start your VPN again.
     </div>
   );
 };
@@ -43,6 +53,9 @@ const Error = ({ msg, errorDetailKey }) => {
           <div className="title is-3 is-family-primary">Strava Hunter</div>
           <div className="content" style={{ width: "600px" }}>
             <Details />
+            <div className="content has-text-right">
+              -- The Strava Hunter team.
+            </div>
           </div>
           <div>
             <figure className="image">
