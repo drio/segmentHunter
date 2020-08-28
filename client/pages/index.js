@@ -9,7 +9,7 @@ import Error from "../components/error";
 import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
-import onlyLocalSegments from "../logic/gis";
+import processSegments from "../logic/gis";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -25,7 +25,6 @@ const App = ({ access_token, username, profile }) => {
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [segments, setSegments] = useState([]);
-  const [localSegments, setLocalSegments] = useState([]);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
 
@@ -44,8 +43,7 @@ const App = ({ access_token, username, profile }) => {
 
               stravaLoader(access_token)
                 .then(d => {
-                  setSegments(d);
-                  setLocalSegments(onlyLocalSegments(coordinates, d));
+                  setSegments(processSegments(coordinates, d));
                   setLoadingSegments(false);
                 })
                 .catch(e => {
@@ -71,7 +69,7 @@ const App = ({ access_token, username, profile }) => {
     if (loadingWeather || loadingSegments) {
       return <Loading />;
     } else {
-      if (segments.length < 1 && localSegments.length < 1) {
+      if (segments.length < 1) {
         return (
           <Error
             msg="It seems you haven't starred any segment yet."
@@ -94,7 +92,6 @@ const App = ({ access_token, username, profile }) => {
               />
               <Map
                 segments={segments}
-                localSegments={localSegments}
                 weather={weather}
                 windDirection={windDirection}
               />

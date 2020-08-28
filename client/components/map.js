@@ -85,9 +85,8 @@ function computeScoreColor(score) {
 
 let map;
 
-function Map({ segments, localSegments, weather, windDirection }) {
-  const firstSegment =
-    localSegments.length > 0 ? localSegments[0] : segments[0];
+function Map({ segments, weather, windDirection }) {
+  const firstSegment = segments[0];
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 

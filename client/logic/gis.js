@@ -2,8 +2,8 @@ import * as turf from "@turf/turf";
 
 const MAX_DIST = 50; // km
 
-export default function onlyLocalSegments({ latitude, longitude }, segments) {
-  return segments.filter(s => {
+export default function processSegments({ latitude, longitude }, segments) {
+  const localSegments = segments.filter(s => {
     const { start_latitude, start_longitude, end_latitude, end_longitude } = s;
     const from = turf.point([longitude, latitude]);
     const start = turf.point([start_longitude, start_latitude]);
@@ -13,4 +13,6 @@ export default function onlyLocalSegments({ latitude, longitude }, segments) {
       turf.distance(from, end) < MAX_DIST
     );
   });
+
+  return localSegments.length > 0 ? localSegments : segments;
 }
