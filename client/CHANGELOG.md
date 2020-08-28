@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.1.2
+
+- Improve error handling messages
+- Use local segments if you can otherwise go global
+- Dynamic error component
+
 ### 0.1.1
 
 - Mobile friendly
