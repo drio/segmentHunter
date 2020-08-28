@@ -5,6 +5,8 @@
 - Improve error handling messages
 - Use local segments if you can otherwise go global
 - Dynamic error component
+- Change logic to load segments and set map coordinates.
+  Now, we load all the segments but use the current location to set the map.
 
 ### 0.1.1
 

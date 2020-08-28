@@ -85,14 +85,13 @@ function computeScoreColor(score) {
 
 let map;
 
-function Map({ segments, weather, windDirection }) {
-  const firstSegment = segments[0];
+function Map({ segments, weather, windDirection, localCoordinates }) {
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const [state, setState] = useState({
-    lng: firstSegment.start_longitude,
-    lat: firstSegment.start_latitude,
+    lng: localCoordinates.longitude,
+    lat: localCoordinates.latitude,
     zoom: DEFAULT_ZOOM
   });
 
@@ -130,13 +129,6 @@ function Map({ segments, weather, windDirection }) {
 
   return (
     <div>
-      {/*
-      <div className="sidebarStyle">
-        <div>
-          Longitude: {state.lng} | Latitude: {state.lat} | Zoom: {state.zoom}
-        </div>
-      </div>
-      */}
       <div ref={mapContainer} className="mapContainer" />
     </div>
   );

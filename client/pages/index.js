@@ -9,7 +9,6 @@ import Error from "../components/error";
 import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
-import processSegments from "../logic/gis";
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
@@ -27,6 +26,7 @@ const App = ({ access_token, username, profile }) => {
   const [segments, setSegments] = useState([]);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
+  const [localCoordinates, setLocalCoordinates] = useState({});
 
   useEffect(() => {
     if (!access_token) {
@@ -43,8 +43,9 @@ const App = ({ access_token, username, profile }) => {
 
               stravaLoader(access_token)
                 .then(d => {
-                  setSegments(processSegments(coordinates, d));
+                  setSegments(d);
                   setLoadingSegments(false);
+                  setLocalCoordinates(coordinates);
                 })
                 .catch(e => {
                   setError("Problem loading segment data.");
@@ -93,6 +94,7 @@ const App = ({ access_token, username, profile }) => {
               <Map
                 segments={segments}
                 weather={weather}
+                localCoordinates={localCoordinates}
                 windDirection={windDirection}
               />
             </div>
