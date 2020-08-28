@@ -1,5 +1,5 @@
 import Loading from "../components/loading";
 
-export default function ExchangePage() {
+export default function LoadingPage() {
   return <Loading />;
 }
