@@ -117,6 +117,7 @@ function Map({ segments, weather, windDirection, localCoordinates }) {
     });
   }, []);
 
+  /* FIXME: this is not running on load we have to move it to the map load event cback */
   useEffect(() => {
     if (mapLoaded) {
       segments.forEach(s => {
