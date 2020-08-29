@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import nextCookie from "next-cookies";
-import Router from "next/Router";
+import Router from "next/router";
 
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";

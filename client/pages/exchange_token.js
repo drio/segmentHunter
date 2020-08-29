@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import cookie from "js-cookie";
-import Router from "next/Router";
+import Router from "next/router";
 
 const STRAVA_URL = `https://www.strava.com/oauth/token`;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
