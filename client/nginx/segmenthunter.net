@@ -1,0 +1,21 @@
+server {
+  root /var/www/segmenthunter.net;
+  server_name segmenthunter.net;
+  access_log  ./access.segmenthunter.log;
+  error_log  ./error.segmenthunter.log;
+  index index.html;
+
+  location / {
+    proxy_pass http://localhost:3031/;
+    proxy_set_header Host $host;
+  }
+
+
+  listen 443 ssl;
+ 	# START managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/segmenthunter.net/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/segmenthunter.net/privkey.pem;
+  include /etc/letsencrypt/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+ 	# END managed by Certbot
+}
