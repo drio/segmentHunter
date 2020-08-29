@@ -48,37 +48,34 @@ const App = ({ access_token, username, profile }) => {
                   setLocalCoordinates(coordinates);
                 })
                 .catch(e => {
-                  setError("Problem loading segment data.");
+                  console.log(e);
+                  setError("segment");
                 });
             })
             .catch(e => {
-              setError("Problem loading weather data.");
+              console.log(e);
+              setError("weather");
             });
         })
         .catch(e => {
-          setError("Problems loading current location");
           console.log(e);
+          setError("location");
         });
     }
   }, []);
 
   if (error) {
-    return <Error msg={error} />;
+    return <Error errorDetailKey={error} />;
   }
 
   if (access_token) {
     if (loadingWeather || loadingSegments) {
       return <Loading />;
     } else {
-      if (segments.length < 1) {
-        return (
-          <Error
-            msg="It seems you haven't starred any segment yet."
-            errorDetailKey="segments"
-          />
-        );
-      } else if (weather.length < 1) {
-        return <Error msg="Ups, no weather data available." />;
+      if (!segments || segments.length == 0) {
+        return <Error errorDetailKey={"no_segments"} />;
+      } else if (!weather || weather.length == 0) {
+        return <Error errorDetailKey={"no_weather"} />;
       } else {
         /* To render the map I need segments and weather data */
         return (
@@ -86,7 +83,7 @@ const App = ({ access_token, username, profile }) => {
             <div>
               <WeatherSlider
                 segments={segments}
-                data={weather}
+                weather={weather}
                 changeAction={e => {
                   if (e) setWindDirection(e.windDirection);
                 }}

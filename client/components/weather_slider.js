@@ -35,14 +35,14 @@ const toKmHour = m => {
   return 0;
 };
 
-function WeatherSlider({ segments, data, changeAction }) {
+function WeatherSlider({ segments, weather, changeAction }) {
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
 
   useEffect(() => {
-    setMax(data.length - 1);
-    setTimeString(formatDate(data[0].startTime));
+    setMax(weather.length - 1);
+    setTimeString(formatDate(weather[0].startTime));
   }, []);
 
   const {
@@ -51,7 +51,7 @@ function WeatherSlider({ segments, data, changeAction }) {
     windSpeed,
     shortForecast,
     startTime
-  } = data[value];
+  } = weather[value];
 
   return (
     <div style={style}>
@@ -73,7 +73,7 @@ function WeatherSlider({ segments, data, changeAction }) {
         onChange={v => {
           setValue(v);
           setTimeString(formatDate(startTime));
-          changeAction(data[v]);
+          changeAction(weather[v]);
         }}
         style={{ paddingTop: "10px" }}
       />
