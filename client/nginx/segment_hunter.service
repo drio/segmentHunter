@@ -1,0 +1,17 @@
+[Unit]
+Description=Segment Hunter Instance __INSTANCE_NUMBER__
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__WORK_DIR__
+ExecStart=npx next start -p __PORT__
+RemainAfterExit=true
+ExecStop=/usr/bin/pkill -f stravaKudos.sh
+StandardOutput=journal
+StandardError=journal
+User=ubuntu
+Group=ubuntu
+
+[Install]
+WantedBy=multi-user.target
