@@ -1,6 +1,7 @@
 client/node_modules
 secret/
 client/.cache
+client/.gitignore
 client/data
 client/.next
 client/config.json
