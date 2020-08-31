@@ -83,6 +83,14 @@ function computeScoreColor(score) {
   return "red";
 }
 
+function colorSegments(segments, map, windDirection) {
+  segments.forEach(s => {
+    const score = alg.score(s, windDirection);
+    const color = computeScoreColor(score);
+    map.setPaintProperty(`segment-${s.id}`, "line-color", color);
+  });
+}
+
 let map;
 
 function Map({ segments, windDirection, localCoordinates }) {
@@ -117,16 +125,9 @@ function Map({ segments, windDirection, localCoordinates }) {
     });
   }, []);
 
-  /* FIXME: this is not running on load we have to move it to the map load event cback */
   useEffect(() => {
-    if (mapLoaded) {
-      segments.forEach(s => {
-        const score = alg.score(s, windDirection);
-        const color = computeScoreColor(score);
-        map.setPaintProperty(`segment-${s.id}`, "line-color", color);
-      });
-    }
-  }, [windDirection]);
+    if (mapLoaded) colorSegments(segments, map, windDirection);
+  }, [windDirection, mapLoaded]);
 
   return (
     <div>

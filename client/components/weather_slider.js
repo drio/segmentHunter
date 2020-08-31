@@ -52,6 +52,7 @@ function degToCompass(num) {
   return arr[val % 16];
 }
 
+// https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
 function WeatherSlider({ segments, weather, changeAction }) {
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
@@ -79,8 +80,10 @@ function WeatherSlider({ segments, weather, changeAction }) {
       </div>
       <div>
         🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F 💨 (
-        <b>{degToCompass(windDirection)}</b>) {toMilesHour(windSpeed)} miles/h |{" "}
-        {windSpeed} m/s
+        <b>
+          {degToCompass(windDirection)} / {windDirection}°
+        </b>
+        ) {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
       </div>
       <div>{shortForecast} </div>
       <Slider

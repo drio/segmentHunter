@@ -20,7 +20,7 @@ const Map = dynamic(importMap, {
 });
 
 const App = ({ access_token, username, profile }) => {
-  const [windDirection, setWindDirection] = useState("N");
+  const [windDirection, setWindDirection] = useState(0);
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [segments, setSegments] = useState([]);
@@ -39,6 +39,7 @@ const App = ({ access_token, username, profile }) => {
           weatherLoader(coordinates)
             .then(d => {
               setWeather(d);
+              setWindDirection(d[0].windDirection);
               setLoadingWeather(false);
 
               stravaLoader(access_token)
