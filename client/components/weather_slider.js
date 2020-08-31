@@ -21,19 +21,36 @@ const style = {
 
 const DATE_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
 
-const formatDate = s => moment(s).format(DATE_FORMAT);
+const formatDate = ts => moment.unix(ts).format(DATE_FORMAT);
 
-const toCelsious = f => ((f - 32) * 0.55).toFixed(1);
+const toFahrenheit = c => +(c * 1.8 + 32.0).toFixed(0);
 
-const toKmHour = m => {
-  const re = /(\d+)\s/;
-  const match = m.match(re);
-  if (match) {
-    const milesPerHour = match[1];
-    return (parseFloat(milesPerHour) * parseFloat(1.61)).toFixed(1);
-  }
-  return 0;
+const toMilesHour = ms => {
+  return +(ms * 0.00062 * 3600).toFixed(1);
 };
+
+function degToCompass(num) {
+  var val = Math.floor(num / 22.5 + 0.5);
+  var arr = [
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW"
+  ];
+  return arr[val % 16];
+}
 
 function WeatherSlider({ segments, weather, changeAction }) {
   const [value, setValue] = useState(0);
@@ -61,8 +78,9 @@ function WeatherSlider({ segments, weather, changeAction }) {
         <b>{timeString}</b>
       </div>
       <div>
-        🌡 {temperature}F | {toCelsious(temperature)}C 💨 (<b>{windDirection}</b>
-        ) {windSpeed} | {toKmHour(windSpeed)} km/h
+        🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F 💨 (
+        <b>{degToCompass(windDirection)}</b>) {toMilesHour(windSpeed)} miles/h |{" "}
+        {windSpeed} m/s
       </div>
       <div>{shortForecast} </div>
       <Slider

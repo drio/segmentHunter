@@ -85,7 +85,7 @@ function computeScoreColor(score) {
 
 let map;
 
-function Map({ segments, weather, windDirection, localCoordinates }) {
+function Map({ segments, windDirection, localCoordinates }) {
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 

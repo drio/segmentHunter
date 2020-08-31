@@ -1,11 +1,31 @@
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
-const WEATHER_API_URL = "https://api.weather.gov/points";
+const NOAA_WEATHER_API_URL = "https://api.weather.gov/points";
+const OPEN_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/onecall";
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const LOCAL_KEY_WEATHER = "segment_hunter_weather";
 const HOURS_MS_24 = 60 * 60 * 24 * 1000;
 const FOUR_HOURS = 60 * 60 * 4 * 1000;
+const OPEN_WEATHER_KEY = process.env.OPEN_WEATHER_KEY;
 
-async function weatherLoader({ latitude, longitude }, fetchFn = fetch) {
+/* 
+We need the following attributes on the weather entries:
+	- temperature,   (celsius)
+	- windDirection, (degrees)
+	- windSpeed,     (meters/sec)
+	- shortForecast, (string)
+	- startTime      (unix timestamp)
+*/
+
+function generateOpenWeatherURL(latitude, longitude) {
+  return (
+    `${OPEN_WEATHER_API_URL}` +
+    `?lat=${latitude}&lon=${longitude}` +
+    `&APPID=${OPEN_WEATHER_KEY}` +
+    `&exclude=minutely&current&units=metric`
+  );
+}
+
+async function openWeatherLoader({ latitude, longitude }, fetchFn = fetch) {
   let error = false;
   let hourly;
   const now = +new Date();
@@ -20,7 +40,50 @@ async function weatherLoader({ latitude, longitude }, fetchFn = fetch) {
     let response, json;
     const fetchOpts = { headers: { accept: "application/json" } };
 
-    const url = `${WEATHER_API_URL}/${latitude},${longitude}`;
+    const url = generateOpenWeatherURL(latitude, longitude);
+    response = await fetchFn(url, fetchOpts);
+    if (response.status === 200) {
+      json = await response.json();
+      hourly = json.hourly.map(e => ({
+        temperature: e.temp,
+        windDirection: e.wind_deg,
+        windSpeed: e.wind_speed,
+        shortForecast: e.weather.description,
+        startTime: e.dt
+      }));
+    } else {
+      error = `Failure requesting open weather data. Response:  ${response.status}`;
+    }
+
+    localStorage.setItem(
+      LOCAL_KEY_WEATHER,
+      JSON.stringify({
+        timestamp: now,
+        weather: hourly
+      })
+    );
+  }
+  return new Promise((resolve, reject) => {
+    error ? reject(error) : resolve(hourly);
+  });
+}
+
+async function noaaLoader({ latitude, longitude }, fetchFn = fetch) {
+  let error = false;
+  let hourly;
+  const now = +new Date();
+  const localStorageWeather = JSON.parse(
+    localStorage.getItem(LOCAL_KEY_WEATHER)
+  );
+
+  if (localStorageWeather && now - localStorageWeather.timestamp < FOUR_HOURS) {
+    console.log("Using weather data from local storage.");
+    hourly = localStorageWeather.weather;
+  } else {
+    let response, json;
+    const fetchOpts = { headers: { accept: "application/json" } };
+
+    const url = `${NOAA_WEATHER_API_URL}/${latitude},${longitude}`;
     response = await fetchFn(url, fetchOpts);
     if (response.status === 200) {
       json = await response.json();
@@ -99,4 +162,4 @@ async function stravaLoader(token, fetchFn = fetch) {
   });
 }
 
-export { weatherLoader, stravaLoader, STRAVA_API_URL };
+export { openWeatherLoader as weatherLoader, stravaLoader, STRAVA_API_URL };

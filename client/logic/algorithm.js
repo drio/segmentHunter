@@ -1,17 +1,6 @@
 import polyline from "@mapbox/polyline";
 import * as turf from "@turf/turf";
 
-const DIR_TO_ANGLE = {
-  N: 0,
-  NW: 45,
-  W: 90,
-  SW: 135,
-  S: 180,
-  SE: 225,
-  E: 270,
-  NE: 315
-};
-
 function polyToCoordinates(pline) {
   return polyline.decode(pline).map(p => [p[1], p[0]]); // reverse lat/long
 }
@@ -54,9 +43,7 @@ function score(segment, windDirection) {
     if (prev) {
       distance.push(+computeDistance(prev, p).toFixed(2));
       angles.push(
-        Math.abs(
-          +(computeAngle(prev, p) - DIR_TO_ANGLE[windDirection]).toFixed(2)
-        )
+        Math.abs(+(computeAngle(prev, p) - windDirection).toFixed(2))
       );
     }
     prev = p;

@@ -90,7 +90,6 @@ const App = ({ access_token, username, profile }) => {
               />
               <Map
                 segments={segments}
-                weather={weather}
                 localCoordinates={localCoordinates}
                 windDirection={windDirection}
               />
