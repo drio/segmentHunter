@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import nextCookie from "next-cookies";
 import Router from "next/router";
-
+import { sessionLoader } from "../logic/session";
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
 import Error from "../components/error";
@@ -19,7 +18,8 @@ const Map = dynamic(importMap, {
   ssr: false
 });
 
-const App = ({ access_token, username, profile }) => {
+const App = props => {
+  const { access_token, username, profile, loggedIn } = props;
   const [windDirection, setWindDirection] = useState(0);
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
@@ -80,7 +80,12 @@ const App = ({ access_token, username, profile }) => {
       } else {
         /* To render the map I need segments and weather data */
         return (
-          <Layout>
+          <Layout
+            props={{
+              ...props,
+              ...{ loading: loadingSegments || loadingWeather }
+            }}
+          >
             <WeatherSlider
               segments={segments}
               weather={weather}
@@ -102,15 +107,5 @@ const App = ({ access_token, username, profile }) => {
   }
 };
 
-App.getInitialProps = async ctx => {
-  const cookies = nextCookie(ctx);
-  const loggedIn = cookies.segment_hunter_access_token ? true : false;
-  return {
-    loggedIn,
-    access_token: cookies.segment_hunter_access_token || null,
-    username: cookies.segment_hunter_username || null,
-    profile: cookies.segment_hunter_profile || null
-  };
-};
-
+App.getInitialProps = sessionLoader;
 export default App;

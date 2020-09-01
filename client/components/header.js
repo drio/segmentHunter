@@ -1,9 +1,47 @@
 //import Link from "next/link";
 //import styles from "./header.module.css";
+import { clearCookies } from "../logic/session";
 
-export default function Header() {
-  //const [session, loading] = useSession();
+function handleLoging() {
+  console.log("loging");
+}
 
+function handleLogout() {
+  clearCookies();
+  window.location.replace("/");
+}
+
+const LoggedInComp = ({ profile }) => {
+  return (
+    <>
+      <li>
+        <a href="#" onClick={handleLogout}>
+          logout
+        </a>
+      </li>
+      <li style={{ marginLeft: "4px" }}>
+        <figure className="image is-24x24">
+          <img className="is-rounded" src={`${profile}`} />
+        </figure>
+      </li>
+    </>
+  );
+};
+
+const NotLoggedIn = () => {
+  return (
+    <>
+      <li>
+        <a href="#" onClick={handleLoging}>
+          logout
+        </a>
+      </li>
+    </>
+  );
+};
+
+export default function Header({ props = {} }) {
+  const { loading = true, access_token, username, profile, loggedIn } = props;
   return (
     <div>
       <div
@@ -14,7 +52,7 @@ export default function Header() {
       </div>
       <header className="header has-text-weight-medium is-size-7">
         <div style={{ backgroundColor: "white" }}>
-          <div className="columns" style={{}}>
+          <div className="columns">
             <div
               className="column"
               style={{ padding: "18px", paddingLeft: "40px" }}
@@ -25,15 +63,11 @@ export default function Header() {
                   alignItems: "center"
                 }}
               >
-                <li style={{}}> login</li>
-                <li style={{ marginLeft: "4px" }}>
-                  <figure className="image is-24x24">
-                    <img
-                      className="is-rounded"
-                      src="https://dgalywyr863hv.cloudfront.net/pictures/athletes/736965/158947/1/medium.jpg"
-                    />
-                  </figure>
-                </li>
+                {loggedIn && !loading ? (
+                  <LoggedInComp profile={profile} />
+                ) : (
+                  <NotLoggedIn />
+                )}
               </ul>
             </div>
           </div>

@@ -6,7 +6,7 @@ import "rc-slider/assets/index.css";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div>
+    <div style={{ padding: 0 }}>
       <Head>
         <title>Strava Hunter by drio</title>
         <meta charSet="utf-8" />

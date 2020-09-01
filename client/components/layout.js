@@ -1,10 +1,10 @@
 import Header from "../components/header";
 import Footer from "../components/footer";
 
-export default function Layout({ children }) {
+export default function Layout({ children, props }) {
   return (
     <>
-      <Header />
+      <Header props={props} />
       <div
         className="section"
         style={{
