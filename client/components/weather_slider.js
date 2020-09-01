@@ -78,13 +78,19 @@ function WeatherSlider({ segments, weather, changeAction }) {
       <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
         <b>{timeString}</b>
       </div>
+
       <div>
-        🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F 💨 (
-        <b>
-          {degToCompass(windDirection)} / {windDirection}°
-        </b>
-        ) {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
+        🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
       </div>
+
+      <div>
+        💨{" "}
+        <b>
+          ({degToCompass(windDirection)} / {windDirection}°)
+        </b>{" "}
+        {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
+      </div>
+
       <div>{shortForecast} </div>
       <Slider
         value={value}
