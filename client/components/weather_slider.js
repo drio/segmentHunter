@@ -6,7 +6,7 @@ import config from "../config.json";
 
 const style = {
   fontSize: 16,
-  width: "50vw",
+  width: "40vw",
   margin: 10,
   background: "rgba(68, 65, 65, 0.84)",
   padding: "14px",
@@ -14,7 +14,7 @@ const style = {
   color: "white",
   display: "inline-block",
   position: "absolute",
-  top: 30,
+  top: 50,
   left: 5,
   zIndex: 2
 };
@@ -73,7 +73,6 @@ function WeatherSlider({ segments, weather, changeAction }) {
 
   return (
     <div style={style}>
-      <div style={{}}>© Segment Hunter (v{config.version})</div>
       <div>⭐️ {segments.length} segments loaded</div>
       <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
         <b>{timeString}</b>

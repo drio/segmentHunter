@@ -104,7 +104,9 @@ const App = ({ access_token, username, profile }) => {
 
 App.getInitialProps = async ctx => {
   const cookies = nextCookie(ctx);
+  const loggedIn = cookies.segment_hunter_access_token ? true : false;
   return {
+    loggedIn,
     access_token: cookies.segment_hunter_access_token || null,
     username: cookies.segment_hunter_username || null,
     profile: cookies.segment_hunter_profile || null

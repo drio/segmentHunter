@@ -8,7 +8,7 @@ export default function Header() {
     <div>
       <div
         className="has-text-weight-medium is-size-7"
-        style={{ position: "absolute", top: "5px", right: "10px" }}
+        style={{ position: "absolute", top: "7px", right: "20px" }}
       >
         Segment Hunter (v0.2.2)
       </div>
@@ -17,7 +17,7 @@ export default function Header() {
           <div className="columns" style={{}}>
             <div
               className="column"
-              style={{ padding: "15px", paddingLeft: "20px" }}
+              style={{ padding: "18px", paddingLeft: "40px" }}
             >
               <ul
                 style={{
@@ -27,9 +27,9 @@ export default function Header() {
               >
                 <li style={{}}> login</li>
                 <li style={{ marginLeft: "4px" }}>
-                  <figure class="image is-24x24">
+                  <figure className="image is-24x24">
                     <img
-                      class="is-rounded"
+                      className="is-rounded"
                       src="https://dgalywyr863hv.cloudfront.net/pictures/athletes/736965/158947/1/medium.jpg"
                     />
                   </figure>
