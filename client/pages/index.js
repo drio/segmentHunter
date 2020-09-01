@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import Router from "next/router";
 import { sessionLoader } from "../logic/session";
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
@@ -8,10 +7,6 @@ import Error from "../components/error";
 import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
 import getLocation from "../logic/get_location";
-
-const CLIENT_ID = process.env.CLIENT_ID;
-const REDIRECT_URI = process.env.REDIRECT_URI;
-const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&approval_prompt=force&scope=read`;
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
@@ -23,17 +18,22 @@ const App = props => {
   const [windDirection, setWindDirection] = useState(0);
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
+  const [haveToLoadData, setHaveToLoadData] = useState(true);
   const [segments, setSegments] = useState([]);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
   const [localCoordinates, setLocalCoordinates] = useState({});
 
+  const waitingForData = loadingWeather || loadingSegments;
+
+  const handleError = (e, errorKey) => {
+    console.log(e);
+    setError(errorKey);
+    setHaveToLoadData(false);
+  };
+
   useEffect(() => {
-    if (!access_token) {
-      console.log("Starting OAUTH process ...");
-      Router.push(OAUTH_URL);
-    }
-    if (access_token) {
+    if (access_token && haveToLoadData) {
       getLocation()
         .then(coordinates => {
           weatherLoader(coordinates)
@@ -47,21 +47,13 @@ const App = props => {
                   setSegments(d);
                   setLoadingSegments(false);
                   setLocalCoordinates(coordinates);
+                  setHaveToLoadData(false);
                 })
-                .catch(e => {
-                  console.log(e);
-                  setError("segment");
-                });
+                .catch(e => handleError(e, "segment"));
             })
-            .catch(e => {
-              console.log(e);
-              setError("weather");
-            });
+            .catch(e => handleError(e, "weather"));
         })
-        .catch(e => {
-          console.log(e);
-          setError("location");
-        });
+        .catch(e => handleError(e, "location"));
     }
   }, []);
 
@@ -69,23 +61,18 @@ const App = props => {
     return <Error errorDetailKey={error} />;
   }
 
-  if (access_token) {
-    if (loadingWeather || loadingSegments) {
-      return <Loading />;
-    } else {
-      if (!segments || segments.length == 0) {
-        return <Error errorDetailKey={"no_segments"} />;
-      } else if (!weather || weather.length == 0) {
-        return <Error errorDetailKey={"no_weather"} />;
-      } else {
-        /* To render the map I need segments and weather data */
-        return (
-          <Layout
-            props={{
-              ...props,
-              ...{ loading: loadingSegments || loadingWeather }
-            }}
-          >
+  if (loggedIn && waitingForData) {
+    return <Loading />;
+  } else {
+    return (
+      <Layout
+        props={{
+          ...props,
+          ...{ loading: loadingSegments || loadingWeather }
+        }}
+      >
+        {loggedIn ? (
+          <>
             <WeatherSlider
               segments={segments}
               weather={weather}
@@ -98,12 +85,12 @@ const App = props => {
               localCoordinates={localCoordinates}
               windDirection={windDirection}
             />
-          </Layout>
-        );
-      }
-    }
-  } else {
-    return null;
+          </>
+        ) : (
+          <div> welcome! </div>
+        )}
+      </Layout>
+    );
   }
 };
 

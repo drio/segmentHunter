@@ -16,7 +16,7 @@ const ExchangeToken = props => {
       cookie.set("segment_hunter_access_token", access_token);
       cookie.set("segment_hunter_username", username);
       cookie.set("segment_hunter_profile", profile);
-      Router.push("/");
+      window.close();
     } else {
       Router.push("/error");
     }
