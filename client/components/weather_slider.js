@@ -14,8 +14,8 @@ const style = {
   color: "white",
   display: "inline-block",
   position: "absolute",
-  top: 0,
-  left: 0,
+  top: 30,
+  left: 5,
   zIndex: 2
 };
 

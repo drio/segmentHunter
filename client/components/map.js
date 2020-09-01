@@ -130,7 +130,7 @@ function Map({ segments, windDirection, localCoordinates }) {
   }, [windDirection, mapLoaded]);
 
   return (
-    <div>
+    <div style={{ height: "100%", width: "100%" }}>
       <div ref={mapContainer} className="mapContainer" />
     </div>
   );

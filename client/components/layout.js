@@ -5,7 +5,17 @@ export default function Layout({ children }) {
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <div
+        className="section"
+        style={{
+          width: "100hw",
+          height: "100vh",
+          margin: 0,
+          padding: 0
+        }}
+      >
+        {children}
+      </div>
       <Footer />
     </>
   );

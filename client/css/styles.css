@@ -1,11 +1,3 @@
-body {
-  font-family: "Arial";
-  font-size: 16;
-  font-weight: normal;
-  line-height: normal;
-  height: 100%;
-}
-
 .sidebarStyle {
   display: inline-block;
   position: absolute;
@@ -20,11 +12,14 @@ body {
 }
 
 .mapContainer {
-  position: absolute;
+  /*position: absolute;*/
+  padding: 0;
   top: 0;
   right: 0;
   left: 0;
   bottom: 0;
+  height: 100%;
+  width: 100%;
 }
 
 .center {

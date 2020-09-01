@@ -81,20 +81,18 @@ const App = ({ access_token, username, profile }) => {
         /* To render the map I need segments and weather data */
         return (
           <Layout>
-            <div>
-              <WeatherSlider
-                segments={segments}
-                weather={weather}
-                changeAction={e => {
-                  if (e) setWindDirection(e.windDirection);
-                }}
-              />
-              <Map
-                segments={segments}
-                localCoordinates={localCoordinates}
-                windDirection={windDirection}
-              />
-            </div>
+            <WeatherSlider
+              segments={segments}
+              weather={weather}
+              changeAction={e => {
+                if (e) setWindDirection(e.windDirection);
+              }}
+            />
+            <Map
+              segments={segments}
+              localCoordinates={localCoordinates}
+              windDirection={windDirection}
+            />
           </Layout>
         );
       }
