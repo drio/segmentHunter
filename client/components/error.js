@@ -88,7 +88,7 @@ const Error = ({ errorDetailKey }) => {
       <div className="content">
         <div className="center">
           <div className="title is-3 is-family-primary">Strava Hunter</div>
-          <div className="content" style={{ width: "600px" }}>
+          <div className="content" style={{ padding: "10px", width: "300px" }}>
             <Details />
             <div className="content has-text-right">
               -- The Strava Hunter team.
@@ -99,7 +99,7 @@ const Error = ({ errorDetailKey }) => {
               <img
                 src="/404/dog-bike.jpg"
                 alt="404"
-                style={{ width: "600px" }}
+                style={{ width: "300px" }}
               />
             </figure>
           </div>
