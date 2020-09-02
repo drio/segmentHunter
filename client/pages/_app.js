@@ -16,6 +16,21 @@ function MyApp({ Component, pageProps }) {
           href="https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css"
           rel="stylesheet"
         />
+
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=UA-2124421-14"
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-2124421-14');
+          `
+          }}
+        />
       </Head>
       <div>
         <Component {...pageProps} />
