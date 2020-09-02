@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.2.0
+
+- Release alpha version to production
+- use open weather data as weather backend
+- implements login/logout screens
+- style changes
+
 ### 0.1.2
 
 - Improve error handling messages
