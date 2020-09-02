@@ -77,6 +77,8 @@ const App = props => {
             <WeatherSlider
               segments={segments}
               weather={weather}
+              username={username}
+              profile={profile}
               changeAction={e => {
                 if (e) setWindDirection(e.windDirection);
               }}

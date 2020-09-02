@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { clearCookies } from "../logic/session";
 import Slider from "rc-slider";
 import moment from "moment";
 
@@ -6,20 +7,50 @@ import config from "../config.json";
 
 const style = {
   fontSize: 16,
-  width: "40vw",
+  width: "350px",
   margin: 0,
-  background: "rgba(68, 65, 65, 0.7)",
+  background: "rgba(68, 65, 65, 0.8)",
   padding: "14px",
-  borderRadius: "0px 0px 0px 10px",
+  borderRadius: "10px",
   color: "white",
   display: "inline-block",
   position: "absolute",
-  top: 0,
-  right: 0,
+  top: 5,
+  right: 5,
   zIndex: 2
 };
 
-const DATE_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
+function handleLogout() {
+  clearCookies();
+  window.location.replace("/");
+}
+
+const LoggedIn = ({ profile, username }) => {
+  return (
+    <div
+      className="container"
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center"
+      }}
+    >
+      <div style={{ paddingRight: "10px" }}>
+        <a href="#" onClick={handleLogout} className="loginLink" style={{}}>
+          logout
+        </a>
+      </div>
+      <div>
+        <figure className="image is-32x32">
+          <img className="is-rounded" src={`${profile}`} />
+        </figure>
+      </div>
+    </div>
+  );
+};
+
+//const DATE_FORMAT = "dddd, MMMM Do, h:mm a";
+const DATE_FORMAT = "dddd, h:mm a";
 
 const formatDate = ts => moment.unix(ts).format(DATE_FORMAT);
 
@@ -53,7 +84,7 @@ function degToCompass(num) {
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function WeatherSlider({ segments, weather, changeAction }) {
+function WeatherSlider({ segments, weather, changeAction, username, profile }) {
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
@@ -73,6 +104,8 @@ function WeatherSlider({ segments, weather, changeAction }) {
 
   return (
     <div style={style}>
+      <LoggedIn profile={profile} username={username} />
+
       <div>⭐️ {segments.length} segments loaded</div>
       <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
         <b>{timeString}</b>
