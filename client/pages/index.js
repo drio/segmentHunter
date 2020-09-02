@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
 import WeatherSlider from "../components/weather_slider";
 import Layout from "../components/layout";
+import Login from "../components/login";
 import Error from "../components/error";
 import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
@@ -87,7 +88,7 @@ const App = props => {
             />
           </>
         ) : (
-          <div> welcome! </div>
+          <Login />
         )}
       </Layout>
     );

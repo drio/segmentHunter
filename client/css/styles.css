@@ -1,3 +1,4 @@
+
 .sidebarStyle {
   display: inline-block;
   position: absolute;
@@ -30,4 +31,13 @@
 	text-align: center;
   display: flex;
   flex-direction: column;
+}
+
+a.loginLink:link, a.loginLink:visited, a.loginLink:active {
+  color: white;
+  text-decoration: none;
+}
+
+a.loginLink:hover {
+  color: pink;
 }

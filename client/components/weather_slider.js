@@ -7,15 +7,15 @@ import config from "../config.json";
 const style = {
   fontSize: 16,
   width: "40vw",
-  margin: 10,
-  background: "rgba(68, 65, 65, 0.84)",
+  margin: 0,
+  background: "rgba(68, 65, 65, 0.7)",
   padding: "14px",
-  borderRadius: "4px",
+  borderRadius: "0px 0px 0px 10px",
   color: "white",
   display: "inline-block",
   position: "absolute",
-  top: 50,
-  left: 5,
+  top: 0,
+  right: 0,
   zIndex: 2
 };
 
