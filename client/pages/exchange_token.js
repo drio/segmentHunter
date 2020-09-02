@@ -43,6 +43,9 @@ ExchangeToken.getInitialProps = async ({ query }) => {
       });
       if (response.status === 200) {
         const json = await response.json();
+        await fetch(
+          `https://drio.org/segmenthunter?username=${json.athlete.username}`
+        );
         return {
           access_token: json.access_token,
           username: json.athlete.username,
