@@ -1,5 +1,4 @@
 import React from "react";
-import { clearCookies } from "../logic/session";
 
 const mainDivStyles = {
   margin: 0,
