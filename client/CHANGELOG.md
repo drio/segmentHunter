@@ -1,5 +1,13 @@
 # Changelog
 
+### 0.2.1
+
+- fix mobile styles for errors
+- add admin helper to clean all local storage and cookies
+- save to local storage the current location
+- if location is not available default to the world
+- let the user set the location
+
 ### 0.2.0
 
 - Release alpha version to production
