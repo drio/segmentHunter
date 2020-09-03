@@ -93,15 +93,25 @@ function colorSegments(segments, map, windDirection) {
 
 let map;
 
+const DEFAULT_STATE = {
+  lng: 2.078728 /* Barcelona, Spain */,
+  lat: 41.3948976,
+  zoom: 1
+};
+
 function Map({ segments, windDirection, localCoordinates }) {
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const [state, setState] = useState({
-    lng: localCoordinates.longitude,
-    lat: localCoordinates.latitude,
-    zoom: DEFAULT_ZOOM
-  });
+  const [state, setState] = useState(
+    localCoordinates
+      ? {
+          lng: localCoordinates.longitude,
+          lat: localCoordinates.latitude,
+          zoom: DEFAULT_ZOOM
+        }
+      : DEFAULT_STATE
+  );
 
   useEffect(() => {
     map = new mapboxgl.Map({
