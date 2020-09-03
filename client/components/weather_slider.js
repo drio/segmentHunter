@@ -6,7 +6,7 @@ import moment from "moment";
 
 const style = {
   fontSize: 16,
-  width: "350px",
+  width: "370px",
   margin: 0,
   background: "rgba(68, 65, 65, 0.8)",
   padding: "14px",
@@ -15,7 +15,7 @@ const style = {
   display: "inline-block",
   position: "absolute",
   top: 5,
-  right: 5,
+  right: 4,
   zIndex: 2
 };
 
@@ -31,10 +31,10 @@ function handleClearAll() {
   handleLogout();
 }
 
-const LoggedIn = ({ profile, username }) => {
+const LoggedIn = ({ profile, username, onUpdateLocation }) => {
   return (
     <div
-      className="container"
+      className="container buttons are-small"
       style={{
         display: "flex",
         justifyContent: "flex-end",
@@ -43,17 +43,24 @@ const LoggedIn = ({ profile, username }) => {
     >
       {username === "driodeiros" && (
         <div style={{ paddingRight: "10px" }}>
-          <a href="#" onClick={handleClearAll} className="loginLink" style={{}}>
-            clear all 💣 |
-          </a>
+          <button onClick={handleClearAll} className="button is-black ">
+            clear all
+          </button>
         </div>
       )}
 
       <div style={{ paddingRight: "10px" }}>
-        <a href="#" onClick={handleLogout} className="loginLink" style={{}}>
-          logout
-        </a>
+        <button onClick={onUpdateLocation} className="button is-info">
+          Update Location
+        </button>
       </div>
+
+      <div style={{ paddingRight: "10px" }}>
+        <button href="#" onClick={handleLogout} className="button is-danger">
+          logout
+        </button>
+      </div>
+
       <div>
         <figure className="image is-32x32">
           <img className="is-rounded" src={`${profile}`} />
@@ -98,7 +105,14 @@ function degToCompass(num) {
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function WeatherSlider({ segments, weather, changeAction, username, profile }) {
+function WeatherSlider({
+  segments,
+  weather,
+  changeAction,
+  username,
+  profile,
+  onUpdateLocation
+}) {
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
@@ -118,7 +132,11 @@ function WeatherSlider({ segments, weather, changeAction, username, profile }) {
 
   return (
     <div style={style}>
-      <LoggedIn profile={profile} username={username} />
+      <LoggedIn
+        profile={profile}
+        username={username}
+        onUpdateLocation={onUpdateLocation}
+      />
 
       <div>⭐️ {segments.length} segments loaded</div>
       <div style={{ fontSize: "20px", paddingBottom: "0px" }}>

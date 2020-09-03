@@ -7,7 +7,7 @@ import Login from "../components/login";
 import Error from "../components/error";
 import Loading from "../components/loading";
 import { stravaLoader, weatherLoader } from "../logic/data_loader";
-import getLocation from "../logic/get_location";
+import { getLocation, storeLocation } from "../logic/location";
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
@@ -24,8 +24,20 @@ const App = props => {
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
   const [localCoordinates, setLocalCoordinates] = useState(null);
+  const [mapCenterCoordinates, setMapCenterCoordinates] = useState({});
 
   const waitingForData = loadingWeather || loadingSegments;
+
+  const handleUpdateInLocation = () => {
+    const { latitude, longitude } = mapCenterCoordinates;
+    if (latitude && longitude) storeLocation(mapCenterCoordinates);
+  };
+
+  const handleUpdateMapCenter = ({ latitude, longitude }) => {
+    if (latitude && longitude) {
+      setMapCenterCoordinates({ latitude, longitude });
+    }
+  };
 
   const handleError = (e, errorKey) => {
     console.log(e);
@@ -82,6 +94,7 @@ const App = props => {
               weather={weather}
               username={username}
               profile={profile}
+              onUpdateLocation={handleUpdateInLocation}
               changeAction={e => {
                 if (e) setWindDirection(e.windDirection);
               }}
@@ -90,6 +103,7 @@ const App = props => {
               segments={segments}
               localCoordinates={localCoordinates}
               windDirection={windDirection}
+              onCenterUpdate={handleUpdateMapCenter}
             />
           </>
         ) : (

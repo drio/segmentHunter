@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { debounce } from "lodash";
 import mapboxgl from "mapbox-gl";
 import alg from "../logic/algorithm";
 
@@ -99,7 +100,7 @@ const DEFAULT_STATE = {
   zoom: 1
 };
 
-function Map({ segments, windDirection, localCoordinates }) {
+function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
   const mapContainer = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -120,6 +121,14 @@ function Map({ segments, windDirection, localCoordinates }) {
       center: [state.lng, state.lat],
       zoom: state.zoom
     });
+
+    map.on(
+      "render",
+      debounce(() => {
+        const { lat, lng } = map.getCenter();
+        onCenterUpdate({ latitude: lat, longitude: lng });
+      }, 30)
+    );
 
     map.on("load", () => {
       renderSegments(map, segments, windDirection);
