@@ -1,9 +1,8 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { clearCookies } from "../logic/session";
 import Slider from "rc-slider";
 import moment from "moment";
-
-import config from "../config.json";
 
 const style = {
   fontSize: 16,
@@ -25,6 +24,13 @@ function handleLogout() {
   window.location.replace("/");
 }
 
+function handleClearAll() {
+  // FIXME: do not hardcode the key values
+  localStorage.removeItem("segment_hunter_weather");
+  localStorage.removeItem("segment_hunter_segments");
+  handleLogout();
+}
+
 const LoggedIn = ({ profile, username }) => {
   return (
     <div
@@ -35,6 +41,14 @@ const LoggedIn = ({ profile, username }) => {
         alignItems: "center"
       }}
     >
+      {username === "driodeiros" && (
+        <div style={{ paddingRight: "10px" }}>
+          <a href="#" onClick={handleClearAll} className="loginLink" style={{}}>
+            clear all 💣 |
+          </a>
+        </div>
+      )}
+
       <div style={{ paddingRight: "10px" }}>
         <a href="#" onClick={handleLogout} className="loginLink" style={{}}>
           logout
