@@ -14,5 +14,6 @@ export default function processSegments({ latitude, longitude }, segments) {
     );
   });
 
-  return localSegments.length > 0 ? localSegments : segments;
+  //return localSegments.length > 0 ? localSegments : segments;
+  return segments;
 }

@@ -23,7 +23,7 @@ const App = props => {
   const [segments, setSegments] = useState([]);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
-  const [localCoordinates, setLocalCoordinates] = useState({});
+  const [localCoordinates, setLocalCoordinates] = useState(null);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -54,6 +54,9 @@ const App = props => {
             })
             .catch(e => handleError(e, "weather"));
         })
+        /* We don't have a current location,
+           The user will have to set it up manually.
+         */
         .catch(e => handleError(e, "location"));
     }
   }, []);
