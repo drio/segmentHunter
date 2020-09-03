@@ -4,11 +4,13 @@ import { clearCookies } from "../logic/session";
 import Slider from "rc-slider";
 import moment from "moment";
 
+const MAX_SEGMENT_TEXT_SIZE = 34;
+
 const style = {
   fontSize: 16,
   width: "370px",
   margin: 0,
-  background: "rgba(68, 65, 65, 0.8)",
+  background: "rgba(68, 65, 65, 0.9)",
   padding: "14px",
   borderRadius: "10px",
   color: "white",
@@ -38,13 +40,14 @@ const LoggedIn = ({ profile, username, onUpdateLocation }) => {
       style={{
         display: "flex",
         justifyContent: "flex-end",
-        alignItems: "center"
+        alignItems: "center",
+        margin: 5
       }}
     >
       {username === "driodeiros" && (
         <div style={{ paddingRight: "10px" }}>
           <button onClick={handleClearAll} className="button is-black ">
-            clear all
+            fresh
           </button>
         </div>
       )}
@@ -116,6 +119,7 @@ function WeatherSlider({
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
+  const [showSegmentDetails, setShowSegmentDetails] = useState(true);
 
   useEffect(() => {
     setMax(weather.length - 1);
@@ -138,36 +142,74 @@ function WeatherSlider({
         onUpdateLocation={onUpdateLocation}
       />
 
-      <div>⭐️ {segments.length} segments loaded</div>
-      <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
-        <b>{timeString}</b>
+      <div className="box">
+        <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
+          <b>{timeString}</b>
+        </div>
+
+        <div>
+          🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
+        </div>
+
+        <div>
+          💨{" "}
+          <b>
+            ({degToCompass(windDirection)} / {windDirection}°)
+          </b>{" "}
+          {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
+        </div>
+
+        <div>{shortForecast} </div>
+
+        <Slider
+          value={value}
+          min={0}
+          max={max}
+          step={1}
+          onChange={v => {
+            setValue(v);
+            setTimeString(formatDate(startTime));
+            changeAction(weather[v]);
+          }}
+          style={{ paddingTop: "10px" }}
+          railStyle={{ background: "rgb(74, 81, 84, 0.6)" }}
+        />
       </div>
 
       <div>
-        🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
+        <span>⭐️ {segments.length} segments loaded </span>
+        <button
+          onClick={() => setShowSegmentDetails(!showSegmentDetails)}
+          className="button is-small is-primary"
+        >
+          {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
+        </button>
       </div>
 
-      <div>
-        💨{" "}
-        <b>
-          ({degToCompass(windDirection)} / {windDirection}°)
-        </b>{" "}
-        {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
-      </div>
-
-      <div>{shortForecast} </div>
-      <Slider
-        value={value}
-        min={0}
-        max={max}
-        step={1}
-        onChange={v => {
-          setValue(v);
-          setTimeString(formatDate(startTime));
-          changeAction(weather[v]);
-        }}
-        style={{ paddingTop: "10px" }}
-      />
+      {showSegmentDetails && (
+        <div
+          className="containerl"
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            textOverflow: "Ellipsis"
+          }}
+        >
+          <div>
+            {segments.map(s => (
+              <div key={s.id}>
+                <label className="checkbox">
+                  <input type="checkbox" />{" "}
+                  {s.name.length > MAX_SEGMENT_TEXT_SIZE
+                    ? s.name.slice(0, MAX_SEGMENT_TEXT_SIZE) + " ..."
+                    : s.name}{" "}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

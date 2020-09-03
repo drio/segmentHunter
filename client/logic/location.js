@@ -35,6 +35,7 @@ function getLocation() {
       storedCoordinates.longitude &&
       storedCoordinates.latitude
     ) {
+      console.log("Using previously stored location");
       resolve(storedCoordinates);
     } else {
       const success = pos => {
