@@ -4,13 +4,13 @@ const OPEN_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/onecall";
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const LOCAL_KEY_WEATHER = "segment_hunter_weather";
 const HOURS_MS_24 = 60 * 60 * 24 * 1000;
-const FOUR_HOURS = 60 * 60 * 4 * 1000;
+const H_HOURS = h => 60 * 60 * h * 1000;
 const OPEN_WEATHER_KEY = process.env.OPEN_WEATHER_KEY;
 
 /* 
 We need the following attributes on the weather entries:
 	- temperature,   (celsius)
-	- windDirection, (degrees)
+	- windAngle, (degrees)
 	- windSpeed,     (meters/sec)
 	- shortForecast, (string)
 	- startTime      (unix timestamp)
@@ -25,44 +25,54 @@ function generateOpenWeatherURL(latitude, longitude) {
   );
 }
 
-async function openWeatherLoader({ latitude, longitude }, fetchFn = fetch) {
+async function openWeatherLoader(coordinates = {}, fetchFn = fetch) {
   let error = false;
   let hourly;
-  const now = +new Date();
-  const localStorageWeather = JSON.parse(
-    localStorage.getItem(LOCAL_KEY_WEATHER)
-  );
 
-  if (localStorageWeather && now - localStorageWeather.timestamp < FOUR_HOURS) {
-    console.log("Using weather data from local storage.");
-    hourly = localStorageWeather.weather;
+  const { latitude, longitude } = coordinates;
+  if (!latitude || !longitude) {
+    error = "No coordinates provided for loading weather";
   } else {
-    let response, json;
-    const fetchOpts = { headers: { accept: "application/json" } };
-
-    const url = generateOpenWeatherURL(latitude, longitude);
-    response = await fetchFn(url, fetchOpts);
-    if (response.status === 200) {
-      json = await response.json();
-      hourly = json.hourly.map(e => ({
-        temperature: e.temp,
-        windDirection: e.wind_deg,
-        windSpeed: e.wind_speed,
-        shortForecast: e.weather.description,
-        startTime: e.dt
-      }));
-    } else {
-      error = `Failure requesting open weather data. Response:  ${response.status}`;
-    }
-
-    localStorage.setItem(
-      LOCAL_KEY_WEATHER,
-      JSON.stringify({
-        timestamp: now,
-        weather: hourly
-      })
+    const now = +new Date();
+    const localStorageWeather = JSON.parse(
+      localStorage.getItem(LOCAL_KEY_WEATHER)
     );
+
+    if (
+      localStorageWeather &&
+      now - localStorageWeather.timestamp < H_HOURS(1)
+    ) {
+      console.log("Using weather data from local storage.");
+      hourly = localStorageWeather.weather;
+    } else {
+      let response, json;
+      const fetchOpts = { headers: { accept: "application/json" } };
+
+      const url = generateOpenWeatherURL(latitude, longitude);
+      response = await fetchFn(url, fetchOpts);
+      if (response.status === 200) {
+        json = await response.json();
+        hourly = json.hourly.map(e => ({
+          temperature: e.temp,
+          windAngle: e.wind_deg,
+          windSpeed: e.wind_speed,
+          shortForecast: e.weather.description,
+          startTime: e.dt
+        }));
+      } else {
+        error = `Failure requesting open weather data. Response:  ${response.status}`;
+      }
+
+      localStorage.setItem(
+        LOCAL_KEY_WEATHER,
+        JSON.stringify({
+          timestamp: now,
+          weather: hourly
+        })
+      );
+    }
   }
+
   return new Promise((resolve, reject) => {
     error ? reject(error) : resolve(hourly);
   });
@@ -76,7 +86,7 @@ async function noaaLoader({ latitude, longitude }, fetchFn = fetch) {
     localStorage.getItem(LOCAL_KEY_WEATHER)
   );
 
-  if (localStorageWeather && now - localStorageWeather.timestamp < FOUR_HOURS) {
+  if (localStorageWeather && now - localStorageWeather.timestamp < H_HOURS(1)) {
     console.log("Using weather data from local storage.");
     hourly = localStorageWeather.weather;
   } else {

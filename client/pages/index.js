@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
-import WeatherSlider from "../components/weather_slider";
+import Controls from "../components/controls";
 import Layout from "../components/layout";
 import Login from "../components/login";
 import Error from "../components/error";
@@ -16,7 +16,7 @@ const Map = dynamic(importMap, {
 
 const App = props => {
   const { access_token, username, profile, loggedIn } = props;
-  const [windDirection, setWindDirection] = useState(0);
+  const [windAngle, setWindAngle] = useState(0);
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [haveToLoadData, setHaveToLoadData] = useState(true);
@@ -52,7 +52,7 @@ const App = props => {
           weatherLoader(coordinates)
             .then(d => {
               setWeather(d);
-              setWindDirection(d[0].windDirection);
+              setWindAngle(d[0].windAngle);
               setLoadingWeather(false);
 
               stravaLoader(access_token)
@@ -89,20 +89,20 @@ const App = props => {
       >
         {loggedIn ? (
           <>
-            <WeatherSlider
+            <Controls
               segments={segments}
               weather={weather}
               username={username}
               profile={profile}
               onUpdateLocation={handleUpdateInLocation}
               changeAction={e => {
-                if (e) setWindDirection(e.windDirection);
+                if (e) setWindAngle(e.windAngle);
               }}
             />
             <Map
               segments={segments}
               localCoordinates={localCoordinates}
-              windDirection={windDirection}
+              windAngle={windAngle}
               onCenterUpdate={handleUpdateMapCenter}
             />
           </>

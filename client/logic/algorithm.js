@@ -33,7 +33,7 @@ function computeAngle(p1, p2) {
   return brng;
 }
 
-function score(segment, windDirection) {
+function score(segment, windAngle) {
   const coordinateList = polyToCoordinates(segment.map.polyline);
 
   let prev = null;
@@ -42,9 +42,7 @@ function score(segment, windDirection) {
   coordinateList.forEach(p => {
     if (prev) {
       distance.push(+computeDistance(prev, p).toFixed(2));
-      angles.push(
-        Math.abs(+(computeAngle(prev, p) - windDirection).toFixed(2))
-      );
+      angles.push(Math.abs(+(computeAngle(prev, p) - windAngle).toFixed(2)));
     }
     prev = p;
   });

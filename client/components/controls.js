@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 import { clearCookies } from "../logic/session";
 import Slider from "rc-slider";
 import moment from "moment";
@@ -33,17 +34,16 @@ function handleClearAll() {
   handleLogout();
 }
 
+const MainRowLoginInfo = styled.div`
+  display: "flex";
+  justify-content: "flex-end";
+  align-items: "center";
+  margin: 5;
+`;
+
 const LoggedIn = ({ profile, username, onUpdateLocation }) => {
-  return (
-    <div
-      className="container buttons are-small"
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        margin: 5
-      }}
-    >
+  const ifLoggedIn = (
+    <>
       {username === "driodeiros" && (
         <div style={{ paddingRight: "10px" }}>
           <button onClick={handleClearAll} className="button is-black ">
@@ -69,7 +69,21 @@ const LoggedIn = ({ profile, username, onUpdateLocation }) => {
           <img className="is-rounded" src={`${profile}`} />
         </figure>
       </div>
+    </>
+  );
+
+  const ifNotLoggedIn = (
+    <div style={{ paddingRight: "10px" }}>
+      <button href="#" onClick={handleClearAll} className="button is-danger">
+        login
+      </button>
     </div>
+  );
+
+  return (
+    <MainRowLoginInfo className="container buttons are-small">
+      {username && profile ? ifLoggedIn : ifNotLoggedIn}
+    </MainRowLoginInfo>
   );
 };
 
@@ -108,18 +122,18 @@ function degToCompass(num) {
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function WeatherSlider({
-  segments,
-  weather,
-  changeAction,
-  username,
-  profile,
-  onUpdateLocation
-}) {
+function Controls(props) {
+  const segments = props.segments || [];
+  const weather = props.weather || [];
+  const username = props.username || null;
+  const profile = props.profile || "";
+  const changeAction = props.changeAction || (() => null);
+  const onUpdateLocation = props.onUpdateLocation || (() => null);
+
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
-  const [showSegmentDetails, setShowSegmentDetails] = useState(true);
+  const [showSegmentDetails, setShowSegmentDetails] = useState(false);
 
   useEffect(() => {
     setMax(weather.length - 1);
@@ -142,42 +156,46 @@ function WeatherSlider({
         onUpdateLocation={onUpdateLocation}
       />
 
-      <div className="box">
-        <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
-          <b>{timeString}</b>
-        </div>
+      {weather.length > 0 && (
+        <>
+          <div className="box">
+            <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
+              <b>{timeString}</b>
+            </div>
 
-        <div>
-          🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
-        </div>
+            <div>
+              🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
+            </div>
 
-        <div>
-          💨{" "}
-          <b>
-            ({degToCompass(windDirection)} / {windDirection}°)
-          </b>{" "}
-          {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
-        </div>
+            <div>
+              💨{" "}
+              <b>
+                ({degToCompass(windDirection)} / {windDirection}°)
+              </b>{" "}
+              {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
+            </div>
 
-        <div>{shortForecast} </div>
+            <div>{shortForecast} </div>
 
-        <Slider
-          value={value}
-          min={0}
-          max={max}
-          step={1}
-          onChange={v => {
-            setValue(v);
-            setTimeString(formatDate(startTime));
-            changeAction(weather[v]);
-          }}
-          style={{ paddingTop: "10px" }}
-          railStyle={{ background: "rgb(74, 81, 84, 0.6)" }}
-        />
-      </div>
+            <Slider
+              value={value}
+              min={0}
+              max={max}
+              step={1}
+              onChange={v => {
+                setValue(v);
+                setTimeString(formatDate(startTime));
+                changeAction(weather[v]);
+              }}
+              style={{ paddingTop: "10px" }}
+              railStyle={{ background: "rgb(74, 81, 84, 0.6)" }}
+            />
+          </div>
+        </>
+      )}
 
       <div>
-        <span>⭐️ {segments.length} segments loaded </span>
+        <span>⭐️ {segments.length} segments loaded </span>
         <button
           onClick={() => setShowSegmentDetails(!showSegmentDetails)}
           className="button is-small is-primary"
@@ -214,4 +232,4 @@ function WeatherSlider({
   );
 }
 
-export default WeatherSlider;
+export default Controls;

@@ -1,6 +1,5 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
 import { debounce } from "lodash";
 import mapboxgl from "mapbox-gl";
 import alg from "../logic/algorithm";
@@ -142,12 +141,5 @@ function Map(props) {
     </div>
   );
 }
-
-Map.propTypes = {
-  segments: PropTypes.array,
-  windAngle: PropTypes.number,
-  localCoordinates: PropTypes.object,
-  onCenterUpdate: PropTypes.func
-};
 
 export default Map;
