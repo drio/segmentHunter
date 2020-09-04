@@ -168,7 +168,7 @@ function Controls(props) {
                 paddingBottom: "5px"
               }}
             >
-              <b>Weather Selection</b>
+              <b>Time Selection</b>
             </div>
             <div style={{ paddingBottom: "0px" }}>
               <b>Time</b>:{timeString}

@@ -113,7 +113,8 @@ function Map(props) {
       "render",
       debounce(() => {
         const { lat, lng } = map.getCenter();
-        onCenterUpdate({ latitude: lat, longitude: lng });
+        const [se, ne] = map.getBounds().toArray();
+        onCenterUpdate({ latitude: lat, longitude: lng }, [...se, ...ne]);
       }, 30)
     );
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
+import { onlySegmentsInBB } from "../logic/gis";
 import Controls from "../components/controls";
 import Layout from "../components/layout";
 import Login from "../components/login";
@@ -25,6 +26,7 @@ const App = props => {
   const [error, setError] = useState("");
   const [localCoordinates, setLocalCoordinates] = useState(null);
   const [mapCenterCoordinates, setMapCenterCoordinates] = useState({});
+  const [mapBounds, setMapBounds] = useState(null);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -33,9 +35,12 @@ const App = props => {
     if (latitude && longitude) storeLocation(mapCenterCoordinates);
   };
 
-  const handleUpdateMapCenter = ({ latitude, longitude }) => {
+  const handleUpdateMapCenter = ({ latitude, longitude }, bounds) => {
     if (latitude && longitude) {
       setMapCenterCoordinates({ latitude, longitude });
+    }
+    if (bounds && Array.isArray(bounds)) {
+      setMapBounds(bounds);
     }
   };
 
@@ -80,6 +85,9 @@ const App = props => {
   if (loggedIn && waitingForData) {
     return <Loading />;
   } else {
+    const boundedSegments = mapBounds
+      ? onlySegmentsInBB(segments, mapBounds)
+      : segments;
     return (
       <Layout
         props={{
@@ -90,7 +98,7 @@ const App = props => {
         {loggedIn ? (
           <>
             <Controls
-              segments={segments}
+              segments={boundedSegments}
               weather={weather}
               username={username}
               profile={profile}
@@ -100,7 +108,7 @@ const App = props => {
               }}
             />
             <Map
-              segments={segments}
+              segments={boundedSegments}
               localCoordinates={localCoordinates}
               windAngle={windAngle}
               onCenterUpdate={handleUpdateMapCenter}
