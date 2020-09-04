@@ -71,9 +71,6 @@ const App = props => {
             })
             .catch(e => handleError(e, "weather"));
         })
-        /* We don't have a current location,
-           The user will have to set it up manually.
-         */
         .catch(e => handleError(e, "location"));
     }
   }, []);

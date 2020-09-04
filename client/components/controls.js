@@ -5,7 +5,7 @@ import { clearCookies } from "../logic/session";
 import Slider from "rc-slider";
 import moment from "moment";
 
-const MAX_SEGMENT_TEXT_SIZE = 34;
+const MAX_SEGMENT_TEXT_SIZE = 35;
 
 const ControlsDiv = styled.div`
   font-size: 16px;
