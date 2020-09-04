@@ -1,4 +1,6 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import { debounce } from "lodash";
 import mapboxgl from "mapbox-gl";
 import alg from "../logic/algorithm";
@@ -8,24 +10,7 @@ const DEFAULT_ZOOM = 11;
 
 mapboxgl.accessToken = TOKEN;
 
-function addMarker(map, segment) {
-  const {
-    start_longitude,
-    start_latitude,
-    end_latitude,
-    end_longitude
-  } = segment;
-
-  new mapboxgl.Marker({ color: "green", scale: 0.5 })
-    .setLngLat([start_longitude, start_latitude])
-    .addTo(map);
-
-  new mapboxgl.Marker({ color: "red", scale: 0.5 })
-    .setLngLat([end_longitude, end_latitude])
-    .addTo(map);
-}
-
-function addLine(map, segment, windDirection) {
+function addLine(map, segment, windAngle) {
   const coordinateList = alg.polyToCoordinates(segment.map.polyline);
 
   const id = `segment-${segment.id}`;
@@ -48,7 +33,7 @@ function addLine(map, segment, windDirection) {
     }
   });
 
-  const score = alg.score(segment, windDirection);
+  const score = alg.score(segment, windAngle);
 
   map.addLayer({
     id: id,
@@ -70,10 +55,9 @@ function addLine(map, segment, windDirection) {
   });
 }
 
-function renderSegments(map, segments, windDirection) {
+function renderSegments(map, segments, windAngle) {
   segments.forEach(s => {
-    //addMarker(map, s);
-    addLine(map, s, windDirection);
+    addLine(map, s, windAngle);
   });
 }
 
@@ -84,9 +68,9 @@ function computeScoreColor(score) {
   return "red";
 }
 
-function colorSegments(segments, map, windDirection) {
+function colorSegments(segments, map, windAngle) {
   segments.forEach(s => {
-    const score = alg.score(s, windDirection);
+    const score = alg.score(s, windAngle);
     const color = computeScoreColor(score);
     map.setPaintProperty(`segment-${s.id}`, "line-color", color);
   });
@@ -100,12 +84,14 @@ const DEFAULT_STATE = {
   zoom: 1
 };
 
-function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
-  const mapContainer = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
+function Map(props) {
+  const segments = props.segments || [];
+  const windAngle = props.windAngle || 0;
+  const onCenterUpdate = props.onCenterUpdate || (() => null);
+  const localCoordinates = props.localCoordinates || {};
 
   const [state, setState] = useState(
-    localCoordinates
+    localCoordinates.longitude && localCoordinates.latitude
       ? {
           lng: localCoordinates.longitude,
           lat: localCoordinates.latitude,
@@ -113,6 +99,8 @@ function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
         }
       : DEFAULT_STATE
   );
+  const mapContainer = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     map = new mapboxgl.Map({
@@ -131,7 +119,7 @@ function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
     );
 
     map.on("load", () => {
-      renderSegments(map, segments, windDirection);
+      renderSegments(map, segments, windAngle);
       setMapLoaded(true);
     });
 
@@ -145,8 +133,8 @@ function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
   }, []);
 
   useEffect(() => {
-    if (mapLoaded) colorSegments(segments, map, windDirection);
-  }, [windDirection, mapLoaded]);
+    if (mapLoaded) colorSegments(segments, map, windAngle);
+  }, [windAngle, mapLoaded]);
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -154,5 +142,12 @@ function Map({ segments, windDirection, localCoordinates, onCenterUpdate }) {
     </div>
   );
 }
+
+Map.propTypes = {
+  segments: PropTypes.array,
+  windAngle: PropTypes.number,
+  localCoordinates: PropTypes.object,
+  onCenterUpdate: PropTypes.func
+};
 
 export default Map;
