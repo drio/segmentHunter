@@ -7,20 +7,20 @@ import moment from "moment";
 
 const MAX_SEGMENT_TEXT_SIZE = 34;
 
-const style = {
-  fontSize: 16,
-  width: "370px",
-  margin: 0,
-  background: "rgba(68, 65, 65, 0.9)",
-  padding: "14px",
-  borderRadius: "10px",
-  color: "white",
-  display: "inline-block",
-  position: "absolute",
-  top: 5,
-  right: 4,
-  zIndex: 2
-};
+const ControlsDiv = styled.div`
+  font-size: 16px;
+  width: 370px;
+  margin: 0;
+  background: rgba(68, 65, 65, 0.9);
+  padding: 14px;
+  border-radius: 10px;
+  color: white;
+  display: inline-block;
+  position: absolute;
+  top: 5px;
+  right: 4px;
+  z-index: 2;
+`;
 
 function handleLogout() {
   clearCookies();
@@ -44,30 +44,32 @@ const MainRowLoginInfo = styled.div`
 const LoggedIn = ({ profile, username, onUpdateLocation }) => {
   const ifLoggedIn = (
     <>
-      {username === "driodeiros" && (
-        <div style={{ paddingRight: "10px" }}>
-          <button onClick={handleClearAll} className="button is-black ">
-            fresh
-          </button>
-        </div>
-      )}
-
       <div style={{ paddingRight: "10px" }}>
-        <button onClick={onUpdateLocation} className="button is-info">
-          Update Location
-        </button>
-      </div>
-
-      <div style={{ paddingRight: "10px" }}>
-        <button href="#" onClick={handleLogout} className="button is-danger">
-          logout
-        </button>
-      </div>
-
-      <div>
         <figure className="image is-32x32">
           <img className="is-rounded" src={`${profile}`} />
         </figure>
+      </div>
+
+      {username === "driodeiros" && (
+        <>
+          <div style={{ paddingRight: "10px" }}>
+            <button onClick={handleClearAll} className="button is-black ">
+              fresh
+            </button>
+          </div>
+
+          <div style={{ paddingRight: "10px" }}>
+            <button onClick={onUpdateLocation} className="button is-info">
+              Update Location
+            </button>
+          </div>
+        </>
+      )}
+
+      <div>
+        <button href="#" onClick={handleLogout} className="button is-danger">
+          logout
+        </button>
       </div>
     </>
   );
@@ -149,7 +151,7 @@ function Controls(props) {
   } = weather[value];
 
   return (
-    <div style={style}>
+    <ControlsDiv>
       <LoggedIn
         profile={profile}
         username={username}
@@ -239,7 +241,7 @@ function Controls(props) {
           </div>
         </div>
       )}
-    </div>
+    </ControlsDiv>
   );
 }
 
