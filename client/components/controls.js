@@ -142,7 +142,7 @@ function Controls(props) {
 
   const {
     temperature,
-    windDirection,
+    windAngle,
     windSpeed,
     shortForecast,
     startTime
@@ -158,21 +158,32 @@ function Controls(props) {
 
       {weather.length > 0 && (
         <>
-          <div className="box">
-            <div style={{ fontSize: "20px", paddingBottom: "0px" }}>
-              <b>{timeString}</b>
+          <div className="box" style={{ padding: 12 }}>
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "16px",
+                paddingBottom: "5px"
+              }}
+            >
+              <b>Weather Selection</b>
+            </div>
+            <div style={{ paddingBottom: "0px" }}>
+              <b>Time</b>:{timeString}
             </div>
 
             <div>
-              🌡 {temperature.toFixed(0)}C | {toFahrenheit(temperature)}F{" "}
+              <b>Temperature</b>:{temperature.toFixed(0)}C |{" "}
+              {toFahrenheit(temperature)}F{" "}
             </div>
 
             <div>
-              💨{" "}
-              <b>
-                ({degToCompass(windDirection)} / {windDirection}°)
-              </b>{" "}
-              {toMilesHour(windSpeed)} miles/h | {windSpeed} m/s
+              <b>Wind direction</b>: {degToCompass(windAngle)} / {windAngle}°
+            </div>
+
+            <div>
+              <b>Wind speed</b>:{toMilesHour(windSpeed)} miles/h | {windSpeed}{" "}
+              m/s
             </div>
 
             <div>{shortForecast} </div>
