@@ -142,11 +142,14 @@ function Controls(props) {
   useEffect(() => {
     setMax(weather.length - 1);
     setTimeString(formatDate(weather[0].startTime));
+    setShowSegmentDetails(true);
   }, []);
 
-  function handleSegmentClick(id) {
-    onSegmentClick(id);
-    setSelectedId(id === selectedId ? null : id);
+  function handleSegmentClick(selSegment) {
+    const { id } = selSegment;
+    const somethingSelected = id === selectedId ? false : true;
+    onSegmentClick(somethingSelected ? selSegment : null);
+    setSelectedId(somethingSelected ? id : null);
   }
 
   const {
@@ -240,9 +243,10 @@ function Controls(props) {
                 <label className="checkbox">
                   <input
                     type="checkbox"
-                    onClick={() => handleSegmentClick(s.id)}
+                    onClick={() => handleSegmentClick(s)}
                     id={`input-${s.id}`}
                     checked={s.id === selectedId}
+                    readOnly
                   />{" "}
                   {s.name.length > MAX_SEGMENT_TEXT_SIZE
                     ? s.name.slice(0, MAX_SEGMENT_TEXT_SIZE) + " ..."

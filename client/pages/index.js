@@ -27,7 +27,7 @@ const App = props => {
   const [localCoordinates, setLocalCoordinates] = useState(null);
   const [mapCenterCoordinates, setMapCenterCoordinates] = useState({});
   const [mapBounds, setMapBounds] = useState(null);
-  const [selectedSegmentId, setSelectedSegmentId] = useState(null);
+  const [selectedSegment, setSelectedSegment] = useState(null);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -101,7 +101,7 @@ const App = props => {
               username={username}
               profile={profile}
               onUpdateLocation={handleUpdateInLocation}
-              onSegmentClick={id => setSelectedSegmentId(id)}
+              onSegmentClick={seg => setSelectedSegment(seg)}
               changeAction={e => {
                 if (e) setWindAngle(e.windAngle);
               }}
@@ -111,7 +111,7 @@ const App = props => {
               localCoordinates={localCoordinates}
               windAngle={windAngle}
               onCenterUpdate={handleUpdateMapCenter}
-              selectedSegmentId={selectedSegmentId}
+              selectedSegment={selectedSegment}
             />
           </>
         ) : (

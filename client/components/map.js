@@ -49,8 +49,6 @@ function addLine(map, segment, windAngle) {
     }
   });
 
-  //map.setLayoutProperty(id, "visibility", "visible");
-
   map.on("click", id, () => {
     console.log("click: ", segment.name, score);
   });
@@ -77,7 +75,7 @@ function colorSegments(segments, map, windAngle) {
   });
 }
 
-let map;
+let map, savedBounds;
 
 const DEFAULT_STATE = {
   lng: 2.078728 /* Barcelona, Spain */,
@@ -90,9 +88,8 @@ function Map(props) {
   const windAngle = props.windAngle || 0;
   const onCenterUpdate = props.onCenterUpdate || (() => null);
   const localCoordinates = props.localCoordinates || {};
-  const selectedSegmentId = props.selectedSegmentId;
+  const selectedSegment = props.selectedSegment;
 
-  console.log(selectedSegmentId);
   const [state, setState] = useState(
     localCoordinates.longitude && localCoordinates.latitude
       ? {
@@ -125,6 +122,7 @@ function Map(props) {
     map.on("load", () => {
       renderSegments(map, segments, windAngle);
       setMapLoaded(true);
+      savedBounds = map.getBounds();
     });
 
     map.on("move", () => {
@@ -139,6 +137,23 @@ function Map(props) {
   useEffect(() => {
     if (mapLoaded) colorSegments(segments, map, windAngle);
   }, [windAngle, mapLoaded]);
+
+  useEffect(() => {
+    if (selectedSegment) {
+      const {
+        start_latitude,
+        end_latitude,
+        start_longitude,
+        end_longitude
+      } = selectedSegment;
+      map.fitBounds([
+        [start_longitude, start_latitude],
+        [end_longitude, end_latitude]
+      ]);
+    } else {
+      if (savedBounds) map.fitBounds(savedBounds);
+    }
+  }, [selectedSegment]);
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
