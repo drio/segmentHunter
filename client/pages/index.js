@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
-import { onlySegmentsInBB } from "../logic/gis";
+import { onlyCloseSegments } from "../logic/gis";
 import Controls from "../components/controls";
 import Layout from "../components/layout";
 import Login from "../components/login";
@@ -27,6 +27,7 @@ const App = props => {
   const [localCoordinates, setLocalCoordinates] = useState(null);
   const [mapCenterCoordinates, setMapCenterCoordinates] = useState({});
   const [mapBounds, setMapBounds] = useState(null);
+  const [selectedSegmentId, setSelectedSegmentId] = useState(null);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -79,11 +80,11 @@ const App = props => {
     return <Error errorDetailKey={error} />;
   }
 
-  if (loggedIn && waitingForData) {
+  if (loggedIn && waitingForData && mapCenterCoordinates) {
     return <Loading />;
   } else {
-    const boundedSegments = mapBounds
-      ? onlySegmentsInBB(segments, mapBounds)
+    const localSegments = mapCenterCoordinates
+      ? onlyCloseSegments(mapCenterCoordinates, segments)
       : segments;
     return (
       <Layout
@@ -95,20 +96,22 @@ const App = props => {
         {loggedIn ? (
           <>
             <Controls
-              segments={boundedSegments}
+              segments={localSegments}
               weather={weather}
               username={username}
               profile={profile}
               onUpdateLocation={handleUpdateInLocation}
+              onSegmentClick={id => setSelectedSegmentId(id)}
               changeAction={e => {
                 if (e) setWindAngle(e.windAngle);
               }}
             />
             <Map
-              segments={boundedSegments}
+              segments={localSegments}
               localCoordinates={localCoordinates}
               windAngle={windAngle}
               onCenterUpdate={handleUpdateMapCenter}
+              selectedSegmentId={selectedSegmentId}
             />
           </>
         ) : (

@@ -131,16 +131,23 @@ function Controls(props) {
   const profile = props.profile || "";
   const changeAction = props.changeAction || (() => null);
   const onUpdateLocation = props.onUpdateLocation || (() => null);
+  const onSegmentClick = props.onSegmentClick || (() => null);
 
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
   const [showSegmentDetails, setShowSegmentDetails] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     setMax(weather.length - 1);
     setTimeString(formatDate(weather[0].startTime));
   }, []);
+
+  function handleSegmentClick(id) {
+    onSegmentClick(id);
+    setSelectedId(id === selectedId ? null : id);
+  }
 
   const {
     temperature,
@@ -231,7 +238,12 @@ function Controls(props) {
             {segments.map(s => (
               <div key={s.id}>
                 <label className="checkbox">
-                  <input type="checkbox" />{" "}
+                  <input
+                    type="checkbox"
+                    onClick={() => handleSegmentClick(s.id)}
+                    id={`input-${s.id}`}
+                    checked={s.id === selectedId}
+                  />{" "}
                   {s.name.length > MAX_SEGMENT_TEXT_SIZE
                     ? s.name.slice(0, MAX_SEGMENT_TEXT_SIZE) + " ..."
                     : s.name}{" "}

@@ -49,6 +49,8 @@ function addLine(map, segment, windAngle) {
     }
   });
 
+  //map.setLayoutProperty(id, "visibility", "visible");
+
   map.on("click", id, () => {
     console.log("click: ", segment.name, score);
   });
@@ -88,7 +90,9 @@ function Map(props) {
   const windAngle = props.windAngle || 0;
   const onCenterUpdate = props.onCenterUpdate || (() => null);
   const localCoordinates = props.localCoordinates || {};
+  const selectedSegmentId = props.selectedSegmentId;
 
+  console.log(selectedSegmentId);
   const [state, setState] = useState(
     localCoordinates.longitude && localCoordinates.latitude
       ? {

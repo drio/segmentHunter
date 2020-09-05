@@ -45,3 +45,8 @@ a.loginLink:hover {
   color: pink;
 }
 
+a.segmentList:hover {
+  color: #0b84ed;
+  font-weight: bold;
+}
+
