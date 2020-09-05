@@ -142,7 +142,7 @@ function Controls(props) {
   useEffect(() => {
     setMax(weather.length - 1);
     setTimeString(formatDate(weather[0].startTime));
-    setShowSegmentDetails(true);
+    setShowSegmentDetails(false);
   }, []);
 
   function handleSegmentClick(selSegment) {
@@ -221,42 +221,44 @@ function Controls(props) {
         <span>⭐️ {segments.length} segments loaded </span>
         <button
           onClick={() => setShowSegmentDetails(!showSegmentDetails)}
-          className="button is-small is-primary"
+          className="button is-small is-warning"
         >
           {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
         </button>
-      </div>
-
-      {showSegmentDetails && (
-        <div
-          className="containerl"
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            textOverflow: "Ellipsis"
-          }}
-        >
-          <div>
-            {segments.map(s => (
-              <div key={s.id}>
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    onClick={() => handleSegmentClick(s)}
-                    id={`input-${s.id}`}
-                    checked={s.id === selectedId}
-                    readOnly
-                  />{" "}
-                  {s.name.length > MAX_SEGMENT_TEXT_SIZE
-                    ? s.name.slice(0, MAX_SEGMENT_TEXT_SIZE) + " ..."
-                    : s.name}{" "}
-                </label>
-              </div>
-            ))}
+        {showSegmentDetails && (
+          <div
+            className="containerl"
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginTop: "5px",
+              textOverflow: "Ellipsis",
+              maxHeight: "65vh",
+              overflow: "scroll"
+            }}
+          >
+            <div>
+              {segments.map(s => (
+                <div key={s.id}>
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      onClick={() => handleSegmentClick(s)}
+                      id={`input-${s.id}`}
+                      checked={s.id === selectedId}
+                      readOnly
+                    />{" "}
+                    {s.name.length > MAX_SEGMENT_TEXT_SIZE
+                      ? s.name.slice(0, MAX_SEGMENT_TEXT_SIZE) + " ..."
+                      : s.name}{" "}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </ControlsDiv>
   );
 }
