@@ -181,11 +181,11 @@ function Controls(props) {
               <b>Time Selection</b>
             </div>
             <div style={{ paddingBottom: "0px" }}>
-              <b>Time</b>:{timeString}
+              <b>Time</b>: {timeString}
             </div>
 
             <div>
-              <b>Temperature</b>:{temperature.toFixed(0)}C |{" "}
+              <b>Temperature</b>: {temperature.toFixed(0)}C |{" "}
               {toFahrenheit(temperature)}F{" "}
             </div>
 
@@ -194,7 +194,7 @@ function Controls(props) {
             </div>
 
             <div>
-              <b>Wind speed</b>:{toMilesHour(windSpeed)} miles/h | {windSpeed}{" "}
+              <b>Wind speed</b>: {toMilesHour(windSpeed)} miles/h | {windSpeed}{" "}
               m/s
             </div>
 
@@ -221,7 +221,7 @@ function Controls(props) {
         <span>⭐️ {segments.length} segments loaded </span>
         <button
           onClick={() => setShowSegmentDetails(!showSegmentDetails)}
-          className="button is-small is-warning"
+          className="button is-small is-warning is-rounded"
         >
           {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
         </button>
