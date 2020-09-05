@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.3.0
+
+- heavy redesign of the controls
+- only pass local segments to the map
+- Adds segment list to the controls
+- Zoom to a concrete segment from the list
+
 ### 0.2.1
 
 - fix mobile styles for errors
