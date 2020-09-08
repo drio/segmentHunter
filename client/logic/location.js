@@ -6,8 +6,8 @@ const options = {
 
 const LOCAL_KEY_COORDINATES = "segment_hunter_coordinates";
 
-function storeLocation({ latitude, longitude }) {
-  if ((latitude, longitude)) {
+function storeLocation({ latitude, longitude } ) {
+  if ((latitude && longitude)) {
     console.log("Saving coordinates in local storage");
     localStorage.setItem(
       LOCAL_KEY_COORDINATES,
