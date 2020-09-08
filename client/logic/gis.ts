@@ -1,9 +1,10 @@
 import * as turf from "@turf/turf";
+import {Coordinate, Segment}  from "./types";
 
 const MAX_DIST = 50; // km
 
 /* filter segments that are within MAX_DIST */
-function onlyCloseSegments({ latitude, longitude }, segments) {
+function onlyCloseSegments({ latitude, longitude }: Coordinate, segments: Segment[]) : Segment[] {
   if (latitude && longitude) {
     return segments.filter(s => {
       const {
@@ -25,7 +26,7 @@ function onlyCloseSegments({ latitude, longitude }, segments) {
   return segments;
 }
 
-function onlySegmentsInBB(segments, bbox) {
+function onlySegmentsInBB(segments: Segment[], bbox: turf.BBox) : Segment[] {
   const polyBB = turf.bboxPolygon(bbox);
   const inBB = segments.filter(s => {
     const segmentStartPoint = turf.point([s.start_longitude, s.start_latitude]);
