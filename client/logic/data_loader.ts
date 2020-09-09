@@ -1,10 +1,12 @@
+import {Coordinate, WeatherEntry, LocalStorageWeather, Segment}  from "./types";
+
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
 const NOAA_WEATHER_API_URL = "https://api.weather.gov/points";
 const OPEN_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/onecall";
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const LOCAL_KEY_WEATHER = "segment_hunter_weather";
 const HOURS_MS_24 = 60 * 60 * 24 * 1000;
-const H_HOURS = h => 60 * 60 * h * 1000;
+const H_HOURS = (h: number) => 60 * 60 * h * 1000;
 const OPEN_WEATHER_KEY = process.env.OPEN_WEATHER_KEY;
 
 /* 
@@ -16,7 +18,7 @@ We need the following attributes on the weather entries:
 	- startTime      (unix timestamp)
 */
 
-function generateOpenWeatherURL(latitude, longitude) {
+function generateOpenWeatherURL(latitude:number, longitude:number) {
   return (
     `${OPEN_WEATHER_API_URL}` +
     `?lat=${latitude}&lon=${longitude}` +
@@ -25,110 +27,63 @@ function generateOpenWeatherURL(latitude, longitude) {
   );
 }
 
-async function openWeatherLoader(coordinates = {}, fetchFn = fetch) {
-  let error = false;
-  let hourly;
-
+async function openWeatherLoader(coordinates: Coordinate, fetchFn = fetch): Promise<WeatherEntry[]> {
+  let error: null | string = null;
+  let weatherEntries: WeatherEntry[];
+  let storedWeather: LocalStorageWeather | null = null;
   const { latitude, longitude } = coordinates;
+  const now = +new Date();
+
   if (!latitude || !longitude) {
     error = "No coordinates provided for loading weather";
-  } else {
-    const now = +new Date();
-    const localStorageWeather = JSON.parse(
-      localStorage.getItem(LOCAL_KEY_WEATHER)
-    );
+  }
 
-    if (
-      localStorageWeather &&
-      now - localStorageWeather.timestamp < H_HOURS(1)
-    ) {
+  if (!error) {
+    const storageResult = localStorage.getItem(LOCAL_KEY_WEATHER)
+    storedWeather = storageResult ? JSON.parse(storageResult) : null;
+
+    if (storedWeather && now - storedWeather.timestamp < H_HOURS(1)) {
       console.log("Using weather data from local storage.");
-      hourly = localStorageWeather.weather;
+      weatherEntries = storedWeather.weather;
     } else {
-      let response, json;
       const fetchOpts = { headers: { accept: "application/json" } };
-
       const url = generateOpenWeatherURL(latitude, longitude);
-      response = await fetchFn(url, fetchOpts);
+      const response = await fetchFn(url, fetchOpts);
       if (response.status === 200) {
-        json = await response.json();
-        hourly = json.hourly.map(e => ({
+        const json = await response.json();
+        weatherEntries = json.hourly.map((e: WeatherEntry) => ({
           temperature: e.temp,
           windAngle: e.wind_deg,
           windSpeed: e.wind_speed,
           shortForecast: e.weather.description,
           startTime: e.dt
         }));
+        localStorage.setItem(
+          LOCAL_KEY_WEATHER,
+          JSON.stringify({
+            timestamp: now,
+            weather: weatherEntries
+          })
+        );
       } else {
         error = `Failure requesting open weather data. Response:  ${response.status}`;
       }
 
-      localStorage.setItem(
-        LOCAL_KEY_WEATHER,
-        JSON.stringify({
-          timestamp: now,
-          weather: hourly
-        })
-      );
     }
   }
 
   return new Promise((resolve, reject) => {
-    error ? reject(error) : resolve(hourly);
+    error ? reject(error) : resolve(weatherEntries);
   });
 }
 
-async function noaaLoader({ latitude, longitude }, fetchFn = fetch) {
-  let error = false;
-  let hourly;
+async function stravaLoader(token: string, fetchFn = fetch): Promise<Segment[]> {
+  let segmentDetailsList: Segment[] = [];
+  let error: string | null;
   const now = +new Date();
-  const localStorageWeather = JSON.parse(
-    localStorage.getItem(LOCAL_KEY_WEATHER)
-  );
 
-  if (localStorageWeather && now - localStorageWeather.timestamp < H_HOURS(1)) {
-    console.log("Using weather data from local storage.");
-    hourly = localStorageWeather.weather;
-  } else {
-    let response, json;
-    const fetchOpts = { headers: { accept: "application/json" } };
-
-    const url = `${NOAA_WEATHER_API_URL}/${latitude},${longitude}`;
-    response = await fetchFn(url, fetchOpts);
-    if (response.status === 200) {
-      json = await response.json();
-      // FIXME: we may not have those keys
-      const hourlyURL = json.properties.forecastHourly;
-      response = await fetchFn(hourlyURL, fetchOpts);
-      if (response.status === 200) {
-        json = await response.json();
-        hourly = json.properties.periods;
-      } else {
-        error = `Failed on second weather request ${response.status}`;
-      }
-    } else {
-      error = `Failed on first weather request ${response.status}`;
-    }
-
-    localStorage.setItem(
-      LOCAL_KEY_WEATHER,
-      JSON.stringify({
-        timestamp: now,
-        weather: hourly
-      })
-    );
-  }
-
-  return new Promise((resolve, reject) => {
-    error ? reject(error) : resolve(hourly);
-  });
-}
-
-async function stravaLoader(token, fetchFn = fetch) {
-  let segmentDetailsList = [];
-  let error = false;
-  const now = +new Date();
-  const localSegments = JSON.parse(localStorage.getItem(LOCAL_KEY_SEGMENTS));
+  const storageResult = localStorage.getItem(LOCAL_KEY_SEGMENTS)
+  const localSegments = storageResult ? JSON.parse(storageResult) : null;
 
   if (localSegments && now - localSegments.timestamp < HOURS_MS_24) {
     console.log("Using strava segments from local storage.");

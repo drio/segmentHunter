@@ -67,7 +67,7 @@ const LoggedIn = ({ profile, username, onUpdateLocation }) => {
       )}
 
       <div>
-        <button href="#" onClick={handleLogout} className="button is-danger">
+        <button onClick={handleLogout} className="button is-danger">
           logout
         </button>
       </div>
@@ -76,7 +76,7 @@ const LoggedIn = ({ profile, username, onUpdateLocation }) => {
 
   const ifNotLoggedIn = (
     <div style={{ paddingRight: "10px" }}>
-      <button href="#" onClick={handleClearAll} className="button is-danger">
+      <button onClick={handleClearAll} className="button is-danger">
         login
       </button>
     </div>
