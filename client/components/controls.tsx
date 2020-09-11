@@ -200,8 +200,7 @@ function Controls(props: ControlProps) {
             </div>
 
             <div>
-              <b>Temperature</b>: {temp.toFixed(0)}C |{" "}
-              {toFahrenheit(temp)}F{" "}
+              <b>Temperature</b>: {temp.toFixed(0)}C | {toFahrenheit(temp)}F{" "}
             </div>
 
             <div>
@@ -209,8 +208,8 @@ function Controls(props: ControlProps) {
             </div>
 
             <div>
-              <b>Wind speed</b>: {toMilesHour(wind_speed)} miles/h | {wind_speed}{" "}
-              m/s
+              <b>Wind speed</b>: {toMilesHour(wind_speed)} miles/h |{" "}
+              {wind_speed} m/s
             </div>
 
             <div>{description} </div>
@@ -220,7 +219,7 @@ function Controls(props: ControlProps) {
               min={0}
               max={max}
               step={1}
-              onChange={(v:number) => {
+              onChange={(v: number) => {
                 setValue(v);
                 setTimeString(formatDate(startTime));
                 changeAction(weather[v]);

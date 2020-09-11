@@ -50,13 +50,7 @@ async function openWeatherLoader(coordinates: Coordinate, fetchFn = fetch): Prom
       const response = await fetchFn(url, fetchOpts);
       if (response.status === 200) {
         const json = await response.json();
-        weatherEntries = json.hourly.map((e: WeatherEntry) => ({
-          temperature: e.temp,
-          windAngle: e.wind_deg,
-          windSpeed: e.wind_speed,
-          shortForecast: e.weather.description,
-          startTime: e.dt
-        }));
+        weatherEntries = json.hourly;
         localStorage.setItem(
           LOCAL_KEY_WEATHER,
           JSON.stringify({
