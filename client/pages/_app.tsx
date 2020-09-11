@@ -1,11 +1,11 @@
 import Head from "next/head";
 import React from "react";
-import type { AppProps } from 'next/app';
+import type { AppProps } from "next/app";
 import "bulma/css/bulma.css";
 import "../css/styles.css";
 import "rc-slider/assets/index.css";
 
-function MyApp( { Component, pageProps }: AppProps): JSX.Element {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <div style={{ padding: 0 }}>
       <Head>
@@ -29,7 +29,7 @@ function MyApp( { Component, pageProps }: AppProps): JSX.Element {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'UA-2124421-14');
-          `
+          `,
           }}
         />
       </Head>

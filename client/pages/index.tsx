@@ -56,9 +56,9 @@ const App = (props: AppProps): JSX.Element => {
     }
   };
 
-  const handleError = (e: Error, errorKey: string) => {
+  const handleError = (e: Error, msg: string) => {
     console.log(e);
-    setError(errorKey);
+    setError(msg);
     setHaveToLoadData(false);
   };
 
@@ -88,7 +88,7 @@ const App = (props: AppProps): JSX.Element => {
   }, []);
 
   if (error) {
-    return <Error errorDetailKey={error} />;
+    return <Error msg={error} />;
   }
 
   if (loggedIn && waitingForData && mapCenterCoordinates) {
@@ -113,8 +113,8 @@ const App = (props: AppProps): JSX.Element => {
               profile={profile}
               onUpdateLocation={handleUpdateInLocation}
               onSegmentClick={(seg) => setSelectedSegment(seg)}
-              changeAction={(e) => {
-                if (e) setWindAngle(e.windAngle);
+              changeAction={(e: WeatherEntry) => {
+                if (e) setWindAngle(e.wind_deg);
               }}
             />
             <Map

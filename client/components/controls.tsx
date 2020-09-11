@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { clearCookies } from "../logic/session";
 import { Segment, WeatherEntry } from "../logic/types";
-import Slider from "rc-slider";
+/*import * as Slider from "rc-slider";*/
 import moment from "moment";
 
 const MAX_SEGMENT_TEXT_SIZE = 35;
@@ -136,7 +136,7 @@ interface ControlProps {
   weather: WeatherEntry[];
   username: string | null;
   profile: string | "";
-  changeAction: (WeatherEntry) => void;
+  changeAction: (e: WeatherEntry) => void;
   onUpdateLocation: () => void;
   onSegmentClick: (s: Segment | null) => void;
 }
@@ -161,7 +161,7 @@ function Controls(props: ControlProps) {
 
   useEffect(() => {
     setMax(weather.length - 1);
-    setTimeString(formatDate(weather[0].startTime));
+    setTimeString(formatDate(weather[0].dt));
     setShowSegmentDetails(false);
   }, []);
 
@@ -172,7 +172,7 @@ function Controls(props: ControlProps) {
     setSelectedId(somethingSelected ? id : null);
   }
 
-  const { temp, wind_deg, wind_speed, startTime } = weather[value];
+  const { temp, wind_deg, wind_speed, dt } = weather[value];
   const description = weather[value].weather.description;
 
   return (
@@ -213,19 +213,29 @@ function Controls(props: ControlProps) {
             </div>
 
             <div>{description} </div>
-
+            {/*
             <Slider
               value={value}
               min={0}
               max={max}
               step={1}
-              onChange={(v: number) => {
-                setValue(v);
-                setTimeString(formatDate(startTime));
-                changeAction(weather[v]);
-              }}
               style={{ paddingTop: "10px" }}
               railStyle={{ background: "rgb(74, 81, 84, 0.6)" }}
+            />
+            */}
+            <input
+              style={{ width: "100%" }}
+              step="1"
+              min="0"
+              max={max}
+              value={value}
+              onChange={(e) => {
+                const v = +e.target.value;
+                setValue(v);
+                setTimeString(formatDate(dt));
+                changeAction(weather[v]);
+              }}
+              type="range"
             />
           </div>
         </>

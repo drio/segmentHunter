@@ -26,7 +26,6 @@ export interface LocalStorageWeather {
 }
 
 export interface WeatherEntry {
-  startTime: number,
   temp: number,
   wind_deg: number,
   wind_speed: number,

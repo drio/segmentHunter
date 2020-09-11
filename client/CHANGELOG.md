@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.3.1
+
+- Migration to typescript
+
 ### 0.3.0
 
 - heavy redesign of the controls
