@@ -2,12 +2,19 @@ import React from "react";
 import { useEffect } from "react";
 import cookie from "js-cookie";
 import Router from "next/router";
+import { NextPageContext } from 'next'
 
 const STRAVA_URL = `https://www.strava.com/oauth/token`;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-const ExchangeToken = props => {
+interface ExchangeProps {
+  access_token: string,
+  username: string,
+  profile: string,
+}
+
+const ExchangeToken = (props: ExchangeProps): null => {
   const { access_token, username, profile } = props;
 
   useEffect(() => {
@@ -25,7 +32,7 @@ const ExchangeToken = props => {
   return null;
 };
 
-ExchangeToken.getInitialProps = async ({ query }) => {
+ExchangeToken.getInitialProps = async ({ query }: NextPageContext) => {
   const { code, scope } = query;
 
   if (code && scope) {

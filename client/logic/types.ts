@@ -8,10 +8,12 @@ export interface GeoResult {
 }
 
 export interface Segment {
+  id: number,
   start_latitude: number, 
   start_longitude: number, 
   end_latitude: number, 
   end_longitude: number
+  name: string,
   map: {
     polyline: string
   }
@@ -24,6 +26,7 @@ export interface LocalStorageWeather {
 }
 
 export interface WeatherEntry {
+  startTime: number,
   temp: number,
   wind_deg: number,
   wind_speed: number,

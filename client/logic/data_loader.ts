@@ -1,7 +1,6 @@
 import {Coordinate, WeatherEntry, LocalStorageWeather, Segment}  from "./types";
 
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
-const NOAA_WEATHER_API_URL = "https://api.weather.gov/points";
 const OPEN_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/onecall";
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const LOCAL_KEY_WEATHER = "segment_hunter_weather";

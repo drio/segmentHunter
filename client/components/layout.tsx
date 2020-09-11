@@ -1,10 +1,11 @@
+import React from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 
-export default function Layout({ children, props }) {
+const Layout: React.FC<React.ReactNode> = ({ children }) => {
   return (
-    <>
-      <Header props={props} />
+    <> 
+      <Header />
       <div
         className="section"
         style={{
@@ -20,3 +21,5 @@ export default function Layout({ children, props }) {
     </>
   );
 }
+
+export default Layout;

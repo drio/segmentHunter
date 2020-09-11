@@ -1,6 +1,8 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
+import { Coordinate, WeatherEntry, Segment } from "../logic/types";
 import { onlyCloseSegments } from "../logic/gis";
 import Controls from "../components/controls";
 import Layout from "../components/layout";
@@ -12,22 +14,33 @@ import { getLocation, storeLocation } from "../logic/location";
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
-  ssr: false
+  ssr: false,
 });
 
-const App = props => {
+interface AppProps {
+  access_token: string;
+  username: string;
+  profile: string;
+  loggedIn: boolean;
+}
+
+const App = (props: AppProps): JSX.Element => {
   const { access_token, username, profile, loggedIn } = props;
   const [windAngle, setWindAngle] = useState(0);
   const [loadingSegments, setLoadingSegments] = useState(true);
   const [loadingWeather, setLoadingWeather] = useState(true);
   const [haveToLoadData, setHaveToLoadData] = useState(true);
-  const [segments, setSegments] = useState([]);
-  const [weather, setWeather] = useState([]);
+  const [segments, setSegments] = useState<Segment[]>([]);
+  const [weather, setWeather] = useState<WeatherEntry[]>([]);
   const [error, setError] = useState("");
-  const [localCoordinates, setLocalCoordinates] = useState(null);
-  const [mapCenterCoordinates, setMapCenterCoordinates] = useState({});
-  const [mapBounds, setMapBounds] = useState(null);
-  const [selectedSegment, setSelectedSegment] = useState(null);
+  const [localCoordinates, setLocalCoordinates] = useState<Coordinate | null>(
+    null
+  );
+  const [mapCenterCoordinates, setMapCenterCoordinates] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+  const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -36,16 +49,14 @@ const App = props => {
     if (latitude && longitude) storeLocation(mapCenterCoordinates);
   };
 
-  const handleUpdateMapCenter = ({ latitude, longitude }, bounds) => {
+  const handleUpdateMapCenter = (c: Coordinate): void => {
+    const { latitude, longitude } = c;
     if (latitude && longitude) {
       setMapCenterCoordinates({ latitude, longitude });
     }
-    if (bounds && Array.isArray(bounds)) {
-      setMapBounds(bounds);
-    }
   };
 
-  const handleError = (e, errorKey) => {
+  const handleError = (e: Error, errorKey: string) => {
     console.log(e);
     setError(errorKey);
     setHaveToLoadData(false);
@@ -54,25 +65,25 @@ const App = props => {
   useEffect(() => {
     if (access_token && haveToLoadData) {
       getLocation()
-        .then(coordinates => {
+        .then((coordinates) => {
           weatherLoader(coordinates)
-            .then(d => {
+            .then((d: WeatherEntry[]) => {
               setWeather(d);
-              setWindAngle(d[0].windAngle);
+              setWindAngle(d[0].wind_deg);
               setLoadingWeather(false);
 
               stravaLoader(access_token)
-                .then(d => {
+                .then((d: Segment[]) => {
                   setSegments(d);
                   setLoadingSegments(false);
                   setLocalCoordinates(coordinates);
                   setHaveToLoadData(false);
                 })
-                .catch(e => handleError(e, "segment"));
+                .catch((e) => handleError(e, "segment"));
             })
-            .catch(e => handleError(e, "weather"));
+            .catch((e) => handleError(e, "weather"));
         })
-        .catch(e => handleError(e, "location"));
+        .catch((e) => handleError(e, "location"));
     }
   }, []);
 
@@ -90,7 +101,7 @@ const App = props => {
       <Layout
         props={{
           ...props,
-          ...{ loading: loadingSegments || loadingWeather }
+          ...{ loading: loadingSegments || loadingWeather },
         }}
       >
         {loggedIn ? (
@@ -101,8 +112,8 @@ const App = props => {
               username={username}
               profile={profile}
               onUpdateLocation={handleUpdateInLocation}
-              onSegmentClick={seg => setSelectedSegment(seg)}
-              changeAction={e => {
+              onSegmentClick={(seg) => setSelectedSegment(seg)}
+              changeAction={(e) => {
                 if (e) setWindAngle(e.windAngle);
               }}
             />

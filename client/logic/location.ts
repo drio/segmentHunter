@@ -25,7 +25,7 @@ function storeLocation(c: Coordinate): void {
     If that fails we try to use the stored location.
     If both fail, we raise an error.
  */
-function getLocation() {
+function getLocation():Promise<Coordinate> {
   return new Promise((resolve, reject) => {
     const storageResult = localStorage.getItem(LOCAL_KEY_COORDINATES)
     let storedCoordinates;

@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { clearCookies } from "../logic/session";
+import { Segment, WeatherEntry } from "../logic/types";
 import Slider from "rc-slider";
 import moment from "moment";
 
@@ -41,12 +42,19 @@ const MainRowLoginInfo = styled.div`
   margin: 5;
 `;
 
-const LoggedIn = ({ profile, username, onUpdateLocation }) => {
+interface LoggedInProps {
+  profile: string | "";
+  username: string | null;
+  onUpdateLocation: () => void;
+}
+
+function LoggedIn(props: LoggedInProps) {
+  const { profile, username, onUpdateLocation } = props;
   const ifLoggedIn = (
     <>
       <div style={{ paddingRight: "10px" }}>
         <figure className="image is-32x32">
-          <img className="is-rounded" src={`${profile}`} />
+          <img className="is-rounded" src={profile} />
         </figure>
       </div>
 
@@ -87,22 +95,22 @@ const LoggedIn = ({ profile, username, onUpdateLocation }) => {
       {username && profile ? ifLoggedIn : ifNotLoggedIn}
     </MainRowLoginInfo>
   );
-};
+}
 
 //const DATE_FORMAT = "dddd, MMMM Do, h:mm a";
 const DATE_FORMAT = "dddd, h:mm a";
 
-const formatDate = ts => moment.unix(ts).format(DATE_FORMAT);
+const formatDate = (ts: number) => moment.unix(ts).format(DATE_FORMAT);
 
-const toFahrenheit = c => +(c * 1.8 + 32.0).toFixed(0);
+const toFahrenheit = (c: number) => +(c * 1.8 + 32.0).toFixed(0);
 
-const toMilesHour = ms => {
+const toMilesHour = (ms: number) => {
   return +(ms * 0.00062 * 3600).toFixed(1);
 };
 
-function degToCompass(num) {
-  var val = Math.floor(num / 22.5 + 0.5);
-  var arr = [
+function degToCompass(num: number) {
+  const val = Math.floor(num / 22.5 + 0.5);
+  const arr = [
     "N",
     "NNE",
     "NE",
@@ -118,26 +126,38 @@ function degToCompass(num) {
     "W",
     "WNW",
     "NW",
-    "NNW"
+    "NNW",
   ];
   return arr[val % 16];
 }
 
+interface ControlProps {
+  segments: Segment[];
+  weather: WeatherEntry[];
+  username: string | null;
+  profile: string | "";
+  changeAction: (WeatherEntry) => void;
+  onUpdateLocation: () => void;
+  onSegmentClick: (s: Segment | null) => void;
+}
+
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function Controls(props) {
-  const segments = props.segments || [];
-  const weather = props.weather || [];
-  const username = props.username || null;
-  const profile = props.profile || "";
-  const changeAction = props.changeAction || (() => null);
-  const onUpdateLocation = props.onUpdateLocation || (() => null);
-  const onSegmentClick = props.onSegmentClick || (() => null);
+function Controls(props: ControlProps) {
+  const {
+    segments,
+    weather,
+    username,
+    profile,
+    changeAction,
+    onUpdateLocation,
+    onSegmentClick,
+  } = props;
 
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
   const [max, setMax] = useState(0);
   const [showSegmentDetails, setShowSegmentDetails] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
     setMax(weather.length - 1);
@@ -145,20 +165,15 @@ function Controls(props) {
     setShowSegmentDetails(false);
   }, []);
 
-  function handleSegmentClick(selSegment) {
+  function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
     const somethingSelected = id === selectedId ? false : true;
     onSegmentClick(somethingSelected ? selSegment : null);
     setSelectedId(somethingSelected ? id : null);
   }
 
-  const {
-    temperature,
-    windAngle,
-    windSpeed,
-    shortForecast,
-    startTime
-  } = weather[value];
+  const { temp, wind_deg, wind_speed, startTime } = weather[value];
+  const description = weather[value].weather.description;
 
   return (
     <ControlsDiv>
@@ -175,7 +190,7 @@ function Controls(props) {
               style={{
                 textAlign: "center",
                 fontSize: "16px",
-                paddingBottom: "5px"
+                paddingBottom: "5px",
               }}
             >
               <b>Time Selection</b>
@@ -185,27 +200,27 @@ function Controls(props) {
             </div>
 
             <div>
-              <b>Temperature</b>: {temperature.toFixed(0)}C |{" "}
-              {toFahrenheit(temperature)}F{" "}
+              <b>Temperature</b>: {temp.toFixed(0)}C |{" "}
+              {toFahrenheit(temp)}F{" "}
             </div>
 
             <div>
-              <b>Wind direction</b>: {degToCompass(windAngle)} / {windAngle}°
+              <b>Wind direction</b>: {degToCompass(wind_deg)} / {wind_deg}°
             </div>
 
             <div>
-              <b>Wind speed</b>: {toMilesHour(windSpeed)} miles/h | {windSpeed}{" "}
+              <b>Wind speed</b>: {toMilesHour(wind_speed)} miles/h | {wind_speed}{" "}
               m/s
             </div>
 
-            <div>{shortForecast} </div>
+            <div>{description} </div>
 
             <Slider
               value={value}
               min={0}
               max={max}
               step={1}
-              onChange={v => {
+              onChange={(v:number) => {
                 setValue(v);
                 setTimeString(formatDate(startTime));
                 changeAction(weather[v]);
@@ -235,11 +250,11 @@ function Controls(props) {
               marginTop: "5px",
               textOverflow: "Ellipsis",
               maxHeight: "65vh",
-              overflow: "scroll"
+              overflow: "scroll",
             }}
           >
             <div>
-              {segments.map(s => (
+              {segments.map((s) => (
                 <div key={s.id}>
                   <label className="checkbox">
                     <input

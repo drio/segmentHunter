@@ -1,3 +1,4 @@
+import React from "react";
 import Layout from "../components/layout";
 
 const DefaultErrorDetail = () => {
@@ -78,7 +79,7 @@ const ERROR_DETAILS = {
   no_weather: NoWeatherData
 };
 
-const Error = ({ errorDetailKey }) => {
+const Error = ({ errorDetailKey: string }) => {
   const Details =
     Object.keys(ERROR_DETAILS).indexOf(errorDetailKey) > -1
       ? ERROR_DETAILS[errorDetailKey]
