@@ -242,13 +242,15 @@ function Controls(props: ControlProps) {
       )}
 
       <div>
-        <span>⭐️ {segments.length} segments loaded </span>
-        <button
-          onClick={() => setShowSegmentDetails(!showSegmentDetails)}
-          className="button is-small is-warning is-rounded"
-        >
-          {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
-        </button>
+        <div>
+          <span>⭐️ {segments.length} segments loaded </span>
+          <button
+            onClick={() => setShowSegmentDetails(!showSegmentDetails)}
+            className="button is-small is-warning is-rounded"
+          >
+            {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
+          </button>
+        </div>
         {showSegmentDetails && (
           <div
             className="containerl"
@@ -258,7 +260,7 @@ function Controls(props: ControlProps) {
               alignItems: "center",
               marginTop: "5px",
               textOverflow: "Ellipsis",
-              maxHeight: "65vh",
+              maxHeight: "55vh",
               overflow: "scroll",
             }}
           >
