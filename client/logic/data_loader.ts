@@ -74,6 +74,7 @@ async function stravaLoader(token: string, fetchFn = fetch): Promise<Segment[]> 
   let segmentDetailsList: Segment[] = [];
   let error: string | null;
   const now = +new Date();
+  let responseCode: number;
 
   const storageResult = localStorage.getItem(LOCAL_KEY_SEGMENTS)
   const localSegments = storageResult ? JSON.parse(storageResult) : null;
@@ -90,6 +91,7 @@ async function stravaLoader(token: string, fetchFn = fetch): Promise<Segment[]> 
     };
 
     const response = await fetchFn(`${STRAVA_API_URL}/starred`, fetchOpts);
+    responseCode = response.status
     if (response.status === 200) {
       const listSegments = await response.json();
       for (let i = 0; i < listSegments.length; i++) {
@@ -116,7 +118,7 @@ async function stravaLoader(token: string, fetchFn = fetch): Promise<Segment[]> 
   }
 
   return new Promise((resolve, reject) => {
-    error ? reject(error) : resolve(segmentDetailsList);
+    error ? reject({error, responseCode}) : resolve(segmentDetailsList);
   });
 }
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect } from "react";
 import cookie from "js-cookie";
 import Router from "next/router";

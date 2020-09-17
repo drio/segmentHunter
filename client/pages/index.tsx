@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { sessionLoader } from "../logic/session";
+import { sessionLoader, clearCookies } from "../logic/session";
 import { Coordinate, WeatherEntry, Segment } from "../logic/types";
 import { onlyCloseSegments } from "../logic/gis";
 import Controls from "../components/controls";
@@ -41,6 +41,7 @@ const App = (props: AppProps): JSX.Element => {
     longitude: 0,
   });
   const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
+  const [reAuthenticate, setReAuthenticate] = useState(false);
 
   const waitingForData = loadingWeather || loadingSegments;
 
@@ -78,14 +79,27 @@ const App = (props: AppProps): JSX.Element => {
                   setLoadingSegments(false);
                   setLocalCoordinates(coordinates);
                   setHaveToLoadData(false);
+                  setReAuthenticate(false);
                 })
-                .catch((e) => handleError(e, "segment"));
+                .catch(({ error, responseCode }) => {
+                  if (responseCode == 401) {
+                    console.log("strava token expired, re-authenticating");
+                    clearCookies();
+                    setReAuthenticate(true);
+                  } else {
+                    handleError(error, "segment");
+                  }
+                });
             })
             .catch((e) => handleError(e, "weather"));
         })
         .catch((e) => handleError(e, "location"));
     }
   }, []);
+
+  if (reAuthenticate || !loggedIn) {
+    return <Login />;
+  }
 
   if (error) {
     return <Error msg={error} />;
@@ -104,30 +118,24 @@ const App = (props: AppProps): JSX.Element => {
           ...{ loading: loadingSegments || loadingWeather },
         }}
       >
-        {loggedIn ? (
-          <>
-            <Controls
-              segments={localSegments}
-              weather={weather}
-              username={username}
-              profile={profile}
-              onUpdateLocation={handleUpdateInLocation}
-              onSegmentClick={(seg) => setSelectedSegment(seg)}
-              changeAction={(e: WeatherEntry) => {
-                if (e) setWindAngle(e.wind_deg);
-              }}
-            />
-            <Map
-              segments={localSegments}
-              localCoordinates={localCoordinates}
-              windAngle={windAngle}
-              onCenterUpdate={handleUpdateMapCenter}
-              selectedSegment={selectedSegment}
-            />
-          </>
-        ) : (
-          <Login />
-        )}
+        <Controls
+          segments={localSegments}
+          weather={weather}
+          username={username}
+          profile={profile}
+          onUpdateLocation={handleUpdateInLocation}
+          onSegmentClick={(seg) => setSelectedSegment(seg)}
+          changeAction={(e: WeatherEntry) => {
+            if (e) setWindAngle(e.wind_deg);
+          }}
+        />
+        <Map
+          segments={localSegments}
+          localCoordinates={localCoordinates}
+          windAngle={windAngle}
+          onCenterUpdate={handleUpdateMapCenter}
+          selectedSegment={selectedSegment}
+        />
       </Layout>
     );
   }
