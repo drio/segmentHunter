@@ -2,6 +2,7 @@ import { Observable, BehaviorSubject } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { Segment } from "../types";
 import { pick } from "lodash";
+import { createHttpObservable } from "../utils";
 
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
 const SEGMENT_KEYS = [
@@ -74,41 +75,5 @@ const store = (function () {
     getSelectedSegment,
   };
 })();
-
-function createHttpObservable(
-  url: string,
-  token: string | null
-): Observable<Segment[]> {
-  return new Observable((observer) => {
-    /* Cancel requests that are ongoing when the observable is canceled */
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    fetch(url, {
-      signal,
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          observer.error("Request failed with status code: " + response.status);
-        }
-      })
-      .then((body) => {
-        observer.next(body);
-        observer.complete();
-      })
-      .catch((err) => {
-        observer.error(err);
-      });
-
-    /* Cancelation function of our observable */
-    return () => controller.abort();
-  });
-}
 
 export default store;
