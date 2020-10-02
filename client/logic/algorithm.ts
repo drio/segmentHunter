@@ -1,17 +1,17 @@
 import polyline from "@mapbox/polyline";
 import * as turf from "@turf/turf";
-import {Segment}  from "./types";
+import { Segment } from "./types";
 
 function polyToCoordinates(pline: string): number[][] {
-  return polyline.decode(pline).map(p => [p[1], p[0]]); // reverse lat/long
+  return polyline.decode(pline).map((p) => [p[1], p[0]]); // reverse lat/long
 }
 
 /*
   WARNING: the input points have to be in the format [longitude, latitude]
  */
-function computeDistance(from: turf.Position, to:turf.Position): number {
+function computeDistance(from: turf.Position, to: turf.Position): number {
   const distance = turf.distance(turf.point(from), turf.point(to), {
-    units: "kilometers"
+    units: "kilometers",
   });
   return distance;
 }
@@ -35,12 +35,12 @@ function computeAngle(p1: number[], p2: number[]): number {
 }
 
 function score(segment: Segment, windAngle: number): number {
-  const coordinateList           = polyToCoordinates(segment.map.polyline);
+  const coordinateList = polyToCoordinates(segment.map.polyline);
   let prev: turf.Position | null = null;
-  const distanceList: number[]   = [];
-  const angleList: number[]      = [];
+  const distanceList: number[] = [];
+  const angleList: number[] = [];
 
-  coordinateList.forEach(p => {
+  coordinateList.forEach((p) => {
     if (prev) {
       distanceList.push(+computeDistance(prev, p).toFixed(2));
       angleList.push(Math.abs(+(computeAngle(prev, p) - windAngle).toFixed(2)));
@@ -49,10 +49,10 @@ function score(segment: Segment, windAngle: number): number {
   });
 
   const percentageList = distanceList.map(
-    d => +((100 * d) / (segment.distance / 1000)).toFixed(3)
+    (d) => +((100 * d) / (segment.distance / 1000)).toFixed(3)
   );
 
-  const windHelpIndex = angleList.map(a => {
+  const windHelpIndex = angleList.map((a) => {
     if (a < 10) return 1;
     if (a < 20) return 0.75;
     if (a < 30) return 0.5;

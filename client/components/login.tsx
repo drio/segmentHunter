@@ -23,7 +23,7 @@ const Login = () => {
   return (
     <Layout>
       <div className="center">
-        <div className="title is-1 is-family-primary">Strava Hunter</div>
+        <div className="title is-1 is-family-primary">Segment Hunter</div>
         <div className="title">
           <a href="#" onClick={handleLogin} className="button is-outlined">
             login

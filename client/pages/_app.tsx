@@ -4,8 +4,12 @@ import type { AppProps } from "next/app";
 import "bulma/css/bulma.css";
 import "../css/styles.css";
 import "rc-slider/assets/index.css";
+import store from "../logic/store/store";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+  const { access_token } = pageProps;
+  store.init(access_token);
+
   return (
     <div style={{ padding: 0 }}>
       <Head>
@@ -34,7 +38,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         />
       </Head>
       <div>
-        <Component {...pageProps} />
+        <Component {...pageProps} store={store} />
       </div>
     </div>
   );
