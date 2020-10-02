@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Observable, interval, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { take, map, catchError } from "rxjs/operators";
 import { sessionLoader } from "../logic/session";
 import Layout from "../components/layout";
 import Login from "../components/login";
 import { Segment } from "../logic/types";
+import {useObservable} from "../logic/utils";
 
 interface AppProps {
   access_token: string;
@@ -27,17 +25,6 @@ function weatherURL() {
     `&exclude=minutely&current&units=metric`
   );
 }
-
-const useObservable = (observable) => {
-  const [state, setState] = useState();
-
-  useEffect(() => {
-    const sub = observable.subscribe(setState);
-    return () => sub.unsubscribe();
-  }, [observable]);
-
-  return state;
-};
 
 const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments());
