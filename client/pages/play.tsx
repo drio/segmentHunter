@@ -37,7 +37,8 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
     .sort((a, b) => a.distance > b.distance ? -1 : 1)
     .map((s) => (
       <li key={s.id}>
-        <a href="#" onClick={() => store.setSelectedSegment(s.id)}> {s.name}></a> ({s.distance} km)
+        <a href="#" onClick={() => store.setSelectedSegment(s.id)}> {s.name}></a> 
+        ({s.distance} km)
       </li>
     ));
   }
