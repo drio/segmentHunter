@@ -19,6 +19,7 @@ function createHttpObservable(
   url: string,
   token: string | null
 ): Observable<Segment[]> {
+  // FIXME: will have to return a type any
   return new Observable((observer) => {
     /* Cancel requests that are ongoing when the observable is canceled */
     const controller = new AbortController();

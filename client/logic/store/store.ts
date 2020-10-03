@@ -1,20 +1,7 @@
 import { Observable, BehaviorSubject } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { Segment } from "../types";
-import { pick } from "lodash";
-import { createHttpObservable } from "../utils";
-
-const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
-const SEGMENT_KEYS = [
-  "id",
-  "start_latitude",
-  "start_longitude",
-  "end_latitude",
-  "end_longitude",
-  "name",
-  "map",
-  "distance",
-];
+import { loadStravaData } from "./strava";
 
 const store = (function () {
   const subjectSegments = new BehaviorSubject<Segment[]>([]);
@@ -25,27 +12,18 @@ const store = (function () {
     Segment[]
   > = subjectSelectedSegment.asObservable();
 
+  const subjectMustLogin = new BehaviorSubject<boolean>(false);
+  const mustLogin$: Observable<boolean> = subjectMustLogin.asObservable();
+
   function init(stravaToken: string | null) {
-    const inTheBrowser = typeof window !== "undefined";
-    if (!inTheBrowser) return;
-
-    if (stravaToken) {
-      const http$ = createHttpObservable(
-        `${STRAVA_API_URL}/starred`,
-        stravaToken
-      );
-
-      http$.subscribe((segments) => subjectSegments.next(segments));
-    }
+    loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
   }
 
-  function getSegments() {
-    return segments$;
-  }
+  const getSegments = () => segments$;
 
-  function getSelectedSegment() {
-    return selectedSegment$;
-  }
+  const getSelectedSegment = () => selectedSegment$;
+
+  const getMustLogin = () => mustLogin$;
 
   function setSelectedSegment(id: number) {
     const filteredSegments = subjectSegments
@@ -73,6 +51,7 @@ const store = (function () {
     getSegments,
     setSelectedSegment,
     getSelectedSegment,
+    getMustLogin,
   };
 })();
 

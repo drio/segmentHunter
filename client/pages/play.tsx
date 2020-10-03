@@ -29,6 +29,8 @@ function weatherURL() {
 const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments());
   const selectedSegment = useObservable(store.getSelectedSegment());
+  const mustLogin = useObservable(store.getMustLogin());
+  console.log(mustLogin);
 
   let liEntries = <li>-</li>;
   if (segments) {
@@ -43,8 +45,7 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
     ));
   }
 
-  //const something = useObservable(stuff$);
-  return loggedIn ? (
+  return (!loggedIn || mustLogin) ? ( <Login />) : (
     <Layout>
       <div style={{ margin: "50px" }}>
         <p>
@@ -64,8 +65,6 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
         <p>Weather Data: </p>
       </div>
     </Layout>
-  ) : (
-    <Login />
   );
 };
 
