@@ -3,7 +3,7 @@ import { sessionLoader } from "../logic/session";
 import Layout from "../components/layout";
 import Login from "../components/login";
 import { Segment } from "../logic/types";
-import {useObservable} from "../logic/utils";
+import { useObservable } from "../logic/utils";
 
 interface AppProps {
   access_token: string;
@@ -13,39 +13,37 @@ interface AppProps {
   store: any;
 }
 
-function weatherURL() {
-  const { latitude, longitude } = {
-    latitude: 32.785090897232294,
-    longitude: -79.84943764284253,
-  };
-  return (
-    "https://api.openweathermap.org/data/2.5/onecall" +
-    `?lat=${latitude}&lon=${longitude}` +
-    `&APPID=92f710577a529b24207f0d0c0b3e0971` +
-    `&exclude=minutely&current&units=metric`
-  );
-}
-
 const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
-  const segments = useObservable(store.getSegments());
-  const selectedSegment = useObservable(store.getSelectedSegment());
+  const segments = useObservable(store.getSegments(), []);
+  const selectedSegment = useObservable(store.getSelectedSegment(), []);
   const mustLogin = useObservable(store.getMustLogin());
-  console.log(mustLogin);
+  const loading = useObservable(store.getLoading(), true);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div>Loading ...</div>
+      </Layout>
+    );
+  }
 
   let liEntries = <li>-</li>;
-  if (segments) {
-    liEntries = segments
-    .map(s => s)
-    .sort((a, b) => a.distance > b.distance ? -1 : 1)
-    .map((s) => (
+  liEntries = segments
+    .map((s: Segment) => s)
+    .sort((a: Segment, b: Segment) => (a.distance > b.distance ? -1 : 1))
+    .map((s: Segment) => (
       <li key={s.id}>
-        <a href="#" onClick={() => store.setSelectedSegment(s.id)}> {s.name}></a> 
+        <a href="#" onClick={() => store.setSelectedSegment(s.id)}>
+          {" "}
+          {s.name}
+        </a>
         ({s.distance} km)
       </li>
     ));
-  }
 
-  return (!loggedIn || mustLogin) ? ( <Login />) : (
+  return !loggedIn || mustLogin ? (
+    <Login />
+  ) : (
     <Layout>
       <div style={{ margin: "50px" }}>
         <p>

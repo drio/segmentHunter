@@ -4,8 +4,8 @@ import { ajax } from "rxjs/ajax";
 import { take, map, catchError } from "rxjs/operators";
 import { Segment } from "./types";
 
-const useObservable = (observable) => {
-  const [state, setState] = useState();
+const useObservable = (observable: any, defaultValue?: any) => {
+  const [state, setState] = useState(defaultValue);
 
   useEffect(() => {
     const sub = observable.subscribe(setState);

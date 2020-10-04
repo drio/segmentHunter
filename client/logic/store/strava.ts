@@ -1,5 +1,5 @@
 import { createHttpObservable } from "../utils";
-import { Observable, BehaviorSubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { Segment } from "../types";
 
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
@@ -15,7 +15,8 @@ function loadStravaData(
   if (stravaToken) {
     createHttpObservable(`${STRAVA_API_URL}/starred`, stravaToken).subscribe(
       (segments) => subjectSegments.next(segments),
-      () => subjectMustLogin.next(true)
+      () => subjectMustLogin.next(true),
+      () => subjectSegments.complete()
     );
   }
 }
