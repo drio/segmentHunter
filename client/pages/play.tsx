@@ -19,7 +19,7 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
   const mustLogin = useObservable(store.getMustLogin());
   const loading = useObservable(store.getLoading(), true);
 
-  if (loading) {
+  if (loading && !mustLogin) {
     return (
       <Layout>
         <div>Loading ...</div>
