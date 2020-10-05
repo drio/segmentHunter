@@ -15,8 +15,7 @@ function loadStravaData(
   if (stravaToken) {
     createHttpObservable(`${STRAVA_API_URL}/starred`, stravaToken).subscribe(
       (segments) => subjectSegments.next(segments),
-      () => subjectMustLogin.next(true),
-      () => subjectSegments.complete()
+      () => subjectMustLogin.next(true)
     );
   } else {
     subjectMustLogin.next(true);

@@ -1,5 +1,5 @@
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { Segment, Coordinate, WeatherEntry } from "../types";
 import { loadStravaData } from "./strava";
 import { getLocation } from "./location";
@@ -46,9 +46,8 @@ const store = (function () {
 
     loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
     segments$.subscribe(
-      () => subjectLoadingStrava.next(true),
-      (error) => console.log(error), // TODO
-      () => subjectLoadingStrava.next(false)
+      () => subjectLoadingStrava.next(false),
+      (error) => console.log(error) // TODO
     );
   }
 
