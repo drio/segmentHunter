@@ -20,7 +20,11 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
   const mustLogin = useObservable(store.getMustLogin());
   const loading = useObservable(store.getLoading(), true);
 
-  if (loading && !mustLogin) {
+  if (mustLogin) {
+    return <Login />;
+  }
+
+  if (loading) {
     return (
       <Layout>
         <div>Loading ...</div>
@@ -42,9 +46,7 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
       </li>
     ));
 
-  return !loggedIn || mustLogin ? (
-    <Login />
-  ) : (
+  return (
     <Layout>
       <div style={{ margin: "50px" }}>
         <p>

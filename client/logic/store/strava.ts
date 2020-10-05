@@ -18,6 +18,8 @@ function loadStravaData(
       () => subjectMustLogin.next(true),
       () => subjectSegments.complete()
     );
+  } else {
+    subjectMustLogin.next(true);
   }
 }
 
