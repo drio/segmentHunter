@@ -59,6 +59,8 @@ const store = (function () {
 
   const getLoading = () => loading$;
 
+  const getLocation = () => location$;
+
   const getWeatherData = () => weather$;
 
   function setSelectedSegment(id: number) {
@@ -87,6 +89,7 @@ const store = (function () {
     getSegments,
     setSelectedSegment,
     getSelectedSegment,
+    getLocation,
     getMustLogin,
     getLoading,
     getWeatherData,

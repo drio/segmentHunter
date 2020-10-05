@@ -3,8 +3,12 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { clearCookies } from "../logic/session";
 import { Segment, WeatherEntry } from "../logic/types";
-/*import * as Slider from "rc-slider";*/
-import moment from "moment";
+import {
+  formatDate,
+  toFahrenheit,
+  toMilesHour,
+  degToCompass,
+} from "../logic/utils";
 
 const MAX_SEGMENT_TEXT_SIZE = 35;
 
@@ -23,6 +27,13 @@ const ControlsDiv = styled.div`
   z-index: 2;
 `;
 
+const MainRowLoginInfo = styled.div`
+  display: "flex";
+  justify-content: "flex-end";
+  align-items: "center";
+  margin: 5;
+`;
+
 function handleLogout() {
   clearCookies();
   window.location.replace("/");
@@ -34,13 +45,6 @@ function handleClearAll() {
   localStorage.removeItem("segment_hunter_segments");
   handleLogout();
 }
-
-const MainRowLoginInfo = styled.div`
-  display: "flex";
-  justify-content: "flex-end";
-  align-items: "center";
-  margin: 5;
-`;
 
 interface LoggedInProps {
   profile: string | "";
@@ -97,40 +101,6 @@ function LoggedIn(props: LoggedInProps) {
   );
 }
 
-//const DATE_FORMAT = "dddd, MMMM Do, h:mm a";
-const DATE_FORMAT = "dddd, h:mm a";
-
-const formatDate = (ts: number) => moment.unix(ts).format(DATE_FORMAT);
-
-const toFahrenheit = (c: number) => +(c * 1.8 + 32.0).toFixed(0);
-
-const toMilesHour = (ms: number) => {
-  return +(ms * 0.00062 * 3600).toFixed(1);
-};
-
-function degToCompass(num: number) {
-  const val = Math.floor(num / 22.5 + 0.5);
-  const arr = [
-    "N",
-    "NNE",
-    "NE",
-    "ENE",
-    "E",
-    "ESE",
-    "SE",
-    "SSE",
-    "S",
-    "SSW",
-    "SW",
-    "WSW",
-    "W",
-    "WNW",
-    "NW",
-    "NNW",
-  ];
-  return arr[val % 16];
-}
-
 interface ControlProps {
   segments: Segment[];
   weather: WeatherEntry[];
@@ -142,7 +112,7 @@ interface ControlProps {
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function Controls(props: ControlProps) {
+function Controls(props: ControlProps): JSX.Element {
   const {
     segments,
     weather,
@@ -165,15 +135,15 @@ function Controls(props: ControlProps) {
     setShowSegmentDetails(false);
   }, []);
 
+  const { temp, wind_deg, wind_speed, dt } = weather[value];
+  const description = weather[value].weather.description;
+
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
     const somethingSelected = id === selectedId ? false : true;
     onSegmentClick(somethingSelected ? selSegment : null);
     setSelectedId(somethingSelected ? id : null);
   }
-
-  const { temp, wind_deg, wind_speed, dt } = weather[value];
-  const description = weather[value].weather.description;
 
   return (
     <ControlsDiv>
@@ -213,16 +183,6 @@ function Controls(props: ControlProps) {
             </div>
 
             <div>{description} </div>
-            {/*
-            <Slider
-              value={value}
-              min={0}
-              max={max}
-              step={1}
-              style={{ paddingTop: "10px" }}
-              railStyle={{ background: "rgb(74, 81, 84, 0.6)" }}
-            />
-            */}
             <input
               style={{ width: "100%" }}
               step="1"

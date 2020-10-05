@@ -35,7 +35,7 @@ function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
     },
   });
 
-  const score = alg.score(segment, windAngle);
+  const score = segment.map ? alg.score(segment, windAngle) : 0;
 
   map.addLayer({
     id: id,
@@ -63,7 +63,7 @@ function renderSegments(
   windAngle: number
 ) {
   segments.forEach((s) => {
-    addLine(map, s, windAngle);
+    s.map && addLine(map, s, windAngle);
   });
 }
 
@@ -80,9 +80,11 @@ function colorSegments(
   windAngle: number
 ) {
   segments.forEach((s) => {
-    const score = alg.score(s, windAngle);
-    const color = computeScoreColor(score);
-    map.setPaintProperty(`segment-${s.id}`, "line-color", color);
+    if (s.map) {
+      const score = alg.score(s, windAngle);
+      const color = computeScoreColor(score);
+      map.setPaintProperty(`segment-${s.id}`, "line-color", color);
+    }
   });
 }
 
