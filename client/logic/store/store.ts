@@ -1,7 +1,9 @@
-import { Observable, BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
-import { Segment } from "../types";
+import { Segment, Coordinate, WeatherEntry } from "../types";
 import { loadStravaData } from "./strava";
+import { getLocation } from "./location";
+import { loadWeatherData } from "./weather";
 
 const subjectSegments = new BehaviorSubject<Segment[]>([]);
 const segments$: Observable<Segment[]> = subjectSegments.asObservable();
@@ -14,16 +16,40 @@ const selectedSegment$: Observable<
 const subjectMustLogin = new BehaviorSubject<boolean>(false);
 const mustLogin$: Observable<boolean> = subjectMustLogin.asObservable();
 
-const subjectLoading = new BehaviorSubject<boolean>(true);
-const loading$: Observable<boolean> = subjectLoading.asObservable();
+const subjectLoadingStrava = new BehaviorSubject<boolean>(true);
+const loadingStrava$: Observable<boolean> = subjectLoadingStrava.asObservable();
+
+const subjectLoadingWeather = new BehaviorSubject<boolean>(true);
+const loadingWeather$: Observable<boolean> = subjectLoadingWeather.asObservable();
+
+const loading$ = combineLatest([loadingWeather$, loadingStrava$]).pipe(
+  map(([lweather, lstrava]) => lweather || lstrava)
+);
+
+const location$: Observable<Coordinate> = getLocation();
+
+const subjectWeather = new BehaviorSubject<WeatherEntry[]>([]);
+const weather$: Observable<WeatherEntry[]> = subjectWeather.asObservable();
 
 const store = (function () {
   function init(stravaToken: string | null) {
+    location$.subscribe(
+      (location) => loadWeatherData(location, subjectWeather),
+      () => console.log("Using default coordinates")
+    );
+
+    weather$.subscribe(
+      () => subjectLoadingWeather.next(true),
+      (error) => console.log(error), // TODO
+      () => subjectLoadingWeather.next(false)
+    );
+
     loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
-    segments$.subscribe({
-      next: () => subjectLoading.next(true),
-      complete: () => subjectLoading.next(false),
-    });
+    segments$.subscribe(
+      () => subjectLoadingStrava.next(true),
+      (error) => console.log(error), // TODO
+      () => subjectLoadingStrava.next(false)
+    );
   }
 
   const getSegments = () => segments$;
@@ -33,6 +59,8 @@ const store = (function () {
   const getMustLogin = () => mustLogin$;
 
   const getLoading = () => loading$;
+
+  const getWeatherData = () => weather$;
 
   function setSelectedSegment(id: number) {
     const filteredSegments = subjectSegments
@@ -62,6 +90,7 @@ const store = (function () {
     getSelectedSegment,
     getMustLogin,
     getLoading,
+    getWeatherData,
   };
 })();
 

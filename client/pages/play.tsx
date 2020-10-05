@@ -16,6 +16,7 @@ interface AppProps {
 const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments(), []);
   const selectedSegment = useObservable(store.getSelectedSegment(), []);
+  const weatherData = useObservable(store.getWeatherData(), []);
   const mustLogin = useObservable(store.getMustLogin());
   const loading = useObservable(store.getLoading(), true);
 
@@ -49,6 +50,8 @@ const App = ({ loggedIn, username, store }: AppProps): JSX.Element => {
         <p>
           🔥 {loggedIn} {username}
         </p>
+        <p>Weather Data: {weatherData.length}</p>
+
         <p>
           Selected segment:{" "}
           {selectedSegment && selectedSegment.length > 0
