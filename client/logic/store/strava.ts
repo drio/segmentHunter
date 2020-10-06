@@ -32,7 +32,7 @@ function loadStravaData(
   const localDetailedSegments = getFromLocalStorage();
   const localDetailedSegmentIDs = localDetailedSegments.map((s) => s.id);
 
-  /* Stream of all segments (only summary) that the user has starred. */
+  /* Stream of all segments (summary version) that the user has starred. */
   const starredSummarySegments$ = createHttpObservable(
     `${STRAVA_API_URL}/starred`,
     stravaToken
@@ -59,6 +59,7 @@ function loadStravaData(
       )
     ); /* A single value with the list of detailed segments that we are missing locally */
 
+  /* Try to get new starred segments and merge them to the list we already have locally */
   newDetailedSegments$.subscribe(
     (listNewDetailedSegments: Segment[]) => {
       const detailedSegments = [
