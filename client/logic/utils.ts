@@ -5,6 +5,11 @@ import moment from "moment";
 import { take, map, catchError } from "rxjs/operators";
 import { Segment } from "./types";
 
+const genStravaRequestHeaders = (token) => ({
+  accept: "application/json",
+  authorization: `Bearer ${token}`,
+});
+
 const useObservable = (observable: any, defaultValue?: any) => {
   const [state, setState] = useState(defaultValue);
 
@@ -28,10 +33,7 @@ function createHttpObservable(
 
     fetch(url, {
       signal,
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${token}`,
-      },
+      headers: genStravaRequestHeaders(token),
     })
       .then((response) => {
         if (response.ok) {
@@ -93,4 +95,5 @@ export {
   formatDate,
   toFahrenheit,
   toMilesHour,
+  genStravaRequestHeaders,
 };
