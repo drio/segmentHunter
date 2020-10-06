@@ -32,25 +32,22 @@ function loadStravaData(
   const localDetailedSegments = getFromLocalStorage();
   const localDetailedSegmentIDs = localDetailedSegments.map((s) => s.id);
 
+  /* Stream of all segments (only summary) that the user has starred. */
   const starredSummarySegments$ = createHttpObservable(
     `${STRAVA_API_URL}/starred`,
     stravaToken
-  );
+  ).pipe(mergeMap((starredSegments: Segment[]) => from(starredSegments)));
 
   const newDetailedSegments$: Observable<Segment[]> = starredSummarySegments$
     .pipe(
-      mergeMap((starredSegments: Segment[]) =>
-        from(starredSegments).pipe(
-          filter((s) => !localDetailedSegmentIDs.includes(s.id)),
-          mergeMap((segment) =>
-            ajax({
-              url: `${STRAVA_API_URL}/${segment.id}`,
-              headers: genStravaRequestHeaders(stravaToken),
-            })
-          )
-        )
+      filter((s) => !localDetailedSegmentIDs.includes(s.id)),
+      mergeMap((segment) =>
+        ajax({
+          url: `${STRAVA_API_URL}/${segment.id}`,
+          headers: genStravaRequestHeaders(stravaToken),
+        })
       )
-    )
+    ) /* stream of ajax requests to get the detailed segments that we don't have locally */
     .pipe(
       map((json) => json.response),
       reduce(
@@ -60,7 +57,7 @@ function loadStravaData(
         ],
         []
       )
-    );
+    ); /* A single value with the list of detailed segments that we are missing locally */
 
   newDetailedSegments$.subscribe(
     (listNewDetailedSegments: Segment[]) => {
@@ -71,7 +68,10 @@ function loadStravaData(
       saveSegments(detailedSegments);
       subjectSegments.next(detailedSegments);
     },
-    () => subjectMustLogin.next(true)
+    (err) => {
+      console.log(err);
+      subjectMustLogin.next(true);
+    }
   );
 }
 
