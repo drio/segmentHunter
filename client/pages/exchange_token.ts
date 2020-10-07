@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import cookie from "js-cookie";
 import Router from "next/router";
-import { NextPageContext } from 'next'
+import { NextPageContext } from "next";
 
 const STRAVA_URL = `https://www.strava.com/oauth/token`;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const CLIENT_ID = process.env.CLIENT_ID;
 
 interface ExchangeProps {
-  access_token: string,
-  username: string,
-  profile: string,
+  access_token: string;
+  username: string;
+  profile: string;
 }
 
 const ExchangeToken = (props: ExchangeProps): null => {
@@ -44,8 +44,8 @@ ExchangeToken.getInitialProps = async ({ query }: NextPageContext) => {
           client_id: CLIENT_ID,
           client_secret: CLIENT_SECRET,
           code,
-          grant_type: "authorization_code"
-        })
+          grant_type: "authorization_code",
+        }),
       });
       if (response.status === 200) {
         const json = await response.json();
@@ -55,7 +55,7 @@ ExchangeToken.getInitialProps = async ({ query }: NextPageContext) => {
         return {
           access_token: json.access_token,
           username: json.athlete.username,
-          profile: json.athlete.profile_medium
+          profile: json.athlete.profile_medium,
         };
       }
     } catch (error) {

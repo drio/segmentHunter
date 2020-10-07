@@ -68,6 +68,7 @@ function loadStravaData(
       ];
       saveSegments(detailedSegments);
       subjectSegments.next(detailedSegments);
+      subjectMustLogin.next(false);
     },
     (err) => {
       console.log(err);
