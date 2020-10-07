@@ -3,7 +3,14 @@ import { Observable, interval, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import moment from "moment";
 import { take, map, catchError } from "rxjs/operators";
+
 import { Segment } from "./types";
+import { clearCookies } from "./session";
+
+function handleLogout() {
+  clearCookies();
+  window.location.replace("/");
+}
 
 const genStravaRequestHeaders = (token) => ({
   accept: "application/json",
@@ -96,4 +103,5 @@ export {
   toFahrenheit,
   toMilesHour,
   genStravaRequestHeaders,
+  handleLogout,
 };

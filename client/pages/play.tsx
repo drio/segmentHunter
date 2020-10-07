@@ -87,11 +87,11 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
       <Controls
         segments={segments}
         weather={weatherData}
-        username={username}
         profile={profile}
-        onUpdateLocation={() => console.log("update location")}
-        onSegmentClick={(seg: number) => console.log("click", seg)}
-        changeAction={(e: WeatherEntry) => console.log(e)}
+        onSegmentClick={(seg: Segment | null) =>
+          console.log("click", seg ? seg.id : null)
+        }
+        changeAction={(e: WeatherEntry) => console.log("New weather:" + e)}
       />
       <Map
         segments={segments}

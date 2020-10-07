@@ -8,6 +8,7 @@ import {
   toFahrenheit,
   toMilesHour,
   degToCompass,
+  handleLogout,
 } from "../logic/utils";
 
 const MAX_SEGMENT_TEXT_SIZE = 35;
@@ -34,69 +35,26 @@ const MainRowLoginInfo = styled.div`
   margin: 5;
 `;
 
-function handleLogout() {
-  clearCookies();
-  window.location.replace("/");
-}
-
-function handleClearAll() {
-  // FIXME: do not hardcode the key values
-  localStorage.removeItem("segment_hunter_weather");
-  localStorage.removeItem("segment_hunter_segments");
-  handleLogout();
-}
-
 interface LoggedInProps {
   profile: string | "";
-  username: string | null;
-  onUpdateLocation: () => void;
 }
 
 function LoggedIn(props: LoggedInProps) {
-  const { profile, username, onUpdateLocation } = props;
-  const ifLoggedIn = (
-    <>
+  const { profile } = props;
+
+  return (
+    <MainRowLoginInfo className="container buttons are-small">
       <div style={{ paddingRight: "10px" }}>
         <figure className="image is-32x32">
           <img className="is-rounded" src={profile} />
         </figure>
       </div>
 
-      {username === "driodeiros" && (
-        <>
-          <div style={{ paddingRight: "10px" }}>
-            <button onClick={handleClearAll} className="button is-black ">
-              fresh
-            </button>
-          </div>
-
-          <div style={{ paddingRight: "10px" }}>
-            <button onClick={onUpdateLocation} className="button is-info">
-              Update Location
-            </button>
-          </div>
-        </>
-      )}
-
       <div>
         <button onClick={handleLogout} className="button is-danger">
           logout
         </button>
       </div>
-    </>
-  );
-
-  const ifNotLoggedIn = (
-    <div style={{ paddingRight: "10px" }}>
-      <button onClick={handleClearAll} className="button is-danger">
-        login
-      </button>
-    </div>
-  );
-
-  return (
-    <MainRowLoginInfo className="container buttons are-small">
-      {username && profile ? ifLoggedIn : ifNotLoggedIn}
     </MainRowLoginInfo>
   );
 }
@@ -104,24 +62,14 @@ function LoggedIn(props: LoggedInProps) {
 interface ControlProps {
   segments: Segment[];
   weather: WeatherEntry[];
-  username: string | null;
   profile: string | "";
   changeAction: (e: WeatherEntry) => void;
-  onUpdateLocation: () => void;
   onSegmentClick: (s: Segment | null) => void;
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
 function Controls(props: ControlProps): JSX.Element {
-  const {
-    segments,
-    weather,
-    username,
-    profile,
-    changeAction,
-    onUpdateLocation,
-    onSegmentClick,
-  } = props;
+  const { segments, weather, profile, changeAction, onSegmentClick } = props;
 
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
@@ -147,11 +95,7 @@ function Controls(props: ControlProps): JSX.Element {
 
   return (
     <ControlsDiv>
-      <LoggedIn
-        profile={profile}
-        username={username}
-        onUpdateLocation={onUpdateLocation}
-      />
+      <LoggedIn profile={profile} />
 
       {weather.length > 0 && (
         <>
