@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { clearCookies } from "../logic/session";
 import { Segment, WeatherEntry } from "../logic/types";
 import {
   formatDate,
@@ -95,7 +94,7 @@ function Controls(props: ControlProps): JSX.Element {
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
     const somethingSelected = id === selectedId ? false : true;
-    actionSegmentClick(actionSegmentClick(somethingSelected ? id : -1))
+    actionSegmentClick(actionSegmentClick(somethingSelected ? id : -1));
     setSelectedId(somethingSelected ? id : null);
   }
 
