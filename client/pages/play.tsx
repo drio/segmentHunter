@@ -24,6 +24,7 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments(), []);
   const selectedSegment = useObservable(store.getSelectedSegment(), []);
   const weatherData = useObservable(store.getWeatherData(), []);
+  const windAngle = useObservable(store.getWindAngle());
   const location = useObservable(store.getLocation(), {});
   const mustLogin = useObservable(store.getMustLogin());
   const loading = useObservable(store.getLoading(), true);
@@ -51,14 +52,25 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
 
     return (
       <div style={{ margin: "50px" }}>
+        <Controls
+          segments={segments}
+          weather={weatherData}
+          profile={profile}
+          actionSegmentClick={(seg: Segment | null) =>
+            store.setSelectedSegment(seg ? seg.id : -1)
+          }
+          actionNewWindDirection={(windDeg: number) => store.setWindAngle(windDeg)}
+        />
+
         <p>
           🔥 {loggedIn} {username}
         </p>
         <p>Weather Data: {weatherData.length}</p>
+        <p>Wind Angle: {windAngle}</p>
 
         <p>
           Selected segment:{" "}
-          {selectedSegmentSingle ? selectedSegmentSingle[0].name : "-"}
+          {selectedSegmentSingle ? selectedSegmentSingle : "-"}
         </p>
         <hr />
         <h1>Segments: </h1>
@@ -82,6 +94,9 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
     );
   }
 
+  return testComp();
+
+  /*
   return (
     <Layout>
       <Controls
@@ -102,6 +117,7 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
       />
     </Layout>
   );
+     */
 };
 
 App.getInitialProps = sessionLoader;

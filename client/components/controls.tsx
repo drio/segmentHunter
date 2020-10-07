@@ -63,13 +63,19 @@ interface ControlProps {
   segments: Segment[];
   weather: WeatherEntry[];
   profile: string | "";
-  changeAction: (e: WeatherEntry) => void;
-  onSegmentClick: (s: Segment | null) => void;
+  actionNewWindDirection: (n: number) => void;
+  actionSegmentClick: (s: Segment | null) => void;
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
 function Controls(props: ControlProps): JSX.Element {
-  const { segments, weather, profile, changeAction, onSegmentClick } = props;
+  const {
+    segments,
+    weather,
+    profile,
+    actionNewWindDirection,
+    actionSegmentClick,
+  } = props;
 
   const [value, setValue] = useState(0);
   const [timeString, setTimeString] = useState("init");
@@ -89,7 +95,7 @@ function Controls(props: ControlProps): JSX.Element {
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
     const somethingSelected = id === selectedId ? false : true;
-    onSegmentClick(somethingSelected ? selSegment : null);
+    actionSegmentClick(somethingSelected ? selSegment : null);
     setSelectedId(somethingSelected ? id : null);
   }
 
@@ -137,7 +143,7 @@ function Controls(props: ControlProps): JSX.Element {
                 const v = +e.target.value;
                 setValue(v);
                 setTimeString(formatDate(dt));
-                changeAction(weather[v]);
+                actionNewWindDirection(weather[v].wind_deg);
               }}
               type="range"
             />

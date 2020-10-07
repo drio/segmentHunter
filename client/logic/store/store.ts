@@ -31,6 +31,9 @@ const location$: Observable<Coordinate> = getLocation();
 const subjectWeather = new BehaviorSubject<WeatherEntry[]>([]);
 const weather$: Observable<WeatherEntry[]> = subjectWeather.asObservable();
 
+const subjectWindAngle = new BehaviorSubject<number>(0);
+const windAngle$: Observable<number> = subjectWindAngle.asObservable();
+
 const store = (function () {
   function init(stravaToken: string | null) {
     location$.subscribe(
@@ -63,6 +66,8 @@ const store = (function () {
 
   const getWeatherData = () => weather$;
 
+  const getWindAngle = () => windAngle$;
+
   function setSelectedSegment(id: number) {
     const filteredSegments = subjectSegments
       .getValue()
@@ -84,6 +89,10 @@ const store = (function () {
     }
   }
 
+  function setWindAngle(angle: number) {
+    subjectWindAngle.next(angle);
+  }
+
   return {
     init,
     getSegments,
@@ -93,6 +102,8 @@ const store = (function () {
     getMustLogin,
     getLoading,
     getWeatherData,
+    getWindAngle,
+    setWindAngle,
   };
 })();
 
