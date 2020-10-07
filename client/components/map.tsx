@@ -8,9 +8,17 @@ import { Segment, Coordinate } from "../logic/types";
 const TOKEN = process.env.MAPBOX_TOKEN;
 const DEFAULT_ZOOM = 11;
 
+const DEFAULT_STATE = {
+  lng: 2.078728 /* Barcelona, Spain */,
+  lat: 41.3948976,
+  zoom: 1,
+};
+
 if (TOKEN) {
   mapboxgl.accessToken = TOKEN;
 }
+
+let map: mapboxgl.Map, savedBounds: mapboxgl.LngLatBounds;
 
 function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
   const coordinateList = alg.polyToCoordinates(segment.map.polyline);
@@ -88,13 +96,38 @@ function colorSegments(
   });
 }
 
-let map: mapboxgl.Map, savedBounds: mapboxgl.LngLatBounds;
+function createMap(mapContainer, {lng, lat, zoom}) {
+  return new mapboxgl.Map({
+    container: mapContainer ? mapContainer.current : "",
+    style: "mapbox://styles/mapbox/streets-v11",
+    center: [lng, lat],
+    zoom,
+  });
+}
 
-const DEFAULT_STATE = {
-  lng: 2.078728 /* Barcelona, Spain */,
-  lat: 41.3948976,
-  zoom: 1,
-};
+function onRender(map) {
+  return debounce(() => {
+    const { lat, lng } = map.getCenter();
+    onCenterUpdate({ latitude: lat, longitude: lng });
+  }, 30)
+}
+
+function segmentSelected(selectedSegment) {
+  if (selectedSegment) {
+    const {
+      start_latitude,
+      end_latitude,
+      start_longitude,
+      end_longitude,
+    } = selectedSegment;
+    map.fitBounds([
+      [start_longitude, start_latitude],
+      [end_longitude, end_latitude],
+    ]);
+  } else {
+    if (savedBounds) map.fitBounds(savedBounds);
+  }
+}
 
 interface MapProps {
   segments: Segment[];
@@ -107,7 +140,7 @@ interface MapProps {
 function Map(props: MapProps): JSX.Element {
   const {
     segments = [],
-    windAngle = 0,
+    windAngle,
     onCenterUpdate,
     localCoordinates,
     selectedSegment,
@@ -126,21 +159,8 @@ function Map(props: MapProps): JSX.Element {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    map = new mapboxgl.Map({
-      container: mapContainer ? mapContainer.current : "",
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [state.lng, state.lat],
-      zoom: state.zoom,
-    });
-
-    map.on(
-      "render",
-      debounce(() => {
-        const { lat, lng } = map.getCenter();
-        /*const [se, ne] = map.getBounds().toArray();*/
-        onCenterUpdate({ latitude: lat, longitude: lng });
-      }, 30)
-    );
+    map = createMap(mapContainer, state);
+    map.on( "render", onRender);
 
     map.on("load", () => {
       renderSegments(map, segments, windAngle);
@@ -161,22 +181,7 @@ function Map(props: MapProps): JSX.Element {
     if (mapLoaded) colorSegments(segments, map, windAngle);
   }, [windAngle, mapLoaded]);
 
-  useEffect(() => {
-    if (selectedSegment) {
-      const {
-        start_latitude,
-        end_latitude,
-        start_longitude,
-        end_longitude,
-      } = selectedSegment;
-      map.fitBounds([
-        [start_longitude, start_latitude],
-        [end_longitude, end_latitude],
-      ]);
-    } else {
-      if (savedBounds) map.fitBounds(savedBounds);
-    }
-  }, [selectedSegment]);
+  useEffect(() => segmentSelected(selectedSegment), [selectedSegment]);
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
