@@ -1,16 +1,12 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { sessionLoader, clearCookies } from "../logic/session";
-import { Coordinate, WeatherEntry, Segment } from "../logic/types";
-import { onlyCloseSegments } from "../logic/gis";
-import Controls from "../components/controls";
+import { sessionLoader } from "../logic/session";
 import Layout from "../components/layout";
 import Login from "../components/login";
-import Error from "../components/error";
 import Loading from "../components/loading";
-import { stravaLoader, weatherLoader } from "../logic/data_loader";
-import { getLocation, storeLocation } from "../logic/location";
+import Controls from "../components/controls";
+import { useObservable } from "../logic/utils";
+import { onlyCloseSegments } from "../logic/gis";
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
@@ -22,123 +18,45 @@ interface AppProps {
   username: string;
   profile: string;
   loggedIn: boolean;
+  store: any;
 }
 
-const App = (props: AppProps): JSX.Element => {
-  const { access_token, username, profile, loggedIn } = props;
-  const [windAngle, setWindAngle] = useState(0);
-  const [loadingSegments, setLoadingSegments] = useState(true);
-  const [loadingWeather, setLoadingWeather] = useState(true);
-  const [haveToLoadData, setHaveToLoadData] = useState(true);
-  const [segments, setSegments] = useState<Segment[]>([]);
-  const [weather, setWeather] = useState<WeatherEntry[]>([]);
-  const [error, setError] = useState("");
-  const [localCoordinates, setLocalCoordinates] = useState<Coordinate | null>(
-    null
+const App = ({ profile, store }: AppProps): JSX.Element => {
+  const segments = useObservable(store.getSegments(), []);
+  const selectedSegment = useObservable(store.getSelectedSegment(), []);
+  const weatherData = useObservable(store.getWeatherData(), []);
+  const windAngle = useObservable(store.getWindAngle());
+  const location = useObservable(store.getLocation(), {});
+  const mustLogin = useObservable(store.getMustLogin());
+  const loading = useObservable(store.getLoading(), true);
+  const closeSegments = onlyCloseSegments(location, segments);
+
+  // FIXME: emit segments in the observable instead of arrays
+  const selectedSegmentSingle =
+    selectedSegment && selectedSegment.length > 0 ? selectedSegment[0] : null;
+
+  if (mustLogin) return <Login />;
+
+  if (loading) return <Loading />;
+
+  return (
+    <Layout>
+      <Controls
+        segments={closeSegments}
+        weather={weatherData}
+        profile={profile}
+        actionSegmentClick={store.setSelectedSegment}
+        actionNewWindDirection={store.setWindAngle}
+      />
+      <Map
+        segments={closeSegments}
+        localCoordinates={location}
+        windAngle={windAngle}
+        onCenterUpdate={() => null}
+        selectedSegment={selectedSegmentSingle}
+      />
+    </Layout>
   );
-  const [mapCenterCoordinates, setMapCenterCoordinates] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
-  const [selectedSegment, setSelectedSegment] = useState<Segment | null>(null);
-  const [reAuthenticate, setReAuthenticate] = useState(false);
-
-  const waitingForData = loadingWeather || loadingSegments;
-
-  const handleUpdateInLocation = () => {
-    const { latitude, longitude } = mapCenterCoordinates;
-    if (latitude && longitude) storeLocation(mapCenterCoordinates);
-  };
-
-  const handleUpdateMapCenter = (c: Coordinate): void => {
-    const { latitude, longitude } = c;
-    if (latitude && longitude) {
-      setMapCenterCoordinates({ latitude, longitude });
-    }
-  };
-
-  const handleError = (e: Error, msg: string) => {
-    console.log(e);
-    setError(msg);
-    setHaveToLoadData(false);
-  };
-
-  useEffect(() => {
-    if (access_token && haveToLoadData) {
-      getLocation()
-        .then((coordinates) => {
-          weatherLoader(coordinates)
-            .then((d: WeatherEntry[]) => {
-              setWeather(d);
-              setWindAngle(d[0].wind_deg);
-              setLoadingWeather(false);
-
-              stravaLoader(access_token)
-                .then((d: Segment[]) => {
-                  setSegments(d);
-                  setLoadingSegments(false);
-                  setLocalCoordinates(coordinates);
-                  setHaveToLoadData(false);
-                  setReAuthenticate(false);
-                })
-                .catch(({ error, responseCode }) => {
-                  if (responseCode == 401) {
-                    console.log("strava token expired, re-authenticating");
-                    clearCookies();
-                    setReAuthenticate(true);
-                  } else {
-                    handleError(error, "segment");
-                  }
-                });
-            })
-            .catch((e) => handleError(e, "weather"));
-        })
-        .catch((e) => handleError(e, "location"));
-    }
-  }, []);
-
-  if (reAuthenticate || !loggedIn) {
-    return <Login />;
-  }
-
-  if (error) {
-    return <Error msg={error} />;
-  }
-
-  if (loggedIn && waitingForData && mapCenterCoordinates) {
-    return <Loading />;
-  } else {
-    const localSegments = mapCenterCoordinates
-      ? onlyCloseSegments(mapCenterCoordinates, segments)
-      : segments;
-    return (
-      <Layout
-        props={{
-          ...props,
-          ...{ loading: loadingSegments || loadingWeather },
-        }}
-      >
-        <Controls
-          segments={localSegments}
-          weather={weather}
-          username={username}
-          profile={profile}
-          onUpdateLocation={handleUpdateInLocation}
-          onSegmentClick={(seg) => setSelectedSegment(seg)}
-          changeAction={(e: WeatherEntry) => {
-            if (e) setWindAngle(e.wind_deg);
-          }}
-        />
-        <Map
-          segments={localSegments}
-          localCoordinates={localCoordinates}
-          windAngle={windAngle}
-          onCenterUpdate={handleUpdateMapCenter}
-          selectedSegment={selectedSegment}
-        />
-      </Layout>
-    );
-  }
 };
 
 App.getInitialProps = sessionLoader;
