@@ -64,7 +64,7 @@ interface ControlProps {
   weather: WeatherEntry[];
   profile: string | "";
   actionNewWindDirection: (n: number) => void;
-  actionSegmentClick: (s: Segment | null) => void;
+  actionSegmentClick: (id: number) => void;
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
@@ -95,7 +95,7 @@ function Controls(props: ControlProps): JSX.Element {
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
     const somethingSelected = id === selectedId ? false : true;
-    actionSegmentClick(somethingSelected ? selSegment : null);
+    actionSegmentClick(actionSegmentClick(somethingSelected ? id : -1))
     setSelectedId(somethingSelected ? id : null);
   }
 

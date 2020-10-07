@@ -56,10 +56,8 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
           segments={segments}
           weather={weatherData}
           profile={profile}
-          actionSegmentClick={(seg: Segment | null) =>
-            store.setSelectedSegment(seg ? seg.id : -1)
-          }
-          actionNewWindDirection={(windDeg: number) => store.setWindAngle(windDeg)}
+          actionSegmentClick={store.setSelectedSegment}
+          actionNewWindDirection={store.setWindAngle}
         />
 
         <p>
