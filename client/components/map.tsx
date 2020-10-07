@@ -96,23 +96,13 @@ function colorSegments(
   });
 }
 
-function createMap(mapContainer, {lng, lat, zoom}) {
-  return new mapboxgl.Map({
-    container: mapContainer ? mapContainer.current : "",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [lng, lat],
-    zoom,
-  });
+interface MapState {
+  lng: number;
+  lat: number;
+  zoom: number;
 }
 
-function onRender(map) {
-  return debounce(() => {
-    const { lat, lng } = map.getCenter();
-    onCenterUpdate({ latitude: lat, longitude: lng });
-  }, 30)
-}
-
-function segmentSelected(selectedSegment) {
+function segmentSelected(selectedSegment: Segment | null) {
   if (selectedSegment) {
     const {
       start_latitude,
@@ -155,12 +145,23 @@ function Map(props: MapProps): JSX.Element {
         }
       : DEFAULT_STATE
   );
-  const mapContainer = useRef<string | HTMLElement>("");
+  const mapContainer = useRef<string | HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    map = createMap(mapContainer, state);
-    map.on( "render", onRender);
+    map = new mapboxgl.Map({
+      container: mapContainer.current || "",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [state.lng, state.lat],
+      zoom: state.zoom,
+    });
+
+    map.on("render", () => {
+      return debounce(() => {
+        const { lat, lng } = map.getCenter();
+        onCenterUpdate({ latitude: lat, longitude: lng });
+      }, 30);
+    });
 
     map.on("load", () => {
       renderSegments(map, segments, windAngle);

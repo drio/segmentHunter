@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.4
+
+- Complete rewrite of state handling (using observables).
+
 ### 0.3.2
 
 - Fixes bug related to strava token handling

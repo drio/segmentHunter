@@ -3,7 +3,6 @@ import { BehaviorSubject, from, Observable } from "rxjs";
 import { map, mergeMap, filter, reduce } from "rxjs/operators";
 import { Segment } from "../types";
 import { createHttpObservable, genStravaRequestHeaders } from "../utils";
-import { onlyCloseSegments } from "../gis";
 
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";

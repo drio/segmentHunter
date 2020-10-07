@@ -12,7 +12,7 @@ function handleLogout() {
   window.location.replace("/");
 }
 
-const genStravaRequestHeaders = (token) => ({
+const genStravaRequestHeaders = (token: string | null) => ({
   accept: "application/json",
   authorization: `Bearer ${token}`,
 });
