@@ -6,10 +6,10 @@ const Loading = () => {
     <Layout>
       <div className="content"></div>
       <div className="center">
-        <div className="title is-3 is-family-primary">Strava Hunter</div>
+        <div className="title is-3 is-family-primary">Segment Hunter</div>
 
         <div className="content">
-          <div className="is-5">Loading data ...</div>
+          <div className="is-5">Loading ...</div>
         </div>
 
         <div>

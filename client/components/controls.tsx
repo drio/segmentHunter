@@ -157,13 +157,15 @@ function Controls(props: ControlProps): JSX.Element {
           <button
             onClick={() => setShowSegmentDetails(!showSegmentDetails)}
             className="button is-small is-warning is-rounded"
+            id="hideShowButton"
           >
             {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
           </button>
         </div>
         {showSegmentDetails && (
           <div
-            className="containerl"
+            className="container"
+            id="containerListSegments"
             style={{
               display: "flex",
               justifyContent: "flex-start",
