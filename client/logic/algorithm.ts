@@ -6,9 +6,6 @@ function polyToCoordinates(pline: string): number[][] {
   return polyline.decode(pline).map((p) => [p[1], p[0]]); // reverse lat/long
 }
 
-/*
-  WARNING: the input points have to be in the format [longitude, latitude]
- */
 function computeDistance(from: turf.Position, to: turf.Position): number {
   const distance = turf.distance(turf.point(from), turf.point(to), {
     units: "kilometers",
