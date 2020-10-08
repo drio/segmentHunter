@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <title>Strava Hunter by drio</title>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <link href="/static/favicon.ico" rel="shortcut icon" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link
           href="https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css"
           rel="stylesheet"
