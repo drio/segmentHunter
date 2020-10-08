@@ -7,7 +7,7 @@ import "rc-slider/assets/index.css";
 import store from "../logic/store/store";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  const { access_token } = pageProps;
+  const { access_token, favicon } = pageProps;
   store.init(access_token);
 
   return (
@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
         <title>Strava Hunter by drio</title>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href={`/${favicon}`} />
         <link
           href="https://api.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css"
           rel="stylesheet"

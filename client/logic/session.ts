@@ -3,6 +3,7 @@ import { NextPageContext } from "next";
 import cookie from "js-cookie";
 
 interface SessionData {
+  favicon: string;
   loggedIn: boolean;
   access_token: string | null;
   username: string | null;
@@ -18,6 +19,7 @@ const sessionLoader = async (ctx: NextPageContext): Promise<SessionData> => {
   const cookies = nextCookie(ctx);
   const loggedIn = cookies.segment_hunter_access_token ? true : false;
   return {
+    favicon: process.env.FAVICON || "favicon.ico",
     loggedIn,
     access_token: cookies.segment_hunter_access_token || null,
     username: cookies.segment_hunter_username || null,
