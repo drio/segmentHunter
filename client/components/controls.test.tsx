@@ -15,8 +15,8 @@ const TestControl = (
         end_latitude: 10,
         end_longitude: 20,
         name: "segment1",
-        map: { polyline: "polyhere" },
-        distance: 5,
+        map: { polyline: "polyhere22xx" },
+        distance: 15,
       },
     ]}
     weather={[

@@ -8,3 +8,4 @@ client/config.json
 data/segments/*.json
 data/segments/details/*.json
 data/weather/*.json
+.eslintcache

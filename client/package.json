@@ -11,6 +11,20 @@
     "build": "next build",
     "start": "next start"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --ext .js,.tsx,.ts --cache --fix",
+      "npm run test"
+    ],
+    "*.{json,scss}": [
+      "prettier --write"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -54,7 +68,9 @@
     "enzyme-adapter-react-16": "^1.15.5",
     "eslint": "^7.10.0",
     "eslint-plugin-react": "^7.21.3",
+    "husky": "^4.3.0",
     "jest": "^26.4.2",
+    "lint-staged": "^10.4.0",
     "prettier": "^2.1.2",
     "typescript": "^4.0.3"
   }
