@@ -140,9 +140,10 @@ function Controls(props: ControlProps): JSX.Element {
               value={value}
               onChange={(e) => {
                 const v = +e.target.value;
+                const { dt, wind_deg } = weather[v];
                 setValue(v);
                 setTimeString(formatDate(dt));
-                actionNewWindDirection(weather[v].wind_deg);
+                actionNewWindDirection(wind_deg);
               }}
               type="range"
             />
