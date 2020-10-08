@@ -77,19 +77,15 @@ function Controls(props: ControlProps): JSX.Element {
   } = props;
 
   const [value, setValue] = useState(0);
-  const [timeString, setTimeString] = useState("init");
-  const [max, setMax] = useState(0);
   const [showSegmentDetails, setShowSegmentDetails] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  useEffect(() => {
-    setMax(weather.length - 1);
-    setTimeString(formatDate(weather[0].dt));
-    setShowSegmentDetails(false);
-  }, []);
+  useEffect(() => setShowSegmentDetails(false), []);
 
   const { temp, wind_deg, wind_speed, dt } = weather[value];
   const description = weather[value].weather.description;
+  const timeString = dt ? formatDate(dt) : "-";
+  const max = weather.length > 0 ? weather.length - 1 : 0;
 
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
@@ -115,7 +111,7 @@ function Controls(props: ControlProps): JSX.Element {
               <b>Time Selection</b>
             </div>
             <div style={{ paddingBottom: "0px" }}>
-              <b>Time</b>: {timeString}
+              <b>Time</b>: <label id="timeString">{timeString}</label>
             </div>
 
             <div>
@@ -133,6 +129,7 @@ function Controls(props: ControlProps): JSX.Element {
 
             <div>{description} </div>
             <input
+              id="weatherSlider"
               style={{ width: "100%" }}
               step="1"
               min="0"
@@ -140,9 +137,8 @@ function Controls(props: ControlProps): JSX.Element {
               value={value}
               onChange={(e) => {
                 const v = +e.target.value;
-                const { dt, wind_deg } = weather[v];
+                const { wind_deg } = weather[v];
                 setValue(v);
-                setTimeString(formatDate(dt));
                 actionNewWindDirection(wind_deg);
               }}
               type="range"
