@@ -9,7 +9,8 @@
     "testwatch": "jest --watchAll",
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "coverage": "npm run test -- --coverage --coverageReporters=text"
   },
   "husky": {
     "hooks": {

@@ -27,8 +27,10 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
   const weatherData = useObservable(store.getWeatherData(), []);
   const windAngle = useObservable(store.getWindAngle());
   const location = useObservable(store.getLocation(), {});
+
   const mustLogin = useObservable(store.getMustLogin());
   const loading = useObservable(store.getLoading(), true);
+
   const closeSegments = onlyCloseSegments(location, segments);
 
   // FIXME: emit segments in the observable instead of arrays
