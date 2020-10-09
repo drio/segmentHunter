@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
 import Layout from "../components/layout";
 import Login from "../components/login";
 import Controls from "../components/controls";
-import { Segment, WeatherEntry } from "../logic/types";
+import { Segment } from "../logic/types";
 import { useObservable } from "../logic/utils";
 import { onlyCloseSegments } from "../logic/gis";
 
@@ -20,6 +20,8 @@ interface AppProps {
   loggedIn: boolean;
   store: any;
 }
+
+const testModeON = true;
 
 const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments(), []);
@@ -65,6 +67,9 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
         </p>
         <p>Weather Data: {weatherData.length}</p>
         <p>Wind Angle: {windAngle}</p>
+        <p>
+          Location: {location.latitude} {location.longitude}
+        </p>
 
         <p>
           Selected segment:{" "}
@@ -74,8 +79,6 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
         <h1>Segments: </h1>
         <ul>{liEntries}</ul>
         <hr />
-        <p>Location: </p>
-        <p>Weather Data: </p>
       </div>
     );
   };
@@ -92,26 +95,28 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
     );
   }
 
-  // return testComp();
-
-  return (
-    <Layout>
-      <Controls
-        segments={closeSegments}
-        weather={weatherData}
-        profile={profile}
-        actionSegmentClick={store.setSelectedSegment}
-        actionNewWindDirection={store.setWindAngle}
-      />
-      <Map
-        segments={closeSegments}
-        localCoordinates={location}
-        windAngle={windAngle}
-        onCenterUpdate={() => null}
-        selectedSegment={selectedSegmentSingle}
-      />
-    </Layout>
-  );
+  if (testModeON) {
+    return testComp();
+  } else {
+    return (
+      <Layout>
+        <Controls
+          segments={closeSegments}
+          weather={weatherData}
+          profile={profile}
+          actionSegmentClick={store.setSelectedSegment}
+          actionNewWindDirection={store.setWindAngle}
+        />
+        <Map
+          segments={closeSegments}
+          localCoordinates={location}
+          windAngle={windAngle}
+          onCenterUpdate={() => null}
+          selectedSegment={selectedSegmentSingle}
+        />
+      </Layout>
+    );
+  }
 };
 
 App.getInitialProps = sessionLoader;

@@ -96,12 +96,6 @@ function colorSegments(
   });
 }
 
-interface MapState {
-  lng: number;
-  lat: number;
-  zoom: number;
-}
-
 function segmentSelected(selectedSegment: Segment | null) {
   if (selectedSegment) {
     const {
@@ -147,6 +141,7 @@ function Map(props: MapProps): JSX.Element {
   );
   const mapContainer = useRef<string | HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [segmentsLoaded, setSegmentsLoaded] = useState(false);
 
   useEffect(() => {
     map = new mapboxgl.Map({
@@ -164,7 +159,6 @@ function Map(props: MapProps): JSX.Element {
     });
 
     map.on("load", () => {
-      renderSegments(map, segments, windAngle);
       setMapLoaded(true);
       savedBounds = map.getBounds();
     });
@@ -179,7 +173,11 @@ function Map(props: MapProps): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (mapLoaded) colorSegments(segments, map, windAngle);
+    if (mapLoaded && !segmentsLoaded) {
+      renderSegments(map, segments, windAngle);
+      setSegmentsLoaded(true);
+    }
+    if (mapLoaded && segmentsLoaded) colorSegments(segments, map, windAngle);
   }, [windAngle, mapLoaded]);
 
   useEffect(() => segmentSelected(selectedSegment), [selectedSegment]);

@@ -1,43 +1,49 @@
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { Segment, Coordinate, WeatherEntry } from "../types";
 import { loadStravaData } from "./strava";
-import { getLocation } from "./location";
+import { loadLocation, defaultLocation } from "./location";
 import { loadWeatherData } from "./weather";
 
-const subjectSegments = new BehaviorSubject<Segment[]>([]);
-const segments$: Observable<Segment[]> = subjectSegments.asObservable();
-
-const subjectSelectedSegment = new BehaviorSubject<Segment[]>([]);
-const selectedSegment$: Observable<
-  Segment[]
-> = subjectSelectedSegment.asObservable();
-
-const subjectMustLogin = new BehaviorSubject<boolean>(false);
-const mustLogin$: Observable<boolean> = subjectMustLogin.asObservable();
-
-const subjectLoadingStrava = new BehaviorSubject<boolean>(true);
-const loadingStrava$: Observable<boolean> = subjectLoadingStrava.asObservable();
-
-const subjectLoadingWeather = new BehaviorSubject<boolean>(true);
-const loadingWeather$: Observable<boolean> = subjectLoadingWeather.asObservable();
-
-const loading$ = combineLatest([loadingWeather$, loadingStrava$]).pipe(
-  map(([lweather, lstrava]) => lweather || lstrava)
-);
-
-const location$: Observable<Coordinate> = getLocation();
-
-const subjectWeather = new BehaviorSubject<WeatherEntry[]>([]);
-const weather$: Observable<WeatherEntry[]> = subjectWeather.asObservable();
-
-const subjectWindAngle = new BehaviorSubject<number>(0);
-const windAngle$: Observable<number> = subjectWindAngle.asObservable();
-
 const store = (function () {
+  const subjectSegments = new BehaviorSubject<Segment[]>([]);
+  const segments$: Observable<Segment[]> = subjectSegments.asObservable();
+
+  const subjectSelectedSegment = new BehaviorSubject<Segment[]>([]);
+  const selectedSegment$: Observable<
+    Segment[]
+  > = subjectSelectedSegment.asObservable();
+
+  const subjectMustLogin = new BehaviorSubject<boolean>(false);
+  const mustLogin$: Observable<boolean> = subjectMustLogin.asObservable();
+
+  const subjectLoadingStrava = new BehaviorSubject<boolean>(true);
+  const loadingStrava$: Observable<boolean> = subjectLoadingStrava.asObservable();
+
+  const subjectLoadingWeather = new BehaviorSubject<boolean>(true);
+  const loadingWeather$: Observable<boolean> = subjectLoadingWeather.asObservable();
+
+  const loading$ = combineLatest([loadingWeather$, loadingStrava$]).pipe(
+    map(([lweather, lstrava]) => lweather || lstrava)
+  );
+
+  const subjectLocation = new BehaviorSubject<Coordinate>(defaultLocation);
+  const location$: Observable<Coordinate> = subjectLocation.asObservable();
+
+  const subjectWeather = new BehaviorSubject<WeatherEntry[]>([]);
+  const weather$: Observable<WeatherEntry[]> = subjectWeather.asObservable();
+
+  const subjectWindAngle = new BehaviorSubject<number>(0);
+  const windAngle$: Observable<number> = subjectWindAngle.asObservable();
+
   function init(stravaToken: string | null) {
+    loadLocation(subjectLocation);
+
     location$.subscribe(
-      (location) => loadWeatherData(location, subjectWeather),
+      (location: Coordinate) => {
+        loadWeatherData(location, subjectWeather);
+        loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
+      },
       () => console.log("Using default coordinates")
     );
 
@@ -47,7 +53,6 @@ const store = (function () {
       () => subjectLoadingWeather.next(false)
     );
 
-    loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
     segments$.subscribe(
       () => subjectLoadingStrava.next(false),
       (error) => console.log(error) // TODO
