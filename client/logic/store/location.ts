@@ -30,4 +30,4 @@ function getLocation(): Observable<Coordinate> {
   });
 }
 
-export { getLocation };
+export { getLocation, defaultLocation };
