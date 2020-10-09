@@ -2,10 +2,15 @@ import { ajax } from "rxjs/ajax";
 import { BehaviorSubject, from, Observable } from "rxjs";
 import { map, mergeMap, filter, reduce } from "rxjs/operators";
 import { Segment } from "../types";
-import { createHttpObservable, genStravaRequestHeaders } from "../utils";
+import createHttpObservable from "./utils";
 
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
 const STRAVA_API_URL = "https://www.strava.com/api/v3/segments";
+
+const genStravaRequestHeaders = (token: string | null) => ({
+  accept: "application/json",
+  authorization: `Bearer ${token}`,
+});
 
 function getFromLocalStorage(): Segment[] {
   const storageResult = localStorage.getItem(LOCAL_KEY_SEGMENTS) || "[]";
@@ -77,4 +82,4 @@ function loadStravaData(
   );
 }
 
-export { loadStravaData };
+export { loadStravaData, genStravaRequestHeaders };
