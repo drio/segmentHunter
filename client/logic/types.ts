@@ -1,36 +1,42 @@
 export interface Coordinate {
-  latitude: number,
-  longitude: number
+  latitude: number;
+  longitude: number;
 }
 
 export interface GeoResult {
-  coords:  Coordinate
+  coords: Coordinate;
 }
 
 export interface Segment {
-  id: number,
-  start_latitude: number, 
-  start_longitude: number, 
-  end_latitude: number, 
-  end_longitude: number
-  name: string,
+  id: number;
+  start_latitude: number;
+  start_longitude: number;
+  end_latitude: number;
+  end_longitude: number;
+  name: string;
   map: {
-    polyline: string
-  }
-  distance: number
+    polyline: string;
+  };
+  distance: number;
 }
 
 export interface LocalStorageWeather {
-  timestamp: number,
-  weather: WeatherEntry[],
+  timestamp: number;
+  weather: WeatherEntry[];
 }
 
 export interface WeatherEntry {
-  temp: number,
-  wind_deg: number,
-  wind_speed: number,
+  temp: number;
+  wind_deg: number;
+  wind_speed: number;
   weather: {
-    description: string,
-  },
-  dt: number
+    description: string;
+  };
+  dt: number;
+}
+
+export interface StoreError {
+  msg: string;
+  error: boolean;
+  details?: string;
 }

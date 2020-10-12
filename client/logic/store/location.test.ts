@@ -1,6 +1,7 @@
 import { Observable, BehaviorSubject } from "rxjs";
 import { loadLocation, defaultLocation } from "./location";
 import { Coordinate } from "../types";
+import { genErrorObservables } from "./helpers";
 
 const timeoutError = {
   code: 1,
@@ -25,23 +26,25 @@ function genPosition(latitude: number, longitude: number): Position {
   };
 }
 
-describe("location", () => {
+describe("store/location", () => {
   it("We get the user location when all goes well", (done) => {
     const subjectLocation = new BehaviorSubject<Coordinate>({
       latitude: 1,
       longitude: 1,
     });
     const location$: Observable<Coordinate> = subjectLocation.asObservable();
+
     const getCurrentPos = (succ: PositionCallback) => {
       succ(genPosition(2, 2));
     };
 
-    loadLocation(subjectLocation, getCurrentPos);
+    const [subjectError, error$] = genErrorObservables();
+    loadLocation(subjectLocation, subjectError, getCurrentPos);
     location$.subscribe(
       ({ latitude, longitude }) => {
         expect(latitude).toBe(2);
         expect(longitude).toBe(2);
-        done();
+        error$.subscribe((val) => (val.error ? done.fail() : done()));
       },
       () => done.fail(),
       () => done.fail()
@@ -54,15 +57,16 @@ describe("location", () => {
       longitude: 1,
     });
     const location$: Observable<Coordinate> = subjectLocation.asObservable();
-    const getCurrentPos = (successCallback, errorCallback) =>
+    const getCurrentPosForceFail = (successCallback, errorCallback) =>
       errorCallback(timeoutError);
 
-    loadLocation(subjectLocation, getCurrentPos);
+    const [subjectError, error$] = genErrorObservables();
+    loadLocation(subjectLocation, subjectError, getCurrentPosForceFail);
     location$.subscribe(
       ({ latitude, longitude }) => {
         expect(latitude).toBe(defaultLocation.latitude);
         expect(longitude).toBe(defaultLocation.longitude);
-        done();
+        error$.subscribe((val) => (val.error ? done.fail() : done()));
       },
       () => done.fail(),
       () => done.fail()
@@ -74,12 +78,13 @@ describe("location", () => {
       latitude: 1,
       longitude: 1,
     });
-    const location$: Observable<Coordinate> = subjectLocation.asObservable();
 
-    loadLocation(subjectLocation);
-    location$.subscribe(
+    const [subjectError, error$] = genErrorObservables();
+    loadLocation(subjectLocation, subjectError);
+
+    error$.subscribe(
+      (val) => (val.error ? done() : done.fail()),
       () => done.fail(),
-      () => done(),
       () => done.fail()
     );
   }, 100);

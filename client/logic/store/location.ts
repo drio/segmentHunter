@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { Coordinate, GeoResult } from "../types";
+import { StoreError, Coordinate, GeoResult } from "../types";
 
 const options = {
   enableHighAccuracy: true,
@@ -23,6 +23,7 @@ interface getPosFunction {
 
 function loadLocation(
   subjectLocation: BehaviorSubject<Coordinate>,
+  subjectError: BehaviorSubject<StoreError>,
   gpFuncImp?: getPosFunction
 ): void {
   let getPosition: getPosFunction | null;
@@ -54,7 +55,10 @@ function loadLocation(
       window.navigator.geolocation.getCurrentPosition(succ, err, opts);
     else getPosition(succ, err, opts);
   } else {
-    subjectLocation.error("Unsupported browser"); // TODO
+    subjectError.next({
+      msg: "Browser does not support geolocation",
+      error: true,
+    });
   }
 }
 

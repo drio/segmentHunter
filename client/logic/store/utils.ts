@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { Observable } from "rxjs";
 import { Segment } from "../types";
 import { genStravaRequestHeaders } from "./strava";
@@ -11,8 +12,9 @@ export default function createHttpObservable(
     /* Cancel requests that are ongoing when the observable is canceled */
     const controller = new AbortController();
     const signal = controller.signal;
+    const fetchImplementation = window && window.fetch ? window.fetch : fetch;
 
-    fetch(url, {
+    fetchImplementation(url, {
       signal,
       headers: genStravaRequestHeaders(token),
     })

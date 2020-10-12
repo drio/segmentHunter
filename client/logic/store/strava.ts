@@ -21,29 +21,19 @@ function saveSegments(segments: Segment[]): void {
   localStorage.setItem(LOCAL_KEY_SEGMENTS, JSON.stringify(segments));
 }
 
-function loadStravaData(
-  stravaToken: string | null,
-  subjectSegments: BehaviorSubject<Segment[]>,
-  subjectMustLogin: BehaviorSubject<boolean>
-): void {
-  const inTheBrowser = typeof window !== "undefined";
-  if (!inTheBrowser) return;
-
-  if (!stravaToken) {
-    subjectMustLogin.next(true);
-    return;
-  }
-
-  const localDetailedSegments = getFromLocalStorage();
-  const localDetailedSegmentIDs = localDetailedSegments.map((s) => s.id);
-
+function genSSObservable(stravaToken: string): Observable<Segment> {
+  return createHttpObservable(`${STRAVA_API_URL}/starred`, stravaToken).pipe(
+    mergeMap((starredSegments: Segment[]) => from(starredSegments))
+  );
   /* Stream of all segments (summary version) that the user has starred. */
-  const starredSummarySegments$ = createHttpObservable(
-    `${STRAVA_API_URL}/starred`,
-    stravaToken
-  ).pipe(mergeMap((starredSegments: Segment[]) => from(starredSegments)));
+}
 
-  const newDetailedSegments$: Observable<Segment[]> = starredSummarySegments$
+function genNewDetailedObservable(
+  starredSummarySegments$: Observable<Segment>,
+  localDetailedSegmentIDs: number[],
+  stravaToken: string
+): Observable<Segment[]> {
+  return starredSummarySegments$
     .pipe(
       filter((s) => !localDetailedSegmentIDs.includes(s.id)),
       mergeMap((segment) =>
@@ -63,8 +53,42 @@ function loadStravaData(
         []
       )
     ); /* A single value with the list of detailed segments that we are missing locally */
+}
 
-  /* Try to get new starred segments and merge them to the list we already have locally */
+interface LoadStravaParams {
+  stravaToken: string | null;
+  subjectSegments: BehaviorSubject<Segment[]>;
+  subjectMustLogin: BehaviorSubject<boolean>;
+  localDetailedSegmentMock?: Segment[];
+  newDetailedSegmentsMock$?: Observable<Segment[]>;
+}
+
+function loadStravaData({
+  stravaToken,
+  subjectSegments,
+  subjectMustLogin,
+  localDetailedSegmentMock,
+  newDetailedSegmentsMock$,
+}: LoadStravaParams): void {
+  const inTheBrowser = typeof window !== "undefined";
+  if (!inTheBrowser) return;
+
+  if (!stravaToken) {
+    subjectMustLogin.next(true);
+    return;
+  }
+
+  const starredSummarySegments$ = genSSObservable(stravaToken);
+  const localDetailedSegments = getFromLocalStorage();
+  const localDetailedSegmentIDs = localDetailedSegments.map((s) => s.id);
+
+  const newDetailedSegments$ = genNewDetailedObservable(
+    starredSummarySegments$,
+    localDetailedSegmentIDs,
+    stravaToken
+  );
+
+  /* Get new starred segments and merge them to the list we already have locally */
   newDetailedSegments$.subscribe(
     (listNewDetailedSegments: Segment[]) => {
       const detailedSegments = [
