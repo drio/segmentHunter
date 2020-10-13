@@ -59,7 +59,7 @@ interface LoadStravaParams {
   stravaToken: string | null;
   subjectSegments: BehaviorSubject<Segment[]>;
   subjectMustLogin: BehaviorSubject<boolean>;
-  localDetailedSegmentMock?: Segment[];
+  localDetailedSegmentsMock?: Segment[];
   newDetailedSegmentsMock$?: Observable<Segment[]>;
 }
 
@@ -67,7 +67,7 @@ function loadStravaData({
   stravaToken,
   subjectSegments,
   subjectMustLogin,
-  localDetailedSegmentMock,
+  localDetailedSegmentsMock,
   newDetailedSegmentsMock$,
 }: LoadStravaParams): void {
   const inTheBrowser = typeof window !== "undefined";
@@ -79,14 +79,17 @@ function loadStravaData({
   }
 
   const starredSummarySegments$ = genSSObservable(stravaToken);
-  const localDetailedSegments = getFromLocalStorage();
+  const localDetailedSegments =
+    localDetailedSegmentsMock || getFromLocalStorage();
   const localDetailedSegmentIDs = localDetailedSegments.map((s) => s.id);
 
-  const newDetailedSegments$ = genNewDetailedObservable(
-    starredSummarySegments$,
-    localDetailedSegmentIDs,
-    stravaToken
-  );
+  const newDetailedSegments$ =
+    newDetailedSegmentsMock$ ||
+    genNewDetailedObservable(
+      starredSummarySegments$,
+      localDetailedSegmentIDs,
+      stravaToken
+    );
 
   /* Get new starred segments and merge them to the list we already have locally */
   newDetailedSegments$.subscribe(
@@ -99,10 +102,7 @@ function loadStravaData({
       subjectSegments.next(detailedSegments);
       subjectMustLogin.next(false);
     },
-    (err) => {
-      console.log(err);
-      subjectMustLogin.next(true);
-    }
+    () => subjectMustLogin.next(true)
   );
 }
 
