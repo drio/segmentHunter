@@ -2,31 +2,12 @@ import { BehaviorSubject, of, throwError } from "rxjs";
 
 import { loadStravaData } from "./strava";
 import { genStravaObservables } from "./helpers";
-import { Segment } from "../types";
+import { genSegments } from "./ut_helpers";
 
 /*
 TODO: Not completely happy witht these tests. We are not exercising all 
 the observables for the strava logic. 
 */
-
-function genSegments(n: number): Segment[] {
-  const list: Segment[] = [];
-  for (let i = 0; i < n; i++) {
-    list.push({
-      id: i,
-      start_latitude: Math.random(),
-      start_longitude: Math.random(),
-      end_latitude: Math.random(),
-      end_longitude: Math.random(),
-      name: `name_${i}`,
-      map: {
-        polyline: "Poly here",
-      },
-      distance: Math.random(),
-    });
-  }
-  return list;
-}
 
 describe("store/strava", () => {
   it("We the mustLogin$ is true when failing to retrieve segments", (done) => {

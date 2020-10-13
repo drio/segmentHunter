@@ -13,11 +13,13 @@ export interface LoadStravaParams {
   stravaToken: string | null;
   subjectSegments: BehaviorSubject<Segment[]>;
   subjectMustLogin: BehaviorSubject<boolean>;
-  localDetailedSegmentsMock?: Segment[];
-  newDetailedSegmentsMock$?: Observable<Segment[]>;
+  localDetailedSegmentsMock?: Segment[] | null;
+  newDetailedSegmentsMock$?: Observable<Segment[]> | null;
 }
 
 export interface InitMockFunctions {
-  getPositionFn: GetPosFunction | null;
-  weatherAjax$: Observable<WeatherEntry[]> | null;
+  getPositionFn?: GetPosFunction | null;
+  weatherAjax$?: Observable<WeatherEntry[]>;
+  localDetailedSegments?: Segment[] | null;
+  newDetailedSegments$?: Observable<Segment[]> | null;
 }

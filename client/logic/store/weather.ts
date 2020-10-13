@@ -19,7 +19,7 @@ function loadWeatherData(
   location: Coordinate,
   subjectWeather: BehaviorSubject<WeatherEntry[]>,
   subjectError: BehaviorSubject<StoreError>,
-  paramAjax$: Observable<WeatherEntry[]> | null
+  paramAjax$?: Observable<WeatherEntry[]>
 ): void {
   const inTheBrowser = typeof window !== "undefined";
   if (!inTheBrowser) return;

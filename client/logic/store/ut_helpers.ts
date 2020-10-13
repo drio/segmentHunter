@@ -1,4 +1,4 @@
-import { WeatherEntry } from "../types";
+import { WeatherEntry, Segment } from "../types";
 
 function genPosition(latitude: number, longitude: number): Position {
   return {
@@ -31,4 +31,23 @@ function genWeatherEntries(n: number): WeatherEntry[] {
   return list;
 }
 
-export { genPosition, genWeatherEntries };
+function genSegments(n: number): Segment[] {
+  const list: Segment[] = [];
+  for (let i = 0; i < n; i++) {
+    list.push({
+      id: i,
+      start_latitude: Math.random(),
+      start_longitude: Math.random(),
+      end_latitude: Math.random(),
+      end_longitude: Math.random(),
+      name: `name_${i}`,
+      map: {
+        polyline: "Poly here",
+      },
+      distance: Math.random(),
+    });
+  }
+  return list;
+}
+
+export { genPosition, genWeatherEntries, genSegments };
