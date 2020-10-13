@@ -1,20 +1,11 @@
-import { Observable, of, throwError } from "rxjs";
+import { of, throwError } from "rxjs";
 import { loadWeatherData } from "./weather";
 import { genWeatherObservables, genErrorObservables } from "./helpers";
-import { WeatherEntry } from "../types";
+import { genWeatherEntries } from "./ut_helpers";
 
 describe("store/weather", () => {
   it("We get weather data when all goes well", (done) => {
-    const entry1: WeatherEntry = {
-      temp: 1,
-      wind_deg: 1,
-      wind_speed: 1,
-      weather: {
-        description: "foo",
-      },
-      dt: 1,
-    };
-
+    const entry1 = genWeatherEntries(1)[0];
     const ajaxMock = of([entry1]);
     const aCoordinate = { latitude: 1, longitude: 2 };
     const [subjectWeather, weather$] = genWeatherObservables();

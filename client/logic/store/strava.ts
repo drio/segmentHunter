@@ -2,6 +2,7 @@ import { ajax } from "rxjs/ajax";
 import { BehaviorSubject, from, Observable } from "rxjs";
 import { map, mergeMap, filter, reduce } from "rxjs/operators";
 import { Segment } from "../types";
+import { LoadStravaParams } from "./types";
 import createHttpObservable from "./utils";
 
 const LOCAL_KEY_SEGMENTS = "segment_hunter_segments";
@@ -53,14 +54,6 @@ function genNewDetailedObservable(
         []
       )
     ); /* A single value with the list of detailed segments that we are missing locally */
-}
-
-interface LoadStravaParams {
-  stravaToken: string | null;
-  subjectSegments: BehaviorSubject<Segment[]>;
-  subjectMustLogin: BehaviorSubject<boolean>;
-  localDetailedSegmentsMock?: Segment[];
-  newDetailedSegmentsMock$?: Observable<Segment[]>;
 }
 
 function loadStravaData({

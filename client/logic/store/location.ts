@@ -1,5 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { StoreError, Coordinate, GeoResult } from "../types";
+import { GetPosFunction } from "./types";
 
 const options = {
   enableHighAccuracy: true,
@@ -13,25 +14,17 @@ const defaultLocation = {
   longitude: -79.940918,
 };
 
-interface getPosFunction {
-  (
-    successCallback: PositionCallback,
-    errorCallback?: PositionErrorCallback,
-    options?: PositionOptions
-  ): void;
-}
-
 function loadLocation(
   subjectLocation: BehaviorSubject<Coordinate>,
   subjectError: BehaviorSubject<StoreError>,
-  gpFuncImp?: getPosFunction
+  gpFuncImp?: GetPosFunction | null
 ): void {
-  let getPosition: getPosFunction | null;
   const inBrowser =
     typeof window !== "undefined" &&
     window.navigator &&
     window.navigator.geolocation;
 
+  let getPosition: GetPosFunction | null;
   if (gpFuncImp) {
     getPosition = gpFuncImp;
   } else if (inBrowser) {

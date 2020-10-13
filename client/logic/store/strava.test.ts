@@ -4,6 +4,11 @@ import { loadStravaData } from "./strava";
 import { genStravaObservables } from "./helpers";
 import { Segment } from "../types";
 
+/*
+TODO: Not completely happy witht these tests. We are not exercising all 
+the observables for the strava logic. 
+*/
+
 function genSegments(n: number): Segment[] {
   const list: Segment[] = [];
   for (let i = 0; i < n; i++) {

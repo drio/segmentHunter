@@ -1,6 +1,8 @@
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
-import { Segment, Coordinate, WeatherEntry } from "../types";
+
+import { InitMockFunctions } from "./types";
+import { Coordinate } from "../types";
 import { loadStravaData } from "./strava";
 import { loadLocation } from "./location";
 import { loadWeatherData } from "./weather";
@@ -39,18 +41,27 @@ const store = (function () {
   const subjectWindAngle = new BehaviorSubject<number>(0);
   const windAngle$: Observable<number> = subjectWindAngle.asObservable();
 
-  function init(stravaToken: string | null) {
-    loadLocation(subjectLocation, subjectError);
+  function init(stravaToken: string | null, mocks?: InitMockFunctions | null) {
+    loadLocation(
+      subjectLocation,
+      subjectError,
+      (mocks && mocks.getPositionFn) || null
+    );
 
-    /*
     location$.subscribe(
       (location: Coordinate) => {
-        loadWeatherData(location, subjectWeather, subjectError);
-        loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
+        loadWeatherData(
+          location,
+          subjectWeather,
+          subjectError,
+          (mocks && mocks.weatherAjax$) || null
+        );
+        //loadStravaData(stravaToken, subjectSegments, subjectMustLogin);
       },
       () => console.log("Using default coordinates")
     );
 
+    /*
     weather$.subscribe(
       () => subjectLoadingWeather.next(true),
       (error) => console.log(error), // TODO
@@ -71,6 +82,8 @@ const store = (function () {
   const getMustLogin = () => mustLogin$;
 
   const getLoading = () => loading$;
+
+  const getError = () => error$;
 
   const getLocation = () => location$;
 
@@ -111,6 +124,7 @@ const store = (function () {
     getLocation,
     getMustLogin,
     getLoading,
+    getError,
     getWeatherData,
     getWindAngle,
     setWindAngle,

@@ -2,6 +2,7 @@ import { Observable, BehaviorSubject } from "rxjs";
 import { loadLocation, defaultLocation } from "./location";
 import { Coordinate } from "../types";
 import { genErrorObservables } from "./helpers";
+import { genPosition } from "./ut_helpers";
 
 const timeoutError = {
   code: 1,
@@ -10,21 +11,6 @@ const timeoutError = {
   POSITION_UNAVAILABLE: 1,
   TIMEOUT: 1,
 };
-
-function genPosition(latitude: number, longitude: number): Position {
-  return {
-    coords: {
-      latitude,
-      longitude,
-      accuracy: 1,
-      altitude: null,
-      altitudeAccuracy: null,
-      heading: null,
-      speed: null,
-    },
-    timestamp: 1,
-  };
-}
 
 describe("store/location", () => {
   it("We get the user location when all goes well", (done) => {
