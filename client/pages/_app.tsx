@@ -4,10 +4,11 @@ import type { AppProps } from "next/app";
 import "bulma/css/bulma.css";
 import "../css/styles.css";
 import "rc-slider/assets/index.css";
-import store from "../logic/store/store";
+import { createStore } from "../logic/store/store";
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   const { access_token, favicon } = pageProps;
+  const store = createStore();
   store.init(access_token);
 
   return (

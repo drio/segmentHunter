@@ -9,7 +9,7 @@ function handleLogout() {
 }
 
 const useObservable = (observable: any, defaultValue?: any) => {
-  const [state, setState] = useState(defaultValue);
+  const [state, setState] = useState(defaultValue || null);
 
   useEffect(() => {
     const sub = observable.subscribe(setState);

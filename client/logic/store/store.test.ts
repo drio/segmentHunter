@@ -1,98 +1,194 @@
-import { of } from "rxjs";
-import store from "./store";
+import { of, NEVER, noop, BehaviorSubject, Subject, combineLatest } from "rxjs";
+import { map } from "rxjs/operators";
+import { createStore } from "./store";
+import { Coordinate } from "../types";
 import { genPosition, genWeatherEntries, genSegments } from "./ut_helpers";
 
 describe("store", () => {
-  describe("store/location", () => {
+  describe("We haven't loaded anything yet", () => {
+    const store = createStore();
     beforeEach(() => {
-      const entry1 = genWeatherEntries(1)[0];
-      const ajaxWeatherMock$ = of([entry1]);
-      const localDetailedSegmentsMock = [];
-      const allSegments = genSegments(6);
-      const newDetailedSegmentsMock$ = of(allSegments);
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      /* We won't broadcast data to the observers */
+      subjectLocation.next = noop;
 
       store.init("token", {
-        getPositionFn: (succ: PositionCallback) => succ(genPosition(2, 2)),
-        weatherAjax$: ajaxWeatherMock$,
-        localDetailedSegments: localDetailedSegmentsMock,
-        newDetailedSegments$: newDetailedSegmentsMock$,
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: NEVER,
+        localDetailedSegments: [],
+        newDetailedSegments$: NEVER,
       });
     });
 
-    it("We get the location without error when the browser has the geolocation API", (done) => {
-      store.getLocation().subscribe(
-        ({ latitude, longitude }) => {
-          expect(latitude).toBe(2);
-          expect(longitude).toBe(2);
-          store
-            .getError()
-            .subscribe((val) => (val.error ? done.fail() : done()));
-        },
-        () => done.fail(),
-        () => done.fail()
-      );
-    });
-  });
-
-  describe("store/weatherData", () => {
-    beforeEach(() => {
-      const entries = genWeatherEntries(2);
-      const ajaxWeatherMock$ = of([...entries]);
-      const localDetailedSegmentsMock = [];
-      const allSegments = genSegments(6);
-      const newDetailedSegmentsMock$ = of(allSegments);
-
-      store.init("token", {
-        getPositionFn: (succ: PositionCallback) => succ(genPosition(2, 2)),
-        weatherAjax$: ajaxWeatherMock$,
-        localDetailedSegments: localDetailedSegmentsMock,
-        newDetailedSegments$: newDetailedSegmentsMock$,
-      });
-    });
-
-    it("We have access to the weather data if all goes well", (done) => {
-      store.getWeatherData().subscribe(
-        (weatherData) => {
-          expect(weatherData.length).toBe(2);
-          done();
-          store
-            .getError()
-            .subscribe((val) => (val.error ? done.fail() : done()));
-        },
-        () => done.fail(),
-        () => done.fail()
-      );
-    });
-  });
-
-  describe("store/strava", () => {
-    beforeEach(() => {
-      const entry1 = genWeatherEntries(1)[0];
-      const ajaxWeatherMock$ = of([entry1]);
-      const localDetailedSegmentsMock = [];
-      const allSegments = genSegments(6);
-      const newDetailedSegmentsMock$ = of(allSegments);
-
-      store.init("token", {
-        getPositionFn: (succ: PositionCallback) => succ(genPosition(2, 2)),
-        weatherAjax$: ajaxWeatherMock$,
-        localDetailedSegments: localDetailedSegmentsMock,
-        newDetailedSegments$: newDetailedSegmentsMock$,
-      });
-    });
-
-    it("We get the strava segments when everything goes well", (done) => {
-      store.getSegments().subscribe(
-        (listSegments) => {
-          expect(listSegments.length).toBe(6);
-          store.getMustLogin().subscribe((v) => {
-            expect(v).toBe(false);
+    it("All the data streams are null ", (done) => {
+      store.getLoading().subscribe((loading) => {
+        expect(loading).toBe(true);
+        combineLatest([
+          store.getLocation(),
+          store.getSegments(),
+          store.getWeatherData(),
+        ])
+          .pipe(map(([l, s, w]) => !l && !s && !w))
+          .subscribe((allAreNull) => {
+            expect(allAreNull).toBe(true);
             done();
           });
-        },
-        () => done.fail(),
-        () => done.fail()
-      );
+      });
+    });
+  });
+
+  describe("When we have loaded the location correctly", () => {
+    const store = createStore();
+    beforeEach(() => {
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: NEVER,
+        localDetailedSegments: [],
+        newDetailedSegments$: NEVER,
+      });
+    });
+
+    it("We are still loading data (segments and weather)", (done) => {
+      store.getLoading().subscribe((loading) => {
+        expect(loading).toBe(true);
+        store.getLocation().subscribe((loc) => {
+          if (loc) {
+            expect(loc.latitude).toBe(1);
+            expect(loc.longitude).toBe(2);
+            done();
+          } else {
+            done.fail();
+          }
+        });
+      });
+    });
+  });
+
+  describe("When we have loaded the location and weather correctly", () => {
+    const store = createStore();
+    beforeEach(() => {
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      const weatherEntries = genWeatherEntries(3);
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: of(weatherEntries),
+        localDetailedSegments: [],
+        newDetailedSegments$: NEVER,
+      });
+    });
+
+    it("We are still loading data (segments and weather)", (done) => {
+      store.getLoading().subscribe((loading) => {
+        expect(loading).toBe(true);
+        store.getWeatherData().subscribe((data) => {
+          if (data) {
+            expect(data.length).toBe(3);
+            expect(data[0].temp).toBe(0);
+            expect(data[1].temp).toBe(1);
+            expect(data[2].temp).toBe(2);
+            done();
+          } else {
+            done.fail();
+          }
+        });
+      });
+    });
+  });
+
+  describe("When we have loaded ALL the data correctly", () => {
+    const store = createStore();
+    beforeEach(() => {
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      const weatherEntries = genWeatherEntries(3);
+      const allSegments = genSegments(2);
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: of(weatherEntries),
+        localDetailedSegments: [],
+        newDetailedSegments$: of(allSegments),
+      });
+    });
+
+    it("We are not loading data anymore and the data in the stream is correct", (done) => {
+      store.getLoading().subscribe((loading) => {
+        expect(loading).toBe(false);
+        store.getSegments().subscribe((segments) => {
+          if (segments) {
+            expect(segments.length).toBe(2);
+            done();
+          } else {
+            done.fail();
+          }
+        });
+      });
+    });
+  });
+
+  describe("The segment selection logic", () => {
+    let store: any;
+
+    beforeEach(() => {
+      store = createStore();
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      const weatherEntries = genWeatherEntries(3);
+      const allSegments = genSegments(10);
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: of(weatherEntries),
+        localDetailedSegments: [],
+        newDetailedSegments$: of(allSegments),
+      });
+    });
+
+    it("It is null if nothing is selected", (done) => {
+      store.getSelectedSegment().subscribe((ss) => {
+        expect(ss).toBe(null);
+        done();
+      });
+    });
+
+    it("We broadcast the selected segment ", (done) => {
+      store.setSelectedSegment(3);
+      store.getSelectedSegment().subscribe((ss) => {
+        expect(ss).not.toBe(null);
+        if (ss) {
+          expect(ss.id).toBe(3);
+          done();
+        }
+      });
+    });
+
+    it("The stream is null when we de-select a segment ", (done) => {
+      store.setSelectedSegment(3);
+      store.setSelectedSegment(3);
+      store.getSelectedSegment().subscribe((ss) => {
+        expect(ss).toBe(null);
+        done();
+      });
+    });
+
+    it("The stream is null when we de-select a segment (-1 method)", (done) => {
+      store.setSelectedSegment(3);
+      store.setSelectedSegment(-1);
+      store.getSelectedSegment().subscribe((ss) => {
+        expect(ss).toBe(null);
+        done();
+      });
     });
   });
 });

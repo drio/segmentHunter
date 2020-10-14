@@ -19,7 +19,7 @@ function genWeatherEntries(n: number): WeatherEntry[] {
   const list: WeatherEntry[] = [];
   for (let i = 0; i < n; i++) {
     list.push({
-      temp: 1,
+      temp: i,
       wind_deg: 1,
       wind_speed: 1,
       weather: {

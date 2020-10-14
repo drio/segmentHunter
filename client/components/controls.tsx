@@ -67,7 +67,7 @@ interface ControlProps {
 }
 
 // https://en.wikipedia.org/wiki/Cardinal_direction#/media/File:Brosen_windrose.svg
-function Controls(props: ControlProps): JSX.Element {
+function Controls(props: ControlProps): JSX.Element | null {
   const {
     segments,
     weather,
@@ -79,13 +79,9 @@ function Controls(props: ControlProps): JSX.Element {
   const [value, setValue] = useState(0);
   const [showSegmentDetails, setShowSegmentDetails] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const noWeatherData = weather.length < 1;
 
   useEffect(() => setShowSegmentDetails(false), []);
-
-  const { temp, wind_deg, wind_speed, dt } = weather[value];
-  const description = weather[value].weather.description;
-  const timeString = dt ? formatDate(dt) : "-";
-  const max = weather.length > 0 ? weather.length - 1 : 0;
 
   function handleSegmentClick(selSegment: Segment) {
     const { id } = selSegment;
@@ -93,6 +89,13 @@ function Controls(props: ControlProps): JSX.Element {
     actionSegmentClick(somethingSelected ? id : -1);
     setSelectedId(somethingSelected ? id : null);
   }
+
+  if (noWeatherData) return null;
+
+  const { temp, wind_deg, wind_speed, dt } = weather[value];
+  const description = weather[value].weather.description;
+  const timeString = dt ? formatDate(dt) : "-";
+  const max = weather.length > 0 ? weather.length - 1 : 0;
 
   return (
     <ControlsDiv>

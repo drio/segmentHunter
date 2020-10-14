@@ -2,37 +2,37 @@ import { Observable, BehaviorSubject, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
 
 import { InitMockFunctions } from "./types";
-import { Coordinate } from "../types";
+import { Coordinate, Segment, StoreError, WeatherEntry } from "../types";
 import { loadStravaData } from "./strava";
 import { loadLocation } from "./location";
 import { loadWeatherData } from "./weather";
-import {
-  genErrorObservables,
-  genLocationObservables,
-  genWeatherObservables,
-  genStravaObservables,
-  genLoadingObservables,
-} from "./helpers";
 
-const store = (function () {
-  const [subjectError, error$] = genErrorObservables();
-  const [subjectLocation, location$] = genLocationObservables();
-  const [subjectWeather, weather$] = genWeatherObservables();
-  const [
-    subjectSegments,
-    segments$,
-    subjectSelectedSegment,
-    selectedSegment$,
-  ] = genStravaObservables();
-  const [
-    subjectLoadingStrava,
-    loadingStrava$,
-    subjectLoadingWeather,
+function store() {
+  const subjectError = new BehaviorSubject<StoreError>({
+    msg: "",
+    error: false,
+  });
+  const error$ = subjectError.asObservable();
+
+  /* Observables for the three data sources */
+  let subjectLocation: BehaviorSubject<Coordinate | null>;
+  const subjectWeather = new BehaviorSubject<WeatherEntry[] | null>(null);
+  const subjectSegments = new BehaviorSubject<Segment[] | null>(null);
+  const subjectSelectedSegment = new BehaviorSubject<Segment | null>(null);
+
+  /* Observables for the loading states */
+  const subjectLoadingLocation = new BehaviorSubject<boolean>(false);
+  const loadingLocation$: Observable<boolean> = subjectLoadingLocation.asObservable();
+  const subjectLoadingStrava = new BehaviorSubject<boolean>(false);
+  const loadingStrava$: Observable<boolean> = subjectLoadingStrava.asObservable();
+  const subjectLoadingWeather = new BehaviorSubject<boolean>(false);
+  const loadingWeather$: Observable<boolean> = subjectLoadingWeather.asObservable();
+  const loading$ = combineLatest([
+    loadingLocation$,
     loadingWeather$,
-  ] = genLoadingObservables();
-
-  const loading$ = combineLatest([loadingWeather$, loadingStrava$]).pipe(
-    map(([lweather, lstrava]) => lweather || lstrava)
+    loadingStrava$,
+  ]).pipe(
+    map(([llocation, lweather, lstrava]) => lweather || llocation || lstrava)
   );
 
   const subjectMustLogin = new BehaviorSubject<boolean>(false);
@@ -42,43 +42,52 @@ const store = (function () {
   const windAngle$: Observable<number> = subjectWindAngle.asObservable();
 
   function init(stravaToken: string, mocks: InitMockFunctions = {}) {
+    subjectLocation =
+      mocks.subjectLocation || new BehaviorSubject<Coordinate | null>(null);
+
+    subjectLoadingLocation.next(true);
+    subjectLoadingWeather.next(true);
+    subjectLoadingStrava.next(true);
+
     loadLocation(subjectLocation, subjectError, mocks.getPositionFn);
 
-    location$.subscribe(
-      (location: Coordinate) => {
-        loadWeatherData(
-          location,
-          subjectWeather,
-          subjectError,
-          mocks.weatherAjax$
-        );
-        loadStravaData({
-          stravaToken,
-          subjectSegments,
-          subjectMustLogin,
-          localDetailedSegmentsMock: mocks.localDetailedSegments,
-          newDetailedSegmentsMock$: mocks && mocks.newDetailedSegments$,
-        });
+    loadStravaData({
+      stravaToken,
+      subjectSegments,
+      subjectMustLogin,
+      localDetailedSegmentsMock: mocks.localDetailedSegments,
+      newDetailedSegmentsMock$: mocks && mocks.newDetailedSegments$,
+    });
+
+    getLocation().subscribe(
+      (location: Coordinate | null) => {
+        if (location) {
+          subjectLoadingLocation.next(false);
+          loadWeatherData(
+            location,
+            subjectWeather,
+            subjectError,
+            mocks.weatherAjax$
+          );
+        }
       },
       () => console.log("Using default coordinates")
     );
-    /*
-    weather$.subscribe(
-      () => subjectLoadingWeather.next(true),
-      (error) => console.log(error), // TODO
-      () => subjectLoadingWeather.next(false)
-    );
 
-    segments$.subscribe(
-      () => subjectLoadingStrava.next(false),
+    getWeatherData().subscribe(
+      (data) => data && subjectLoadingWeather.next(false),
       (error) => console.log(error) // TODO
     );
-		*/
+
+    getSegments().subscribe(
+      (segments) => segments && subjectLoadingStrava.next(false),
+      (error) => console.log(error) // TODO
+    );
   }
 
-  const getSegments = () => segments$;
+  const getSegments = () => subjectSegments.asObservable();
 
-  const getSelectedSegment = () => selectedSegment$;
+  const getSelectedSegment = () => subjectSelectedSegment.asObservable();
 
   const getMustLogin = () => mustLogin$;
 
@@ -86,30 +95,32 @@ const store = (function () {
 
   const getError = () => error$;
 
-  const getLocation = () => location$;
+  const getLocation = () => subjectLocation.asObservable();
 
-  const getWeatherData = () => weather$;
+  const getWeatherData = () => subjectWeather.asObservable();
 
-  const getWindAngle = () => windAngle$;
+  const getWindAngle = () => subjectWindAngle.asObservable();
 
   function setSelectedSegment(id: number) {
-    const filteredSegments = subjectSegments
-      .getValue()
-      .filter((s) => s.id === id);
+    const segments = subjectSegments.getValue() || [];
+    const filteredSegments = segments.filter((s) => s.id === id);
 
     const currentSelectedId = subjectSelectedSegment.getValue();
     const selectingSameSegment =
-      currentSelectedId.length > 0 && currentSelectedId[0].id === id;
+      currentSelectedId && currentSelectedId.id === id;
 
     if (id === -1 || selectingSameSegment) {
-      subjectSelectedSegment.next([]);
+      subjectSelectedSegment.next(null);
       return;
     }
 
     if (filteredSegments.length === 1) {
-      segments$
-        .pipe(map((listSegments) => listSegments.find((s) => s.id === id)))
-        .subscribe((s) => s && subjectSelectedSegment.next([s]));
+      getSegments()
+        .pipe(
+          map((listSegments) => listSegments || []),
+          map((listSegments) => listSegments.find((s) => s.id === id))
+        )
+        .subscribe((s) => s && subjectSelectedSegment.next(s));
     }
   }
 
@@ -130,6 +141,8 @@ const store = (function () {
     getWindAngle,
     setWindAngle,
   };
-})();
+}
 
-export default store;
+const createStore = () => store();
+
+export { createStore };

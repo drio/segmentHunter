@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject } from "rxjs";
 import { StoreError, Coordinate, GeoResult } from "../types";
 import { GetPosFunction } from "./types";
 
@@ -15,7 +15,7 @@ const defaultLocation = {
 };
 
 function loadLocation(
-  subjectLocation: BehaviorSubject<Coordinate>,
+  subjectLocation: BehaviorSubject<Coordinate | null>,
   subjectError: BehaviorSubject<StoreError>,
   gpFuncImp?: GetPosFunction | null
 ): void {

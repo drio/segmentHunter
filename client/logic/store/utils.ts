@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { Observable } from "rxjs";
 import { Segment } from "../types";
 import { genStravaRequestHeaders } from "./strava";

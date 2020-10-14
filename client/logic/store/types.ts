@@ -1,5 +1,5 @@
-import { Observable, BehaviorSubject } from "rxjs";
-import { WeatherEntry, Segment } from "../types";
+import { Observable, BehaviorSubject, Subject } from "rxjs";
+import { WeatherEntry, Segment, Coordinate } from "../types";
 
 export interface GetPosFunction {
   (
@@ -11,13 +11,14 @@ export interface GetPosFunction {
 
 export interface LoadStravaParams {
   stravaToken: string | null;
-  subjectSegments: BehaviorSubject<Segment[]>;
+  subjectSegments: BehaviorSubject<Segment[] | null>;
   subjectMustLogin: BehaviorSubject<boolean>;
   localDetailedSegmentsMock?: Segment[] | null;
   newDetailedSegmentsMock$?: Observable<Segment[]> | null;
 }
 
 export interface InitMockFunctions {
+  subjectLocation?: BehaviorSubject<Coordinate | null>;
   getPositionFn?: GetPosFunction | null;
   weatherAjax$?: Observable<WeatherEntry[]>;
   localDetailedSegments?: Segment[] | null;

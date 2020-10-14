@@ -17,7 +17,7 @@ function generateOpenWeatherURL(location: Coordinate) {
 
 function loadWeatherData(
   location: Coordinate,
-  subjectWeather: BehaviorSubject<WeatherEntry[]>,
+  subjectWeather: BehaviorSubject<WeatherEntry[] | null>,
   subjectError: BehaviorSubject<StoreError>,
   paramAjax$?: Observable<WeatherEntry[]>
 ): void {

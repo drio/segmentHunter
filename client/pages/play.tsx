@@ -33,10 +33,6 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
   const loading = useObservable(store.getLoading(), true);
   const closeSegments = onlyCloseSegments(location, segments);
 
-  // FIXME: emit sements in the observable instead of arrays
-  const selectedSegmentSingle =
-    selectedSegment && selectedSegment.length > 0 ? selectedSegment[0] : null;
-
   const testComp = () => {
     let liEntries = <li>-</li>;
     liEntries = segments
@@ -55,8 +51,8 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
     return (
       <div style={{ margin: "50px" }}>
         <Controls
-          segments={closeSegments}
-          weather={weatherData}
+          segments={closeSegments || []}
+          weather={weatherData || []}
           profile={profile}
           actionSegmentClick={store.setSelectedSegment}
           actionNewWindDirection={store.setWindAngle}
@@ -65,15 +61,15 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
         <p>
           🔥 {loggedIn} {username}
         </p>
-        <p>Weather Data: {weatherData.length}</p>
+        <p>Weather Data: {(weatherData && weatherData.length) || "-"}</p>
         <p>Wind Angle: {windAngle}</p>
         <p>
           Location: {location.latitude} {location.longitude}
         </p>
 
         <p>
-          Selected segment:{" "}
-          {selectedSegmentSingle ? selectedSegmentSingle.name : "-"}
+          Selected segment:
+          {selectedSegment ? selectedSegment.name : "-"}
         </p>
         <hr />
         <h1>Segments: </h1>
@@ -101,18 +97,18 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
     return (
       <Layout>
         <Controls
-          segments={closeSegments}
-          weather={weatherData}
+          segments={closeSegments || []}
+          weather={weatherData || []}
           profile={profile}
           actionSegmentClick={store.setSelectedSegment}
           actionNewWindDirection={store.setWindAngle}
         />
         <Map
-          segments={closeSegments}
+          segments={closeSegments || []}
           localCoordinates={location}
           windAngle={windAngle}
           onCenterUpdate={() => null}
-          selectedSegment={selectedSegmentSingle}
+          selectedSegment={selectedSegment}
         />
       </Layout>
     );

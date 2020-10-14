@@ -22,20 +22,16 @@ interface AppProps {
 }
 
 const App = ({ profile, store }: AppProps): JSX.Element => {
-  const segments = useObservable(store.getSegments(), []);
-  const selectedSegment = useObservable(store.getSelectedSegment(), []);
-  const weatherData = useObservable(store.getWeatherData(), []);
+  const segments = useObservable(store.getSegments());
+  const selectedSegment = useObservable(store.getSelectedSegment());
+  const weatherData = useObservable(store.getWeatherData());
   const windAngle = useObservable(store.getWindAngle());
-  const location = useObservable(store.getLocation(), {});
+  const location = useObservable(store.getLocation());
 
   const mustLogin = useObservable(store.getMustLogin());
-  const loading = useObservable(store.getLoading(), true);
+  const loading = useObservable(store.getLoading());
 
   const closeSegments = onlyCloseSegments(location, segments);
-
-  // FIXME: emit segments in the observable instead of arrays
-  const selectedSegmentSingle =
-    selectedSegment && selectedSegment.length > 0 ? selectedSegment[0] : null;
 
   if (mustLogin) return <Login />;
 
@@ -44,18 +40,18 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
   return (
     <Layout>
       <Controls
-        segments={closeSegments}
-        weather={weatherData}
+        segments={closeSegments || []}
+        weather={weatherData || []}
         profile={profile}
         actionSegmentClick={store.setSelectedSegment}
         actionNewWindDirection={store.setWindAngle}
       />
       <Map
-        segments={closeSegments}
+        segments={closeSegments || []}
         localCoordinates={location}
         windAngle={windAngle}
         onCenterUpdate={() => null}
-        selectedSegment={selectedSegmentSingle}
+        selectedSegment={selectedSegment}
       />
     </Layout>
   );
