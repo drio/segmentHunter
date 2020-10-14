@@ -7,8 +7,8 @@ const MAX_DIST = 50; // km
 function onlyCloseSegments(
   location: Coordinate | null,
   segments: Segment[] | null
-): Segment[] | null {
-  if (!segments || !location) return null;
+): Segment[] {
+  if (!segments || !location) return [];
 
   const { latitude, longitude } = location;
 

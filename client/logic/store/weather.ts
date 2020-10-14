@@ -18,7 +18,6 @@ function generateOpenWeatherURL(location: Coordinate) {
 function loadWeatherData(
   location: Coordinate,
   subjectWeather: BehaviorSubject<WeatherEntry[] | null>,
-  subjectError: BehaviorSubject<StoreError>,
   paramAjax$?: Observable<WeatherEntry[]>
 ): void {
   const inTheBrowser = typeof window !== "undefined";
@@ -33,11 +32,7 @@ function loadWeatherData(
     (hourlyWeatherData: WeatherEntry[]) =>
       subjectWeather.next(hourlyWeatherData),
     (error: string) =>
-      subjectError.next({
-        msg: "I couldn't download the weather data.",
-        error: true,
-        details: error,
-      })
+      subjectWeather.error(`error loading weather data: ${error}`)
   );
 }
 

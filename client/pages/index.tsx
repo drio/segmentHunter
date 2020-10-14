@@ -40,14 +40,14 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
   return (
     <Layout>
       <Controls
-        segments={closeSegments || []}
+        segments={closeSegments}
         weather={weatherData || []}
         profile={profile}
         actionSegmentClick={store.setSelectedSegment}
         actionNewWindDirection={store.setWindAngle}
       />
       <Map
-        segments={closeSegments || []}
+        segments={closeSegments}
         localCoordinates={location}
         windAngle={windAngle}
         onCenterUpdate={() => null}

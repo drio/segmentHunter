@@ -37,7 +37,6 @@ function store() {
 
   const subjectMustLogin = new BehaviorSubject<boolean>(false);
   const subjectWindAngle = new BehaviorSubject<number>(0);
-  const windAngle$: Observable<number> = subjectWindAngle.asObservable();
 
   function init(stravaToken: string, mocks: InitMockFunctions = {}) {
     subjectLocation =
@@ -47,7 +46,7 @@ function store() {
     subjectLoadingWeather.next(true);
     subjectLoadingStrava.next(true);
 
-    loadLocation(subjectLocation, subjectError, mocks.getPositionFn);
+    loadLocation(subjectLocation, mocks.getPositionFn);
 
     loadStravaData({
       stravaToken,
@@ -60,12 +59,7 @@ function store() {
       (location: Coordinate | null) => {
         if (location) {
           subjectLoadingLocation.next(false);
-          loadWeatherData(
-            location,
-            subjectWeather,
-            subjectError,
-            mocks.weatherAjax$
-          );
+          loadWeatherData(location, subjectWeather, mocks.weatherAjax$);
         }
       },
       () => console.log("Using default coordinates")
@@ -78,7 +72,7 @@ function store() {
 
     getSegments().subscribe(
       (segments) => segments && subjectLoadingStrava.next(false),
-      (error) => subjectMustLogin.next(true)
+      () => subjectMustLogin.next(true)
     );
   }
 

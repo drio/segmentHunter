@@ -16,7 +16,6 @@ const defaultLocation = {
 
 function loadLocation(
   subjectLocation: BehaviorSubject<Coordinate | null>,
-  subjectError: BehaviorSubject<StoreError>,
   gpFuncImp?: GetPosFunction | null
 ): void {
   const inBrowser =
@@ -48,10 +47,7 @@ function loadLocation(
       window.navigator.geolocation.getCurrentPosition(succ, err, opts);
     else getPosition(succ, err, opts);
   } else {
-    subjectError.next({
-      msg: "Browser does not support geolocation",
-      error: true,
-    });
+    subjectLocation.error("Probably getting location");
   }
 }
 
