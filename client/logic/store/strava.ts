@@ -59,7 +59,6 @@ function genNewDetailedObservable(
 function loadStravaData({
   stravaToken,
   subjectSegments,
-  subjectMustLogin,
   localDetailedSegmentsMock,
   newDetailedSegmentsMock$,
 }: LoadStravaParams): void {
@@ -67,7 +66,7 @@ function loadStravaData({
   if (!inTheBrowser) return;
 
   if (!stravaToken) {
-    subjectMustLogin.next(true);
+    subjectSegments.error("No strava token");
     return;
   }
 
@@ -93,9 +92,8 @@ function loadStravaData({
       ];
       saveSegments(detailedSegments);
       subjectSegments.next(detailedSegments);
-      subjectMustLogin.next(false);
     },
-    () => subjectMustLogin.next(true)
+    () => subjectSegments.error("Error loading new segments")
   );
 }
 

@@ -1,4 +1,12 @@
-import { of, NEVER, noop, BehaviorSubject, Subject, combineLatest } from "rxjs";
+import {
+  of,
+  NEVER,
+  noop,
+  Observable,
+  BehaviorSubject,
+  throwError,
+  combineLatest,
+} from "rxjs";
 import { map } from "rxjs/operators";
 import { createStore } from "./store";
 import { Coordinate } from "../types";
@@ -188,6 +196,66 @@ describe("store", () => {
       store.getSelectedSegment().subscribe((ss) => {
         expect(ss).toBe(null);
         done();
+      });
+    });
+  });
+
+  describe("Login", () => {
+    let store: any;
+
+    beforeEach(() => {
+      store = createStore();
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      const weatherEntries = genWeatherEntries(3);
+      const newDetailedSegments$ = new Observable((observer) =>
+        observer.error("")
+      );
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: of(weatherEntries),
+        localDetailedSegments: [],
+        newDetailedSegments$,
+      });
+    });
+
+    it("It is true if we fail to retrieve the strava segments", (done) => {
+      store.getMustLogin().subscribe((mustLogin) => {
+        expect(mustLogin).toBe(true);
+        done();
+      });
+    });
+  });
+
+  describe("windAngle", () => {
+    let store: any;
+
+    beforeEach(() => {
+      store = createStore();
+      const getPositionFn = (succ: PositionCallback) => succ(genPosition(1, 2));
+      const subjectLocation = new BehaviorSubject<Coordinate | null>(null);
+      const weatherEntries = genWeatherEntries(3);
+      const newDetailedSegments$ = of(genSegments(2));
+
+      store.init("token", {
+        subjectLocation,
+        getPositionFn,
+        weatherAjax$: of(weatherEntries),
+        localDetailedSegments: [],
+        newDetailedSegments$,
+      });
+    });
+
+    it("It starts with zero and then changes", (done) => {
+      store.getWindAngle().subscribe((angle) => {
+        expect(angle).toBe(0);
+        store.setWindAngle(12);
+        store.getWindAngle().subscribe((angle) => {
+          expect(angle).toBe(12);
+          done();
+        });
       });
     });
   });

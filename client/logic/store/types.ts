@@ -12,7 +12,6 @@ export interface GetPosFunction {
 export interface LoadStravaParams {
   stravaToken: string | null;
   subjectSegments: BehaviorSubject<Segment[] | null>;
-  subjectMustLogin: BehaviorSubject<boolean>;
   localDetailedSegmentsMock?: Segment[] | null;
   newDetailedSegmentsMock$?: Observable<Segment[]> | null;
 }

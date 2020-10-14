@@ -36,8 +36,6 @@ function store() {
   );
 
   const subjectMustLogin = new BehaviorSubject<boolean>(false);
-  const mustLogin$: Observable<boolean> = subjectMustLogin.asObservable();
-
   const subjectWindAngle = new BehaviorSubject<number>(0);
   const windAngle$: Observable<number> = subjectWindAngle.asObservable();
 
@@ -54,7 +52,6 @@ function store() {
     loadStravaData({
       stravaToken,
       subjectSegments,
-      subjectMustLogin,
       localDetailedSegmentsMock: mocks.localDetailedSegments,
       newDetailedSegmentsMock$: mocks && mocks.newDetailedSegments$,
     });
@@ -81,7 +78,7 @@ function store() {
 
     getSegments().subscribe(
       (segments) => segments && subjectLoadingStrava.next(false),
-      (error) => console.log(error) // TODO
+      (error) => subjectMustLogin.next(true)
     );
   }
 
@@ -89,7 +86,7 @@ function store() {
 
   const getSelectedSegment = () => subjectSelectedSegment.asObservable();
 
-  const getMustLogin = () => mustLogin$;
+  const getMustLogin = () => subjectMustLogin.asObservable();
 
   const getLoading = () => loading$;
 
