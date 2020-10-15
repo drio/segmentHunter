@@ -12,14 +12,14 @@ function handleLogin() {
     "width=800,height=600,modal=yes,alwaysRaised=yes"
   );
 
-  const checkConnect = setInterval(function() {
+  const checkConnect = setInterval(function () {
     if (!win || !win.closed) return;
     clearInterval(checkConnect);
     window.location.reload();
   }, 100);
 }
 
-const Login = () => {
+const Login = (): JSX.Element => {
   return (
     <Layout>
       <div className="center">

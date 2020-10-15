@@ -22,10 +22,9 @@ const ExchangeToken = (props: ExchangeProps): null => {
       cookie.set("segment_hunter_access_token", access_token);
       cookie.set("segment_hunter_username", username);
       cookie.set("segment_hunter_profile", profile);
-      window.close();
-    } else {
-      Router.push("/error");
     }
+    /* Close the window independently if the user authorize or not. */
+    window.close();
   }, []);
 
   return null;
