@@ -108,7 +108,7 @@ function Controls(props: ControlProps): JSX.Element | null {
       >
         <div>
           Made with ❤️ by{" "}
-          <a href="drio.org">
+          <a href="https://drio.org">
             <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
           </a>
           .
