@@ -29,6 +29,13 @@ const Login = (): JSX.Element => {
             login
           </a>
         </div>
+        <div>
+          Made with ❤️ by{" "}
+          <a href="https://drio.org">
+            <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
+          </a>
+          .
+        </div>
       </div>
     </Layout>
   );
