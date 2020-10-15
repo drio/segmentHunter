@@ -1,8 +1,16 @@
 import { Observable } from "rxjs";
 import { Segment } from "../types";
 import { genStravaRequestHeaders } from "./strava";
+import { StoreErrorContext, ErrorCode } from "./types";
 
-export default function createHttpObservable(
+function genError(e: ErrorCode): StoreErrorContext {
+  return {
+    msg: "",
+    code: e,
+  };
+}
+
+function createHttpObservable(
   url: string,
   token: string | null
 ): Observable<Segment[]> {
@@ -36,3 +44,5 @@ export default function createHttpObservable(
     return () => controller.abort();
   });
 }
+
+export { genError, createHttpObservable };

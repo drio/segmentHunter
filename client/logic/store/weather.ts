@@ -1,7 +1,7 @@
 import { Observable, BehaviorSubject } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { map } from "rxjs/operators";
-import { StoreError, WeatherEntry, Coordinate } from "../types";
+import { WeatherEntry, Coordinate } from "../types";
 
 const OPEN_WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/onecall";
 const OPEN_WEATHER_KEY = process.env.OPEN_WEATHER_KEY;

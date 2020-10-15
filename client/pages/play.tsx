@@ -24,6 +24,7 @@ interface AppProps {
 const testModeON = true;
 
 const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
+  const storeError = useObservable(store.getError(), null);
   const segments = useObservable(store.getSegments(), []);
   const selectedSegment = useObservable(store.getSelectedSegment(), []);
   const weatherData = useObservable(store.getWeatherData(), []);
@@ -58,6 +59,7 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
           actionNewWindDirection={store.setWindAngle}
         />
 
+        <p style={{ color: "red" }}>{storeError ? storeError.msg : ""}</p>
         <p>
           🔥 {loggedIn} {username}
         </p>

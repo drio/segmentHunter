@@ -1,5 +1,5 @@
 import { Subject, BehaviorSubject } from "rxjs";
-import { StoreError, Coordinate, GeoResult } from "../types";
+import { Coordinate, GeoResult } from "../types";
 import { GetPosFunction } from "./types";
 
 const options = {

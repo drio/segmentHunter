@@ -23,3 +23,16 @@ export interface InitMockFunctions {
   localDetailedSegments?: Segment[] | null;
   newDetailedSegments$?: Observable<Segment[]> | null;
 }
+
+export enum ErrorCode {
+  Weather,
+  Segments,
+  Location,
+  Ok,
+}
+
+export interface StoreErrorContext {
+  msg: string;
+  code: ErrorCode;
+  details?: string;
+}

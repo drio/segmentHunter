@@ -1,17 +1,17 @@
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, catchError } from "rxjs/operators";
 
-import { InitMockFunctions } from "./types";
-import { Coordinate, Segment, StoreError, WeatherEntry } from "../types";
+import { InitMockFunctions, ErrorCode, StoreErrorContext } from "./types";
+import { Coordinate, Segment, WeatherEntry } from "../types";
+import { genError } from "./utils";
 import { loadStravaData } from "./strava";
 import { loadLocation } from "./location";
 import { loadWeatherData } from "./weather";
 
 function store() {
-  const subjectError = new BehaviorSubject<StoreError>({
-    msg: "",
-    error: false,
-  });
+  const subjectError = new BehaviorSubject<StoreErrorContext | null>(
+    genError(ErrorCode.Ok)
+  );
   const error$ = subjectError.asObservable();
 
   /* Observables for the three data sources */
@@ -46,6 +46,39 @@ function store() {
     subjectLoadingWeather.next(true);
     subjectLoadingStrava.next(true);
 
+    /* Subscribe to the three data observables and act accordingly */
+    getLocation().subscribe(
+      (location: Coordinate | null) => {
+        if (location) {
+          subjectLoadingLocation.next(false);
+          loadWeatherData(location, subjectWeather, mocks.weatherAjax$);
+        }
+      },
+      (error) =>
+        subjectError.next({
+          ...genError(ErrorCode.Location),
+          ...{ details: error },
+        })
+    );
+
+    getWeatherData().subscribe(
+      (data) => data && subjectLoadingWeather.next(false),
+      (error) =>
+        subjectError.next({
+          ...genError(ErrorCode.Weather),
+          ...{ details: error },
+        })
+    );
+
+    getSegments().subscribe(
+      (segments) => {
+        segments && subjectLoadingStrava.next(false);
+        subjectMustLogin.next(false);
+      },
+      () => subjectMustLogin.next(true)
+    );
+
+    /* Try to load data */
     loadLocation(subjectLocation, mocks.getPositionFn);
 
     loadStravaData({
@@ -54,43 +87,23 @@ function store() {
       localDetailedSegmentsMock: mocks.localDetailedSegments,
       newDetailedSegmentsMock$: mocks && mocks.newDetailedSegments$,
     });
-
-    getLocation().subscribe(
-      (location: Coordinate | null) => {
-        if (location) {
-          subjectLoadingLocation.next(false);
-          loadWeatherData(location, subjectWeather, mocks.weatherAjax$);
-        }
-      },
-      () => console.log("Using default coordinates")
-    );
-
-    getWeatherData().subscribe(
-      (data) => data && subjectLoadingWeather.next(false),
-      (error) => console.log(error) // TODO
-    );
-
-    getSegments().subscribe(
-      (segments) => segments && subjectLoadingStrava.next(false),
-      () => subjectMustLogin.next(true)
-    );
   }
 
   const getSegments = () => subjectSegments.asObservable();
 
   const getSelectedSegment = () => subjectSelectedSegment.asObservable();
 
-  const getMustLogin = () => subjectMustLogin.asObservable();
-
-  const getLoading = () => loading$;
-
-  const getError = () => error$;
-
   const getLocation = () => subjectLocation.asObservable();
 
   const getWeatherData = () => subjectWeather.asObservable();
 
   const getWindAngle = () => subjectWindAngle.asObservable();
+
+  const getMustLogin = () => subjectMustLogin.asObservable();
+
+  const getLoading = () => loading$;
+
+  const getError = () => error$;
 
   function setSelectedSegment(id: number) {
     const segments = subjectSegments.getValue() || [];

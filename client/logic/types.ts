@@ -34,9 +34,3 @@ export interface WeatherEntry {
   };
   dt: number;
 }
-
-export interface StoreError {
-  msg: string;
-  error: boolean;
-  details?: string;
-}

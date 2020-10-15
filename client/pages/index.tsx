@@ -7,6 +7,7 @@ import Loading from "../components/loading";
 import Controls from "../components/controls";
 import { useObservable } from "../logic/utils";
 import { onlyCloseSegments } from "../logic/gis";
+import { ErrorCode } from "../logic/store/types";
 
 const importMap = () => import("../components/map");
 const Map = dynamic(importMap, {
@@ -23,6 +24,7 @@ interface AppProps {
 
 const App = ({ profile, store }: AppProps): JSX.Element => {
   const segments = useObservable(store.getSegments());
+  const error = useObservable(store.getError(), null);
   const selectedSegment = useObservable(store.getSelectedSegment());
   const weatherData = useObservable(store.getWeatherData());
   const windAngle = useObservable(store.getWindAngle());
@@ -32,6 +34,14 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
   const loading = useObservable(store.getLoading());
 
   const closeSegments = onlyCloseSegments(location, segments);
+
+  if (error && error.code !== ErrorCode.Ok) {
+    return (
+      <Layout>
+        <div className="center">Error</div>
+      </Layout>
+    );
+  }
 
   if (mustLogin) return <Login />;
 
