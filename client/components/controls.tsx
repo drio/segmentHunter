@@ -99,6 +99,22 @@ function Controls(props: ControlProps): JSX.Element | null {
 
   return (
     <ControlsDiv>
+      <div
+        style={{
+          fontSize: "12px",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <div>
+          Made with ❤️ by{" "}
+          <a href="drio.org">
+            <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
+          </a>
+          .
+        </div>
+      </div>
+
       <LoggedIn profile={profile} />
 
       {weather.length > 0 && (
