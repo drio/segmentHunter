@@ -59,7 +59,7 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
           actionNewWindDirection={store.setWindAngle}
         />
 
-        <p style={{ color: "red" }}>{storeError ? storeError.msg : ""}</p>
+        <p style={{ color: "red" }}>{storeError ? storeError.code : ""}</p>
         <p>
           🔥 {loggedIn} {username}
         </p>

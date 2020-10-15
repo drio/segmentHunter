@@ -1,4 +1,4 @@
-import { Subject, BehaviorSubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { Coordinate, GeoResult } from "../types";
 import { GetPosFunction } from "./types";
 
@@ -47,7 +47,9 @@ function loadLocation(
       window.navigator.geolocation.getCurrentPosition(succ, err, opts);
     else getPosition(succ, err, opts);
   } else {
-    subjectLocation.error("Probably getting location");
+    subjectLocation.error(
+      "There is no engine to retrieve the current location"
+    );
   }
 }
 

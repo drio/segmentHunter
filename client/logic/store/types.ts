@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, Subject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { WeatherEntry, Segment, Coordinate } from "../types";
 
 export interface GetPosFunction {
@@ -32,7 +32,6 @@ export enum ErrorCode {
 }
 
 export interface StoreErrorContext {
-  msg: string;
   code: ErrorCode;
   details?: string;
 }

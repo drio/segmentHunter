@@ -3,9 +3,19 @@ import { Segment } from "../types";
 import { genStravaRequestHeaders } from "./strava";
 import { StoreErrorContext, ErrorCode } from "./types";
 
+const knowErrors = [
+  "It seems we have problems accessing the weather data.",
+  "We cannot access your strava segments.",
+  "We cannot get your current location.",
+];
+
+function genDetailedMsg(err: StoreErrorContext | null): string {
+  if (err && err.code >= 0 && err.code < 3) return knowErrors[err.code];
+  return "Crazy, you just hit an unknown error.";
+}
+
 function genError(e: ErrorCode): StoreErrorContext {
   return {
-    msg: "",
     code: e,
   };
 }
@@ -45,4 +55,4 @@ function createHttpObservable(
   });
 }
 
-export { genError, createHttpObservable };
+export { genDetailedMsg, genError, createHttpObservable };

@@ -1,19 +1,31 @@
 import React from "react";
 import Layout from "../components/layout";
+import { StoreErrorContext } from "../logic/store/types";
+import { genDetailedMsg } from "../logic/store/utils";
 
 interface ErrorProps {
-  msg: string;
+  error?: StoreErrorContext;
 }
+
 const Error = (props: ErrorProps): JSX.Element => {
-  const msg = props.msg;
+  const error = props.error || null;
+  const msg = genDetailedMsg(error);
+  const { code = null, details = null } = error || {};
+
+  if (details) {
+    console.log(`ERROR: ${msg}, code: ${code}, details: ${details}`);
+  }
+
   return (
     <Layout>
       <div className="content">
         <div className="center">
           <div className="title is-3 is-family-primary">Strava Hunter</div>
           <div className="content" style={{ padding: "10px", width: "300px" }}>
-            <div>Sorry, something went wrong.</div>
-            <div>{msg}</div>
+            <div>Ups, something went wrong.</div>
+            <div>
+              {msg} {code && `(code:${code})`}
+            </div>
           </div>
           <div>
             <figure className="image">
@@ -25,6 +37,10 @@ const Error = (props: ErrorProps): JSX.Element => {
             </figure>
           </div>
           <br />
+          <div>
+            You can always clean your browser history and
+            <a href="/">start over</a>.
+          </div>
         </div>
       </div>
     </Layout>
