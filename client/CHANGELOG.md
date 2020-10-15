@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.5
+
+- Adds tests for the store and other components
+
 ### 0.4
 
 - Complete rewrite of state handling (using observables).
