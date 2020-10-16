@@ -40,7 +40,7 @@ function LoggedIn(props: LoggedInProps) {
       style={{
         justifyContent: "flex-end",
         padding: "0px",
-        marginBottom: "5px",
+        marginBottom: "10px",
       }}
     >
       <div
@@ -57,13 +57,15 @@ function LoggedIn(props: LoggedInProps) {
         .
       </div>
 
-      <div style={{ paddingRight: "10px" }}>
-        <figure className="image is-32x32">
-          <img className="is-rounded" src={profile} />
-        </figure>
-      </div>
+      <figure className="image is-32x32" style={{ marginRight: "10px" }}>
+        <img className="is-rounded" src={profile} />
+      </figure>
 
-      <button onClick={handleLogout} className="button is-danger">
+      <button
+        onClick={handleLogout}
+        className="button is-danger"
+        style={{ marginBottom: 0 }}
+      >
         logout
       </button>
     </div>
@@ -164,7 +166,9 @@ function Controls(props: ControlProps): JSX.Element | null {
 
       <div>
         <div>
-          <span>⭐️ {segments.length} segments loaded </span>
+          <span style={{ verticalAlign: "top" }}>
+            ⭐️ {segments.length} segments loaded{" "}
+          </span>
           <button
             onClick={() => setShowSegmentDetails(!showSegmentDetails)}
             className="button is-small is-warning is-rounded"
