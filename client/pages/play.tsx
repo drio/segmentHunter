@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { sessionLoader } from "../logic/session";
 import Layout from "../components/layout";
 import Login from "../components/login";
+import Loading from "../components/loading";
 import Controls from "../components/controls";
 import { Segment } from "../logic/types";
 import { useObservable } from "../logic/utils";
@@ -81,20 +82,9 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
     );
   };
 
-  if (mustLogin) {
-    return <Login />;
-  }
-
-  if (loading) {
-    return (
-      <Layout>
-        <div>Loading ...</div>
-      </Layout>
-    );
-  }
-
   if (testModeON) {
-    return testComp();
+    //return testComp();
+    return <Loading />;
   } else {
     return (
       <Layout>

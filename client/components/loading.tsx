@@ -14,7 +14,11 @@ const Loading = () => {
 
         <div>
           <figure className="image">
-            <img src="loading/loading.gif" alt="Image" />
+            <img
+              src="loading/loading.gif"
+              alt="Image"
+              style={{ width: "250px" }}
+            />
           </figure>
         </div>
         <br />
