@@ -27,13 +27,6 @@ const ControlsDiv = styled.div`
   z-index: 2;
 `;
 
-const MainRowLoginInfo = styled.div`
-  display: "flex";
-  justify-content: "flex-end";
-  align-items: "center";
-  margin: 5;
-`;
-
 interface LoggedInProps {
   profile: string | "";
 }
@@ -42,19 +35,38 @@ function LoggedIn(props: LoggedInProps) {
   const { profile } = props;
 
   return (
-    <MainRowLoginInfo className="container buttons are-small">
+    <div
+      className="buttons are-small"
+      style={{
+        justifyContent: "flex-end",
+        padding: "0px",
+        marginBottom: "5px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "12px",
+          alignSelf: "flex-start",
+          flex: "2 0 0",
+        }}
+      >
+        Made with ❤️ by{" "}
+        <a href="https://drio.org">
+          <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
+        </a>
+        .
+      </div>
+
       <div style={{ paddingRight: "10px" }}>
         <figure className="image is-32x32">
           <img className="is-rounded" src={profile} />
         </figure>
       </div>
 
-      <div>
-        <button onClick={handleLogout} className="button is-danger">
-          logout
-        </button>
-      </div>
-    </MainRowLoginInfo>
+      <button onClick={handleLogout} className="button is-danger">
+        logout
+      </button>
+    </div>
   );
 }
 
@@ -99,22 +111,6 @@ function Controls(props: ControlProps): JSX.Element | null {
 
   return (
     <ControlsDiv>
-      <div
-        style={{
-          fontSize: "12px",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <div>
-          Made with ❤️ by{" "}
-          <a href="https://drio.org">
-            <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
-          </a>
-          .
-        </div>
-      </div>
-
       <LoggedIn profile={profile} />
 
       {weather.length > 0 && (
