@@ -159,7 +159,6 @@ function Map(props: MapProps): JSX.Element {
       "render",
       debounce(() => {
         const { lat, lng } = map.getCenter();
-        console.log("asdasdf");
         onCenterUpdate({ latitude: lat, longitude: lng });
       }, 30)
     );
@@ -167,14 +166,6 @@ function Map(props: MapProps): JSX.Element {
     map.on("load", () => {
       setMapLoaded(true);
       savedBounds = map.getBounds();
-    });
-
-    map.on("move", () => {
-      setState({
-        lng: map.getCenter().lng,
-        lat: map.getCenter().lat,
-        zoom: map.getZoom(),
-      });
     });
   }, []);
 
