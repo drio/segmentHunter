@@ -164,7 +164,7 @@ function Controls(props: ControlProps): JSX.Element | null {
         </>
       )}
 
-      <div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
         <div>
           <span style={{ verticalAlign: "top" }}>
             ⭐️ {segments.length} segments loaded{" "}
@@ -177,15 +177,13 @@ function Controls(props: ControlProps): JSX.Element | null {
             {segments.length > 0 && showSegmentDetails ? "hide" : "show"}
           </button>
         </div>
+
         {showSegmentDetails && (
           <div
             className="container"
             id="containerListSegments"
             style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              marginTop: "5px",
+              margin: 0,
               textOverflow: "Ellipsis",
               maxHeight: "55vh",
               overflow: "scroll",
