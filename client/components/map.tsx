@@ -113,18 +113,6 @@ function segmentSelected(selectedSegment: Segment | null) {
   }
 }
 
-function initState(location: Coordinate | null) {
-  return useState(
-    location
-      ? {
-          lng: location.longitude,
-          lat: location.latitude,
-          zoom: DEFAULT_ZOOM,
-        }
-      : DEFAULT_STATE
-  );
-}
-
 interface MapProps {
   segments: Segment[];
   windAngle: number;
@@ -142,7 +130,13 @@ function Map(props: MapProps): JSX.Element {
     selectedSegment,
   } = props;
 
-  const [state, setState] = initState(localCoordinates);
+  const state = localCoordinates
+    ? {
+        lng: localCoordinates.longitude,
+        lat: localCoordinates.latitude,
+        zoom: DEFAULT_ZOOM,
+      }
+    : DEFAULT_STATE;
   const mapContainer = useRef<string | HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [segmentsLoaded, setSegmentsLoaded] = useState(false);
