@@ -155,12 +155,14 @@ function Map(props: MapProps): JSX.Element {
       zoom: state.zoom,
     });
 
-    map.on("render", () => {
-      return debounce(() => {
+    map.on(
+      "render",
+      debounce(() => {
         const { lat, lng } = map.getCenter();
+        console.log("asdasdf");
         onCenterUpdate({ latitude: lat, longitude: lng });
-      }, 30);
-    });
+      }, 30)
+    );
 
     map.on("load", () => {
       setMapLoaded(true);
