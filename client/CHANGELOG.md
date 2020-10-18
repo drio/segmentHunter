@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.5.1
+
+- Adds your location
+- Adds markers to indicate segment start and stop
+
 ### 0.5
 
 - Adds tests for the store and other components
