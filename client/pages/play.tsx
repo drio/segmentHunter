@@ -97,7 +97,7 @@ const App = ({ loggedIn, username, profile, store }: AppProps): JSX.Element => {
         />
         <Map
           segments={closeSegments || []}
-          localCoordinates={location}
+          location={location}
           windAngle={windAngle}
           onCenterUpdate={() => null}
           selectedSegment={selectedSegment}

@@ -46,7 +46,6 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
   if (mustLogin) return <Login />;
 
   if (loading) return <Loading />;
-
   return (
     <Layout>
       <Controls
@@ -58,7 +57,7 @@ const App = ({ profile, store }: AppProps): JSX.Element => {
       />
       <Map
         segments={closeSegments}
-        localCoordinates={location}
+        location={location}
         windAngle={windAngle}
         onCenterUpdate={() => null}
         selectedSegment={selectedSegment}

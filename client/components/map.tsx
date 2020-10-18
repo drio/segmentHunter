@@ -20,6 +20,37 @@ if (TOKEN) {
 
 let map: mapboxgl.Map, savedBounds: mapboxgl.LngLatBounds;
 
+function genGeoJSONSymbol(coordinates: number[]): mapboxgl.GeoJSONSourceRaw {
+  return {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Point",
+            coordinates,
+          },
+        },
+      ],
+    },
+  };
+}
+
+function genLayerSymbol(id: string, field: string): mapboxgl.Layer {
+  return {
+    id,
+    type: "symbol",
+    source: id,
+    layout: {
+      "text-field": field,
+      visibility: "visible",
+    },
+  };
+}
+
 function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
   const coordinateList = alg.polyToCoordinates(segment.map.polyline);
 
@@ -31,9 +62,7 @@ function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
       features: [
         {
           type: "Feature",
-          properties: {
-            color: "#F7455D", // red
-          },
+          properties: {},
           geometry: {
             type: "LineString",
             coordinates: coordinateList,
@@ -42,17 +71,12 @@ function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
       ],
     },
   });
-
   const score = segment.map ? alg.score(segment, windAngle) : 0;
-
   map.addLayer({
     id: id,
     type: "line",
     source: id,
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
+    layout: {},
     paint: {
       "line-opacity": 0.8,
       "line-width": 6,
@@ -60,9 +84,16 @@ function addLine(map: mapboxgl.Map, segment: Segment, windAngle: number) {
     },
   });
 
-  map.on("click", id, () => {
-    console.log("click: ", segment.name, score);
-  });
+  const startId = `start-${segment.id}`;
+  map.addSource(startId, genGeoJSONSymbol(coordinateList[0]));
+  map.addLayer(genLayerSymbol(startId, "▶︎"));
+
+  const stopId = `stop-${segment.id}`;
+  map.addSource(
+    stopId,
+    genGeoJSONSymbol(coordinateList[coordinateList.length - 1])
+  );
+  map.addLayer(genLayerSymbol(stopId, "■"));
 }
 
 function renderSegments(
@@ -117,7 +148,7 @@ interface MapProps {
   segments: Segment[];
   windAngle: number;
   onCenterUpdate: (c: Coordinate) => void;
-  localCoordinates: Coordinate | null;
+  location: Coordinate | null;
   selectedSegment: Segment | null;
 }
 
@@ -126,14 +157,14 @@ function Map(props: MapProps): JSX.Element {
     segments = [],
     windAngle,
     onCenterUpdate,
-    localCoordinates,
+    location,
     selectedSegment,
   } = props;
 
-  const state = localCoordinates
+  const state = location
     ? {
-        lng: localCoordinates.longitude,
-        lat: localCoordinates.latitude,
+        lng: location.longitude,
+        lat: location.latitude,
         zoom: DEFAULT_ZOOM,
       }
     : DEFAULT_STATE;
@@ -160,6 +191,8 @@ function Map(props: MapProps): JSX.Element {
     map.on("load", () => {
       setMapLoaded(true);
       savedBounds = map.getBounds();
+      const { lng, lat } = state;
+      new mapboxgl.Marker().setLngLat([lng, lat]).addTo(map);
     });
   }, []);
 
