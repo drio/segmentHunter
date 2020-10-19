@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "../components/layout";
 
+const VERSION = process.env.version;
 const CLIENT_ID = process.env.CLIENT_ID;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 const OAUTH_URL = `http://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&approval_prompt=force&scope=read`;
@@ -34,8 +35,8 @@ const Login = (): JSX.Element => {
           <a href="https://drio.org">
             <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
           </a>
-          .
         </div>
+        <div style={{ fontSize: "10px", color: "gray" }}>v{VERSION}</div>
       </div>
     </Layout>
   );

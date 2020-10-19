@@ -11,6 +11,7 @@ import {
 } from "../logic/utils";
 
 const MAX_SEGMENT_TEXT_SIZE = 35;
+const VERSION = process.env.version;
 
 const ControlsDiv = styled.div`
   font-size: 16px;
@@ -54,7 +55,8 @@ function LoggedIn(props: LoggedInProps) {
         <a href="https://drio.org">
           <span style={{ color: "tomato", fontWeight: "bold" }}>drio</span>
         </a>
-        .
+        <br />
+        <span style={{ color: "gray" }}>v{VERSION}</span>
       </div>
 
       <figure className="image is-32x32" style={{ marginRight: "10px" }}>

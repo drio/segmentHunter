@@ -1,5 +1,6 @@
+import fs = require('fs')
+
 const mode = process.env.NODE_ENV;
-const fs = require("fs");
 
 const fileName = "./config.json";
 
@@ -24,5 +25,5 @@ if (!config[mode]) {
 console.log(`>> config file loaded. Working in ${mode} mode.`);
 
 module.exports = {
-  env: config[mode]
+  env: { ...config[mode], ...{ version: config.version } },
 };
