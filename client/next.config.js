@@ -1,4 +1,5 @@
-import fs = require('fs')
+/* eslint-disable */
+const fs = require("fs");
 
 const mode = process.env.NODE_ENV;
 
