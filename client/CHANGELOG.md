@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.5.2
+
+- Refactors map to a dedicated location
+
 ### 0.5.1
 
 - Adds your location
