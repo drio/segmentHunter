@@ -9,7 +9,7 @@ import { Segment } from "../logic/types";
 import { useObservable } from "../logic/utils";
 import { onlyCloseSegments } from "../logic/gis";
 
-const importMap = () => import("../components/map");
+const importMap = () => import("../components/map/map");
 const Map = dynamic(importMap, {
   ssr: false,
 });
